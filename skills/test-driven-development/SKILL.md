@@ -30,9 +30,7 @@ Thinking "skip TDD just this once"? Stop. That's rationalization.
 
 ## The Iron Law
 
-```
-NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST
-```
+**No production code without a failing test first.**
 
 Write code before the test? Delete it. Start over.
 
@@ -72,38 +70,9 @@ digraph tdd_cycle {
 
 Write one minimal test showing what should happen.
 
-<Good>
-```typescript
-test('retries failed operations 3 times', async () => {
-  let attempts = 0;
-  const operation = () => {
-    attempts++;
-    if (attempts < 3) throw new Error('fail');
-    return 'success';
-  };
+**Good test:** the name describes a specific, observable behavior (e.g. "retries failed operations 3 times"); the body drives the real implementation through real code without mocks; and the assertions check what the code returned, not what intermediate steps were called.
 
-  const result = await retryOperation(operation);
-
-  expect(result).toBe('success');
-  expect(attempts).toBe(3);
-});
-```
-Clear name, tests real behavior, one thing
-</Good>
-
-<Bad>
-```typescript
-test('retry works', async () => {
-  const mock = jest.fn()
-    .mockRejectedValueOnce(new Error())
-    .mockRejectedValueOnce(new Error())
-    .mockResolvedValueOnce('success');
-  await retryOperation(mock);
-  expect(mock).toHaveBeenCalledTimes(3);
-});
-```
-Vague name, tests mock not code
-</Bad>
+**Bad test:** vague name (e.g. "retry works"); heavy mock setup that pre-arranges the answer; assertions on the mock's interaction count rather than the result. You're testing the mock, not the code.
 
 **Requirements:**
 - One behavior
@@ -115,7 +84,7 @@ Vague name, tests mock not code
 **MANDATORY. Never skip.**
 
 ```bash
-npm test path/to/test.test.ts
+vendor/bin/phpunit tests/Path/SomeTest.php
 ```
 
 Confirm:
@@ -131,37 +100,9 @@ Confirm:
 
 Write simplest code to pass the test.
 
-<Good>
-```typescript
-async function retryOperation<T>(fn: () => Promise<T>): Promise<T> {
-  for (let i = 0; i < 3; i++) {
-    try {
-      return await fn();
-    } catch (e) {
-      if (i === 2) throw e;
-    }
-  }
-  throw new Error('unreachable');
-}
-```
-Just enough to pass
-</Good>
+**Good implementation:** just enough to make the test pass — no optional parameters, no configuration knobs, no premature abstraction. If the test asks for "retry 3 times", hardcode 3.
 
-<Bad>
-```typescript
-async function retryOperation<T>(
-  fn: () => Promise<T>,
-  options?: {
-    maxRetries?: number;
-    backoff?: 'linear' | 'exponential';
-    onRetry?: (attempt: number) => void;
-  }
-): Promise<T> {
-  // YAGNI
-}
-```
-Over-engineered
-</Bad>
+**Bad implementation:** anticipates needs the test didn't ask for — optional retry counts, exponential backoff modes, callback hooks for each attempt. That's YAGNI in spirit, even before any of it gets implemented.
 
 Don't add features, refactor other code, or "improve" beyond the test.
 
@@ -170,7 +111,7 @@ Don't add features, refactor other code, or "improve" beyond the test.
 **MANDATORY.**
 
 ```bash
-npm test path/to/test.test.ts
+vendor/bin/phpunit tests/Path/SomeTest.php
 ```
 
 Confirm:
@@ -199,8 +140,8 @@ Next failing test for next feature.
 
 | Quality | Good | Bad |
 |---------|------|-----|
-| **Minimal** | One thing. "and" in name? Split it. | `test('validates email and domain and whitespace')` |
-| **Clear** | Name describes behavior | `test('test1')` |
+| **Minimal** | One thing. "and" in name? Split it. | A name that joins multiple behaviors with "and" |
+| **Clear** | Name describes behavior | A name like "test1" or "it works" |
 | **Shows intent** | Demonstrates desired API | Obscures what code should do |
 
 ## Why Order Matters
@@ -289,40 +230,17 @@ Tests-first force edge case discovery before implementing. Tests-after verify yo
 
 ## Example: Bug Fix
 
-**Bug:** Empty email accepted
+**Bug:** empty email accepted by the registration form.
 
-**RED**
-```typescript
-test('rejects empty email', async () => {
-  const result = await submitForm({ email: '' });
-  expect(result.error).toBe('Email required');
-});
-```
+**RED** — write a test that submits the registration with an empty email and asserts the response carries a validation error like "Email required".
 
-**Verify RED**
-```bash
-$ npm test
-FAIL: expected 'Email required', got undefined
-```
+**Verify RED** — run `vendor/bin/phpunit` for that test. It should fail because the form returns no error (or returns one with a different message). Confirm the failure mode is "feature missing", not a typo or class-not-found.
 
-**GREEN**
-```typescript
-function submitForm(data: FormData) {
-  if (!data.email?.trim()) {
-    return { error: 'Email required' };
-  }
-  // ...
-}
-```
+**GREEN** — add the minimal validation: if the email is empty or whitespace-only, return a validation error with message "Email required". Nothing else.
 
-**Verify GREEN**
-```bash
-$ npm test
-PASS
-```
+**Verify GREEN** — run the test again. Confirm it passes and that no other tests broke.
 
-**REFACTOR**
-Extract validation for multiple fields if needed.
+**REFACTOR** — if you'll need validation for multiple fields, extract a small helper. Otherwise, leave it.
 
 ## Verification Checklist
 
@@ -363,9 +281,6 @@ When adding mocks or test utilities, read @testing-anti-patterns.md to avoid com
 
 ## Final Rule
 
-```
-Production code → test exists and failed first
-Otherwise → not TDD
-```
+**Production code → test exists and failed first. Otherwise → not TDD.**
 
 No exceptions without your human partner's permission.

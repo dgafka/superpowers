@@ -15,27 +15,23 @@ Claiming work is complete without verification is dishonesty, not efficiency.
 
 ## The Iron Law
 
-```
-NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE
-```
+**No completion claims without fresh verification evidence.**
 
 If you haven't run the verification command in this message, you cannot claim it passes.
 
 ## The Gate Function
 
-```
-BEFORE claiming any status or expressing satisfaction:
+Before claiming any status or expressing satisfaction:
 
-1. IDENTIFY: What command proves this claim?
-2. RUN: Execute the FULL command (fresh, complete)
-3. READ: Full output, check exit code, count failures
-4. VERIFY: Does output confirm the claim?
-   - If NO: State actual status with evidence
-   - If YES: State claim WITH evidence
-5. ONLY THEN: Make the claim
+1. **Identify** what command proves this claim.
+2. **Run** the full command, fresh and complete — no extrapolation from a previous run.
+3. **Read** the full output. Check the exit code. Count the failures.
+4. **Verify** the output confirms the claim.
+   - If no: state the actual status with evidence.
+   - If yes: state the claim *with* evidence.
+5. **Only then** make the claim.
 
-Skip any step = lying, not verifying
-```
+Skip any step and you are lying, not verifying.
 
 ## Common Failures
 
@@ -75,35 +71,15 @@ Skip any step = lying, not verifying
 
 ## Key Patterns
 
-**Tests:**
-```
-✅ [Run test command] [See: 34/34 pass] "All tests pass"
-❌ "Should pass now" / "Looks correct"
-```
+**Tests:** ✅ Run the test command, see the pass count in the output, *then* say "all tests pass". ❌ "Should pass now" / "Looks correct".
 
-**Regression tests (TDD Red-Green):**
-```
-✅ Write → Run (pass) → Revert fix → Run (MUST FAIL) → Restore → Run (pass)
-❌ "I've written a regression test" (without red-green verification)
-```
+**Regression tests (TDD Red-Green):** ✅ Write the test → run (pass) → revert the fix → run (must fail) → restore → run (pass). ❌ "I've written a regression test" without the red-green verification.
 
-**Build:**
-```
-✅ [Run build] [See: exit 0] "Build passes"
-❌ "Linter passed" (linter doesn't check compilation)
-```
+**Build:** ✅ Run the build, confirm exit 0, *then* say "build passes". ❌ "Linter passed" — the linter doesn't check compilation.
 
-**Requirements:**
-```
-✅ Re-read plan → Create checklist → Verify each → Report gaps or completion
-❌ "Tests pass, phase complete"
-```
+**Requirements:** ✅ Re-read the plan, build a checklist, verify each item, report gaps or completion. ❌ "Tests pass, phase complete" — tests passing isn't the same as requirements met.
 
-**Agent delegation:**
-```
-✅ Agent reports success → Check VCS diff → Verify changes → Report actual state
-❌ Trust agent report
-```
+**Agent delegation:** ✅ Agent reports success → check the VCS diff → verify the changes independently → report the actual state. ❌ Trust the agent's report.
 
 ## Why This Matters
 

@@ -98,11 +98,11 @@ These thoughts mean STOP—you're rationalizing:
 
 When multiple skills could apply, use this order:
 
-1. **Process skills first** (brainstorming, debugging) - these determine HOW to approach the task
-2. **Implementation skills second** (frontend-design, mcp-builder) - these guide execution
+1. **Process skills first** (brainstorming, executing-plans) - these determine HOW to approach the task
+2. **Implementation skills second** - any domain-specific skill installed alongside Superpowers, applied per task during execution
 
-"Let's build X" → brainstorming first, then implementation skills.
-"Fix this bug" → debugging first, then domain-specific skills.
+"Let's build X" → brainstorming first, then execution.
+"Fix this bug" → write a test that reproduces it first, then implement the fix.
 
 ## Skill Types
 

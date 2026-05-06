@@ -12,7 +12,6 @@
   "license": "MIT",
   "keywords": [
     "brainstorming",
-    "subagent-driven-development",
     "skills",
     "planning",
     "tdd",
@@ -23,8 +22,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Superpowers",
-    "shortDescription": "Planning, TDD, debugging, and delivery workflows for coding agents",
-    "longDescription": "Use Superpowers to guide agent work through brainstorming, implementation planning, test-driven development, systematic debugging, parallel execution, code review, and finish-the-branch workflows.",
+    "shortDescription": "Spec-driven brainstorming, TDD, and delivery workflows for coding agents",
+    "longDescription": "Use Superpowers to guide agent work through brainstorming, spec-driven task decomposition with per-task TDD, verification before completion, and finish-the-branch workflows.",
     "developerName": "Jesse Vincent",
     "category": "Coding",
     "capabilities": [

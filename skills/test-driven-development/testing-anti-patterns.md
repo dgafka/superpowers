@@ -12,22 +12,13 @@ Tests must verify real behavior, not mock behavior. Mocks are a means to isolate
 
 ## The Iron Laws
 
-```
-1. NEVER test mock behavior
-2. NEVER add test-only methods to production classes
-3. NEVER mock without understanding dependencies
-```
+1. **Never test mock behavior.**
+2. **Never add test-only methods to production classes.**
+3. **Never mock without understanding what the real dependency does.**
 
 ## Anti-Pattern 1: Testing Mock Behavior
 
-**The violation:**
-```typescript
-// ❌ BAD: Testing that the mock exists
-test('renders sidebar', () => {
-  render(<Page />);
-  expect(screen.getByTestId('sidebar-mock')).toBeInTheDocument();
-});
-```
+**The violation:** asserting on the presence of a mock element. The test mounts a page, mocks the sidebar so it renders as a stub with a recognizable test-id, and asserts that the stub is in the document. The assertion passes because the mock rendered — not because the page wired up real navigation.
 
 **Why this is wrong:**
 - You're verifying the mock works, not that the component works
@@ -36,17 +27,7 @@ test('renders sidebar', () => {
 
 **your human partner's correction:** "Are we testing the behavior of a mock?"
 
-**The fix:**
-```typescript
-// ✅ GOOD: Test real component or don't mock it
-test('renders sidebar', () => {
-  render(<Page />);  // Don't mock sidebar
-  expect(screen.getByRole('navigation')).toBeInTheDocument();
-});
-
-// OR if sidebar must be mocked for isolation:
-// Don't assert on the mock - test Page's behavior with sidebar present
-```
+**The fix:** test the real component (don't mock the sidebar) and assert on something a user can observe — for example, that an element with `role="navigation"` is in the document. If the sidebar genuinely must be mocked for isolation, assert on the page's behavior with the sidebar present, never on the mock itself.
 
 ### Gate Function
 
@@ -62,19 +43,7 @@ BEFORE asserting on any mock element:
 
 ## Anti-Pattern 2: Test-Only Methods in Production
 
-**The violation:**
-```typescript
-// ❌ BAD: destroy() only used in tests
-class Session {
-  async destroy() {  // Looks like production API!
-    await this._workspaceManager?.destroyWorkspace(this.id);
-    // ... cleanup
-  }
-}
-
-// In tests
-afterEach(() => session.destroy());
-```
+**The violation:** adding a method to a production class that exists only because tests need it. For example, a `Session` class gains a `destroy()` method whose only callers are `afterEach` hooks in test files. The method looks like part of the public API, but no production caller ever invokes it.
 
 **Why this is wrong:**
 - Production class polluted with test-only code
@@ -82,22 +51,7 @@ afterEach(() => session.destroy());
 - Violates YAGNI and separation of concerns
 - Confuses object lifecycle with entity lifecycle
 
-**The fix:**
-```typescript
-// ✅ GOOD: Test utilities handle test cleanup
-// Session has no destroy() - it's stateless in production
-
-// In test-utils/
-export async function cleanupSession(session: Session) {
-  const workspace = session.getWorkspaceInfo();
-  if (workspace) {
-    await workspaceManager.destroyWorkspace(workspace.id);
-  }
-}
-
-// In tests
-afterEach(() => cleanupSession(session));
-```
+**The fix:** keep cleanup logic out of the production class entirely. Put it in a test helper (e.g. `cleanupSession(session)` in a `test-utils/` module) that reaches into the underlying resources directly. Tests call the helper; production code never sees it.
 
 ### Gate Function
 
@@ -117,36 +71,14 @@ BEFORE adding any method to production class:
 
 ## Anti-Pattern 3: Mocking Without Understanding
 
-**The violation:**
-```typescript
-// ❌ BAD: Mock breaks test logic
-test('detects duplicate server', () => {
-  // Mock prevents config write that test depends on!
-  vi.mock('ToolCatalog', () => ({
-    discoverAndCacheTools: vi.fn().mockResolvedValue(undefined)
-  }));
-
-  await addServer(config);
-  await addServer(config);  // Should throw - but won't!
-});
-```
+**The violation:** mocking a method without checking what side effects it has. The test is meant to exercise duplicate-server detection, but it pre-mocks the tool-catalog's discovery method to return nothing — and that method was the one writing the config the duplicate check reads. The second `addServer(config)` call should throw "duplicate", but it doesn't, because the first call never persisted anything.
 
 **Why this is wrong:**
 - Mocked method had side effect test depended on (writing config)
 - Over-mocking to "be safe" breaks actual behavior
 - Test passes for wrong reason or fails mysteriously
 
-**The fix:**
-```typescript
-// ✅ GOOD: Mock at correct level
-test('detects duplicate server', () => {
-  // Mock the slow part, preserve behavior test needs
-  vi.mock('MCPServerManager'); // Just mock slow server startup
-
-  await addServer(config);  // Config written
-  await addServer(config);  // Duplicate detected ✓
-});
-```
+**The fix:** mock at the lowest meaningful level. If the only thing you actually need to skip is a slow external server startup, mock just the server-startup component — not the high-level orchestrator that also writes config the test depends on.
 
 ### Gate Function
 
@@ -176,17 +108,7 @@ BEFORE mocking any method:
 
 ## Anti-Pattern 4: Incomplete Mocks
 
-**The violation:**
-```typescript
-// ❌ BAD: Partial mock - only fields you think you need
-const mockResponse = {
-  status: 'success',
-  data: { userId: '123', name: 'Alice' }
-  // Missing: metadata that downstream code uses
-};
-
-// Later: breaks when code accesses response.metadata.requestId
-```
+**The violation:** building a mock response with only the fields your immediate test reads (e.g. `status` and `data`), even though the real API also returns a `metadata` object that downstream code consumes. The test passes because the mock satisfies the part of the contract under test. Production breaks the moment something accesses `response.metadata.requestId`.
 
 **Why this is wrong:**
 - **Partial mocks hide structural assumptions** - You only mocked fields you know about
@@ -196,16 +118,7 @@ const mockResponse = {
 
 **The Iron Rule:** Mock the COMPLETE data structure as it exists in reality, not just fields your immediate test uses.
 
-**The fix:**
-```typescript
-// ✅ GOOD: Mirror real API completeness
-const mockResponse = {
-  status: 'success',
-  data: { userId: '123', name: 'Alice' },
-  metadata: { requestId: 'req-789', timestamp: 1234567890 }
-  // All fields real API returns
-};
-```
+**The fix:** mirror the real API response in full. Include every field the live response carries — `metadata`, timestamps, request IDs, anything documented or observable in real responses — even if your immediate test doesn't read them.
 
 ### Gate Function
 
@@ -227,26 +140,14 @@ BEFORE creating mock responses:
 
 ## Anti-Pattern 5: Integration Tests as Afterthought
 
-**The violation:**
-```
-✅ Implementation complete
-❌ No tests written
-"Ready for testing"
-```
+**The violation:** declaring implementation done with tests "to come later". Treating tests as a separate phase that lives after "complete", or as something to add when reviewers ask.
 
 **Why this is wrong:**
 - Testing is part of implementation, not optional follow-up
 - TDD would have caught this
 - Can't claim complete without tests
 
-**The fix:**
-```
-TDD cycle:
-1. Write failing test
-2. Implement to pass
-3. Refactor
-4. THEN claim complete
-```
+**The fix:** follow the TDD cycle — write the failing test, implement to pass, refactor, *then* claim complete. "Complete" without tests is "complete" without verification, which means it's not complete.
 
 ## When Mocks Become Too Complex
 
