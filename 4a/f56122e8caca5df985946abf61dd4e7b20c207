@@ -1,0 +1,19 @@
+.claude-plugin/marketplace.json
+  s_f9a58b499c6de3::t_c12bf3c9c3bcf2 2-3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.1",
+  "base_commit_sha": "4af56122e8caca5df985946abf61dd4e7b20c207",
+  "prompts": {},
+  "sessions": {
+    "s_f9a58b499c6de3": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0a7fe8be-3398-40a2-88f7-67616beaca2c",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Dariusz Gafka <dgafka.mail@gmail.com>"
+    }
+  }
+}
