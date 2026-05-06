@@ -1,0 +1,85 @@
+skills/finishing-a-development-branch/SKILL.md
+  f9a58b499c6de3b4 166
+  s_f9a58b499c6de3::t_592a8648b70c6f 106,129-134
+  s_f9a58b499c6de3::t_dbc5e0913e8e03 24
+skills/verification-before-completion/SKILL.md
+  s_f9a58b499c6de3::t_b684e291a7ef13 24,26-32,34
+  s_f9a58b499c6de3::t_19ed22fc4d7e6d 18
+  s_f9a58b499c6de3::t_b699a940861c39 74-82
+tests/explicit-skill-requests/run-all.sh
+  s_f9a58b499c6de3::t_366c64f9c23f18 18
+tests/explicit-skill-requests/run-test.sh
+  f9a58b499c6de3b4 18
+skills/executing-plans/SKILL.md
+  s_f9a58b499c6de3::t_314cbb1ea34b5f 3,10,12,14,18,20-23,25,27-59,68-72,76,78-80,82,85-91,96-98,100-101
+skills/using-superpowers/SKILL.md
+  s_f9a58b499c6de3::t_2408cc28ddc09e 101-102,104-105
+README.md
+  s_f9a58b499c6de3::t_6596fe45a5c8c4 11,13
+  s_f9a58b499c6de3::t_380dc91d77287f 127
+  s_f9a58b499c6de3::t_65f003a8f22056 123,125
+  s_f9a58b499c6de3::t_875076bb8e7f2c 143
+skills/test-driven-development/SKILL.md
+  s_f9a58b499c6de3::t_2c262b4b0a9566 33
+  s_f9a58b499c6de3::t_d9a80e911da3de 143-144
+  s_f9a58b499c6de3::t_187491bb03dd93 103-105
+  s_f9a58b499c6de3::t_6053e112bf0363 284
+  s_f9a58b499c6de3::t_2d62f14b070882 243
+  s_f9a58b499c6de3::t_27b3c5bac9c277 87,114
+  s_f9a58b499c6de3::t_2769a7be2548d8 233,235,237,239,241
+  s_f9a58b499c6de3::t_3bbc2481a6c92a 73-75
+CLAUDE.md
+  s_f9a58b499c6de3::t_ee096e8422c2e6 1,3,5,7,9,11,13,15-17
+skills/brainstorming/SKILL.md
+  s_f9a58b499c6de3::t_8d1bf3ebec8a86 48
+  s_f9a58b499c6de3::t_2b33f941d995c8 32
+  s_f9a58b499c6de3::t_9a0a9a81d53ded 66
+  s_f9a58b499c6de3::t_e5364b2753d609 129,135-136
+  s_f9a58b499c6de3::t_45ba74a0401d0d 62
+skills/test-driven-development/testing-anti-patterns.md
+  s_f9a58b499c6de3::t_ef5039a34f2e5f 21,30
+  s_f9a58b499c6de3::t_f078fe6e29aa6a 46,54
+  s_f9a58b499c6de3::t_abcad255a21055 143,150
+  s_f9a58b499c6de3::t_0fca2e9ece6501 15-17
+  s_f9a58b499c6de3::t_04928e4d0367b4 111,121
+  s_f9a58b499c6de3::t_42fbcbd79cd566 74,81
+skills/using-superpowers/references/codex-tools.md
+  s_f9a58b499c6de3::t_34abdb648a933e 14-15,23-24
+skills/writing-skills/SKILL.md
+  s_f9a58b499c6de3::t_fa2a3a636a2012 284
+skills/writing-skills/render-graphs.js
+  f9a58b499c6de3b4 96-97
+.codex-plugin/plugin.json
+  s_f9a58b499c6de3::t_813b6c8c17dca8 25-26
+tests/skill-triggering/run-test.sh
+  s_f9a58b499c6de3::t_4fe1dc15c8c2de 16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.1",
+  "base_commit_sha": "a0f4e13ac48bdef505047ff1b4c5b393404c50e5",
+  "prompts": {
+    "f9a58b499c6de3b4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0a7fe8be-3398-40a2-88f7-67616beaca2c",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Dariusz Gafka <dgafka.mail@gmail.com>",
+      "total_additions": 15,
+      "total_deletions": 62,
+      "accepted_lines": 4,
+      "overriden_lines": 0
+    }
+  },
+  "sessions": {
+    "s_f9a58b499c6de3": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0a7fe8be-3398-40a2-88f7-67616beaca2c",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Dariusz Gafka <dgafka.mail@gmail.com>"
+    }
+  }
+}
