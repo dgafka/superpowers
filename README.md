@@ -120,11 +120,9 @@ gemini extensions update superpowers
 
 1. **brainstorming** - Activates before writing code. Refines rough ideas through questions, explores alternatives, presents design in sections for validation. Saves design document.
 
-2. **executing-plans** - Activates with approved spec. Decomposes the spec into bite-sized tasks, identifies parallel-safe work, and executes with per-task TDD.
+2. **executing-specs** - Activates with approved spec. Hands the spec off to the dedicated `executing-specs` subagent (sonnet, 1M context), which decomposes it into bite-sized tasks, identifies parallel-safe work, and executes with per-task TDD.
 
 3. **test-driven-development** - Activates during implementation. Enforces RED-GREEN-REFACTOR: write failing test, watch it fail, write minimal code, watch it pass, commit. Deletes code written before tests.
-
-4. **finishing-a-development-branch** - Activates when tasks complete. Verifies tests, presents options (merge/PR/keep/discard), cleans up branch.
 
 **The agent checks for relevant skills before any task.** Mandatory workflows, not suggestions.
 
@@ -140,8 +138,7 @@ gemini extensions update superpowers
 
 **Collaboration** 
 - **brainstorming** - Socratic design refinement
-- **executing-plans** - Spec-driven task decomposition and execution
-- **finishing-a-development-branch** - Merge/PR decision workflow
+- **executing-specs** - Hands an approved spec to the executing-specs subagent for TDD execution
 
 **Meta**
 - **writing-skills** - Create new skills following best practices (includes testing methodology)

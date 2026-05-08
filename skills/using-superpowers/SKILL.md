@@ -98,7 +98,7 @@ These thoughts mean STOP—you're rationalizing:
 
 When multiple skills could apply, use this order:
 
-1. **Process skills first** (brainstorming, executing-plans) - these determine HOW to approach the task
+1. **Process skills first** (brainstorming, executing-specs) - these determine HOW to approach the task
 2. **Implementation skills second** - any domain-specific skill installed alongside Superpowers, applied per task during execution
 
 "Let's build X" → brainstorming first, then execution.

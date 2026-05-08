@@ -93,8 +93,8 @@ function main() {
     console.error('  --combine    Combine all diagrams into one SVG');
     console.error('');
     console.error('Example:');
-    console.error('  ./render-graphs.js ../executing-plans');
-    console.error('  ./render-graphs.js ../executing-plans --combine');
+    console.error('  ./render-graphs.js ../executing-specs');
+    console.error('  ./render-graphs.js ../executing-specs --combine');
     process.exit(1);
   }
 

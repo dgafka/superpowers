@@ -29,7 +29,7 @@ You MUST create a task for each of these items and complete them in order:
 6. **Write design doc** — save to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md` and commit
 7. **Spec self-review** — quick inline check for placeholders, contradictions, ambiguity, scope (see below)
 8. **User reviews written spec** — ask user to review the spec file before proceeding
-9. **Transition to implementation** — invoke executing-plans skill to implement the approved spec
+9. **Transition to implementation** — invoke executing-specs skill to implement the approved spec
 
 ## Process Flow
 
@@ -45,7 +45,7 @@ digraph brainstorming {
     "Write design doc" [shape=box];
     "Spec self-review\n(fix inline)" [shape=box];
     "User reviews spec?" [shape=diamond];
-    "Invoke executing-plans skill" [shape=doublecircle];
+    "Invoke executing-specs skill" [shape=doublecircle];
 
     "Explore project context" -> "Visual questions ahead?";
     "Visual questions ahead?" -> "Offer Visual Companion\n(own message, no other content)" [label="yes"];
@@ -59,11 +59,11 @@ digraph brainstorming {
     "Write design doc" -> "Spec self-review\n(fix inline)";
     "Spec self-review\n(fix inline)" -> "User reviews spec?";
     "User reviews spec?" -> "Write design doc" [label="changes requested"];
-    "User reviews spec?" -> "Invoke executing-plans skill" [label="approved"];
+    "User reviews spec?" -> "Invoke executing-specs skill" [label="approved"];
 }
 ```
 
-**The terminal state is invoking executing-plans.** Do NOT invoke any other implementation or domain skill instead. The ONLY skill you invoke after brainstorming is executing-plans.
+**The terminal state is invoking executing-specs.** Do NOT invoke any other implementation or domain skill instead. The ONLY skill you invoke after brainstorming is executing-specs.
 
 ## The Process
 
@@ -132,8 +132,8 @@ Wait for the user's response. If they request changes, make them and re-run the 
 
 **Implementation:**
 
-- Invoke the executing-plans skill to implement the approved spec
-- Do NOT invoke any other skill. executing-plans is the next step.
+- Invoke the executing-specs skill to implement the approved spec
+- Do NOT invoke any other skill. executing-specs is the next step.
 
 ## Key Principles
 
