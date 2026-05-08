@@ -1,0 +1,22 @@
+skills/executing-specs/SKILL.md
+  s_65ba67bb562f64::t_d301b8e54b7054 36,42-61,63-65,72-76,78-82,84-88,92-93
+  s_65ba67bb562f64::t_5d85dcbaac018c 128-129,131,133
+  s_65ba67bb562f64::t_95fed2ff535c2e 3,10,12-13,15-19
+  s_65ba67bb562f64::t_a5948bc6459fcd 99,103,105,108-112,117-119,121
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.4",
+  "base_commit_sha": "bebbdf726d8262ccfb7bd6492e47af0016c07d7f",
+  "prompts": {},
+  "sessions": {
+    "s_65ba67bb562f64": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "17adab2d-37bb-411c-a972-07ee36d50923",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Dariusz Gafka <dgafka.mail@gmail.com>"
+    }
+  }
+}
