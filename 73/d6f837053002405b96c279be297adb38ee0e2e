@@ -1,0 +1,15 @@
+CLAUDE.md
+  ai_agent 9,11-17,23-24
+skills/brainstorming/SKILL.md
+  ai_agent 31-33,48,62-63,129-144
+skills/recognize-and-learn/SKILL.md
+  ai_agent 1-159
+skills/executing-specs/SKILL.md
+  ai_agent 3,10,12-16,18,20,30,43,45,47,49-51,53,55,57,64,66,70,76,82,87,94-95,98,105-109,111
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "73d6f837053002405b96c279be297adb38ee0e2e",
+  "prompts": {}
+}
