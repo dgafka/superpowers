@@ -135,7 +135,9 @@ Next failing test for next feature.
 
 During RED → GREEN → REFACTOR for a single cycle, run **only** the test you are driving. No other tests. No suite.
 
-Full-suite verification is owned by `verification-before-completion`, run before commit or PR.
+A spec implementation chains many inner loops — one per spec-defined step. Each loop covers exactly one piece of work, fast, with only its own test.
+
+The full test suite runs **only** as part of `verification-before-completion`, triggered **once** at the end of the implementation when the work is considered ready. Not before each task-level commit. Not anywhere inside the TDD cycle.
 
 ```bash
 vendor/bin/phpunit --filter testMethodName tests/Path/SomeTest.php
@@ -174,7 +176,7 @@ Before marking work complete:
 - [ ] Each test failed for expected reason (feature missing, not typo)
 - [ ] Wrote minimal code to pass each test
 - [ ] Your new test passes (inner loop)
-- [ ] Full suite verified separately via verification-before-completion
+- [ ] Full suite triggered only via verification-before-completion (at end of implementation)
 - [ ] Output pristine (no errors, warnings)
 - [ ] Tests follow Detroit/Chicago School (real collaborators, state-based)
 - [ ] Edge cases and errors covered
