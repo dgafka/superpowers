@@ -83,8 +83,10 @@ Write one minimal test showing what should happen.
 
 **MANDATORY. Never skip.**
 
+Run only the test you just wrote. Not the file, not the suite — just this test method.
+
 ```bash
-vendor/bin/phpunit tests/Path/SomeTest.php
+vendor/bin/phpunit --filter testMethodName tests/Path/SomeTest.php
 ```
 
 Confirm:
