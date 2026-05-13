@@ -161,7 +161,7 @@ The same single-test pattern applies to other runners: `pytest -k`, `jest -t`, `
 
 **GREEN** — add the minimal validation: if the email is empty or whitespace-only, return a validation error with message "Email required". Nothing else.
 
-**Verify GREEN** — run the test again. Confirm it passes and that no other tests broke.
+**Verify GREEN** — run the test again. Confirm it passes.
 
 **REFACTOR** — if you'll need validation for multiple fields, extract a small helper. Otherwise, leave it.
 
