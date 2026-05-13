@@ -28,8 +28,9 @@ You MUST create a task for each of these items and complete them in order:
 5. **Present design** — in sections scaled to their complexity, get user approval after each section
 6. **Write design doc** — save to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md` and commit
 7. **Spec self-review** — quick inline check for placeholders, contradictions, ambiguity, scope (see below)
-8. **User reviews written spec** — ask user to review the spec file before proceeding
-9. **Transition to implementation** — invoke executing-specs skill to implement the approved spec
+8. **Map required skills** — dispatch a subagent to scan available skills and prepend a "Required Skills" instruction block to the spec (see Spec Skill Mapping below)
+9. **User reviews written spec** — ask user to review the spec file before proceeding
+10. **Transition to implementation** — invoke executing-specs skill to implement the approved spec
 
 ## Process Flow
 
@@ -44,6 +45,7 @@ digraph brainstorming {
     "User approves design?" [shape=diamond];
     "Write design doc" [shape=box];
     "Spec self-review\n(fix inline)" [shape=box];
+    "Map required skills\n(dispatch subagent)" [shape=box];
     "User reviews spec?" [shape=diamond];
     "Invoke executing-specs skill" [shape=doublecircle];
 
@@ -57,7 +59,8 @@ digraph brainstorming {
     "User approves design?" -> "Present design sections" [label="no, revise"];
     "User approves design?" -> "Write design doc" [label="yes"];
     "Write design doc" -> "Spec self-review\n(fix inline)";
-    "Spec self-review\n(fix inline)" -> "User reviews spec?";
+    "Spec self-review\n(fix inline)" -> "Map required skills\n(dispatch subagent)";
+    "Map required skills\n(dispatch subagent)" -> "User reviews spec?";
     "User reviews spec?" -> "Write design doc" [label="changes requested"];
     "User reviews spec?" -> "Invoke executing-specs skill" [label="approved"];
 }
@@ -122,6 +125,23 @@ After writing the spec document, look at it with fresh eyes:
 4. **Ambiguity check:** Could any requirement be interpreted two different ways? If so, pick one and make it explicit.
 
 Fix any issues inline. No need to re-review — just fix and move on.
+
+**Spec Skill Mapping:**
+After the spec passes self-review, dispatch a subagent to identify which available skills would help implement it. This adds a `## Required Skills` instruction block near the top of the spec so the implementer loads the right tools before starting work.
+
+Dispatch a `general-purpose` agent with a self-contained prompt. The prompt MUST include:
+
+1. The absolute path to the spec file.
+2. The verbatim list of skill names + descriptions you can see in your own `<system-reminder>` "available skills" block. The subagent's system reminder may differ; pass the parent session's list so the mapping reflects the actual environment.
+3. Explicit instructions:
+   - Read the spec end-to-end.
+   - Scan the provided skill list. For each skill, decide whether it applies to *this specific* implementation — judge by description and the work the spec actually requires.
+   - Be conservative: prefer fewer, high-signal matches over a long list. `superpowers:test-driven-development` and `superpowers:verification-before-completion` apply to nearly every spec and should default in.
+   - Edit the spec to insert a `## Required Skills` section immediately after the title (before any other content). Each entry: skill name + one sentence on why it applies here.
+   - Add a single instruction line at the top: `> Before starting implementation, invoke each skill in **Required Skills** via the Skill tool.`
+   - Report back the final list of skills it selected and a one-sentence rationale per skill. Do not edit anything else in the spec.
+
+After the subagent returns, scan its added section quickly. If something is obviously wrong (irrelevant skill, missing an obvious one), fix it inline. Do not re-dispatch for minor tweaks. If the subagent reports it could not match any skills with confidence, leave the section empty with a single line: `_No specific skills required beyond defaults._`
 
 **User Review Gate:**
 After the spec review loop passes, ask the user to review the written spec before proceeding:
