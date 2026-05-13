@@ -137,6 +137,18 @@ Keep tests green. Don't add behavior.
 
 Next failing test for next feature.
 
+## Inner Loop Scope
+
+During RED → GREEN → REFACTOR for a single cycle, run **only** the test you are driving. No other tests. No suite.
+
+Full-suite verification is owned by `verification-before-completion`, run before commit or PR.
+
+```bash
+vendor/bin/phpunit --filter testMethodName tests/Path/SomeTest.php
+```
+
+The same single-test pattern applies to other runners: `pytest -k`, `jest -t`, `go test -run`.
+
 ## Good Tests
 
 | Quality | Good | Bad |
