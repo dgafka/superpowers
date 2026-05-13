@@ -68,16 +68,18 @@ digraph tdd_cycle {
 
 ### RED - Write Failing Test
 
+Default to **Detroit/Chicago School TDD**: real collaborators, assertions on observable state — not on interactions.
+
 Write one minimal test showing what should happen.
 
-**Good test:** the name describes a specific, observable behavior (e.g. "retries failed operations 3 times"); the body drives the real implementation through real code without mocks; and the assertions check what the code returned, not what intermediate steps were called.
+**Good test:** the name describes a specific, observable behavior (e.g. "retries failed operations 3 times"); the body drives the real implementation through real collaborators (Detroit/Chicago School); and the assertions check what the code returned or the observable state, not what intermediate steps were called.
 
-**Bad test:** vague name (e.g. "retry works"); heavy mock setup that pre-arranges the answer; assertions on the mock's interaction count rather than the result. You're testing the mock, not the code.
+**Bad test:** vague name (e.g. "retry works"); heavy test-double setup that pre-arranges the answer; assertions on interactions between collaborators rather than the result. You're testing your test scaffold, not the code.
 
 **Requirements:**
 - One behavior
 - Clear name
-- Real code (no mocks unless unavoidable)
+- Detroit/Chicago School: real collaborators, state-based assertions
 
 ### Verify RED - Watch It Fail
 
@@ -266,7 +268,7 @@ Before marking work complete:
 - [ ] Your new test passes (inner loop)
 - [ ] Full suite verified separately via verification-before-completion
 - [ ] Output pristine (no errors, warnings)
-- [ ] Tests use real code (mocks only if unavoidable)
+- [ ] Tests follow Detroit/Chicago School (real collaborators, state-based)
 - [ ] Edge cases and errors covered
 
 Can't check all boxes? You skipped TDD. Start over.
@@ -277,7 +279,7 @@ Can't check all boxes? You skipped TDD. Start over.
 |---------|----------|
 | Don't know how to test | Write wished-for API. Write assertion first. Ask your human partner. |
 | Test too complicated | Design too complicated. Simplify interface. |
-| Must mock everything | Code too coupled. Use dependency injection. |
+| Hard to test without faking every collaborator | Code too coupled. Use dependency injection or test at a higher boundary. |
 | Test setup huge | Extract helpers. Still complex? Simplify design. |
 
 ## Debugging Integration
@@ -288,10 +290,10 @@ Never fix bugs without a test.
 
 ## Testing Anti-Patterns
 
-When adding mocks or test utilities, read @testing-anti-patterns.md to avoid common pitfalls:
-- Testing mock behavior instead of real behavior
+If you must reach for test doubles (rare under Detroit/Chicago School), read @testing-anti-patterns.md to avoid common pitfalls:
+- Testing test-double behavior instead of real behavior
 - Adding test-only methods to production classes
-- Mocking without understanding dependencies
+- Substituting collaborators without understanding what they do
 
 ## Final Rule
 
