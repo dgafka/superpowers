@@ -101,27 +101,55 @@ g) **Testing Anti-Patterns section.** Replace the lead-in `When adding mocks or 
 
 Do not edit `testing-anti-patterns.md`. The cross-reference still works because the companion file still covers test-double pitfalls.
 
-### Change 6 — Strip persuasion content
+### Change 6 — Strip persuasion content (keep useful positive flips)
 
 The TDD skill currently contains substantial content that argues against bad behavior rather than specifies desired behavior. Remove it.
 
-**Sections to remove entirely:**
+**Decision rule.** For each piece of "don't do X" content being removed, ask:
 
-- `## Why Order Matters` (the four "I'll write tests after..." / "I already manually tested..." / "Deleting X hours of work is wasteful" / "TDD is dogmatic..." / "Tests after achieve the same goals" blocks).
+1. Can it be flipped to a positive "do Y" instruction?
+2. Would that positive form **not** repeat an instruction already stated elsewhere in the skill?
+
+Both yes → keep the positive form, delete the negative original. Otherwise → just delete.
+
+The audit below has already been done. The implementer applies the verdicts as written; do not re-audit.
+
+**Sections to remove entirely** (every item audited; no positive flip survives — each is already covered by the Iron Law, the `When to Use` block, `Verify RED`, the `Good Tests` table, or `When Stuck`):
+
+- `## Why Order Matters` (the five "I'll write tests after..." / "I already manually tested..." / "Deleting X hours of work is wasteful" / "TDD is dogmatic..." / "Tests after achieve the same goals" blocks).
 - `## Common Rationalizations` (the entire table).
 - `## Red Flags - STOP and Start Over` (the entire bulleted list, including the "All of these mean: Delete code. Start over with TDD." trailing line).
 
-**Lines / sub-blocks to remove inside surviving sections:**
+**Lines to remove inside surviving sections:**
 
-- In `## When to Use`: remove the line *"Thinking 'skip TDD just this once'? Stop. That's rationalization."*
-- In `## The Iron Law`: remove the `**No exceptions:**` bullet block (`Don't keep it as "reference"` / `Don't "adapt" it...` / `Don't look at it` / `Delete means delete`) and the trailing line *"Implement fresh from tests. Period."*
+- In `## When to Use`: remove the line *"Thinking 'skip TDD just this once'? Stop. That's rationalization."* (The `Exceptions (ask your human partner)` block already specifies the only permitted skips.)
+- In `## The Iron Law`: remove the `**No exceptions:**` bullet block (`Don't keep it as "reference"` / `Don't "adapt" it...` / `Don't look at it` / `Delete means delete`) and the standalone trailing line *"Implement fresh from tests. Period."*
 
-**Sections / lines to keep:**
+**Positive flip to preserve** (one):
 
-- The Iron Law's opening — the bold rule and the directive "Write code before the test? Delete it. Start over." — stays. That is specification, not persuasion.
-- All process sections (RED, Verify RED, GREEN, Verify GREEN, REFACTOR, Repeat) stay.
-- The `Good Tests` table stays — it describes good vs. bad, it does not argue against rationalizations.
-- `Example: Bug Fix`, `Verification Checklist`, `When Stuck`, `Debugging Integration`, `Testing Anti-Patterns`, `Final Rule` — all stay.
+The deleted "no exceptions" block's intent — *where does the new code come from after you delete?* — is not stated anywhere else in the skill. Keep the positive answer by appending it to the existing Iron Law content:
+
+After "Write code before the test? Delete it. Start over." add a single line: *"Implement fresh from tests — drive new code from the failing test, not from what was deleted."*
+
+Result for the Iron Law section:
+
+```
+## The Iron Law
+
+**No production code without a failing test first.**
+
+Write code before the test? Delete it. Start over.
+
+Implement fresh from tests — drive new code from the failing test, not from what was deleted.
+```
+
+That is the entire Iron Law section after this change. Nothing else stays in it.
+
+**Sections / lines that stay untouched by Change 6:**
+
+- All process sections (RED, Verify RED, GREEN, Verify GREEN, REFACTOR, Repeat).
+- The `Good Tests` table — descriptive, not argumentative.
+- `Example: Bug Fix`, `Verification Checklist`, `When Stuck`, `Debugging Integration`, `Testing Anti-Patterns`, `Final Rule`.
 
 After this change the skill becomes substantially shorter. That is the goal.
 
@@ -148,7 +176,8 @@ The implementation is done when:
 3. A new `## Inner Loop Scope` section exists between `## Red-Green-Refactor` and `## Good Tests` and contains: the rule, the pointer to `verification-before-completion`, and one command example. It does **not** contain a "why" paragraph or tradeoff statement.
 4. The verification checklist replaces `All tests pass` with the two new items.
 5. The file contains zero matches for "mock", "mocks", or "mocking" (case-insensitive). Testing tactic is framed as Detroit/Chicago School with a one-sentence definition in the RED lead-in.
-6. The following are deleted: `## Why Order Matters`, `## Common Rationalizations`, `## Red Flags - STOP and Start Over`. The Iron Law's `**No exceptions:**` block and "Implement fresh from tests. Period." are deleted. The "skip TDD just this once" line in `## When to Use` is deleted.
+6. The following are deleted: `## Why Order Matters`, `## Common Rationalizations`, `## Red Flags - STOP and Start Over`. The Iron Law's `**No exceptions:**` bullet block and the standalone "Implement fresh from tests. Period." line are deleted. The "skip TDD just this once" line in `## When to Use` is deleted.
+6b. The Iron Law section ends with the line *"Implement fresh from tests — drive new code from the failing test, not from what was deleted."* (positive flip preserved per Change 6's decision rule).
 7. The file still reads as one coherent skill — no orphaned references to removed sections, no broken cross-references, no dangling pronouns or section pointers.
 8. The YAML frontmatter (`name`, `description`) is unchanged.
 9. Markdown remains well-formed (tables intact, code fences balanced, headings nested correctly).
