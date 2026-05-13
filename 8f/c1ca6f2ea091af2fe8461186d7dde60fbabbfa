@@ -1,0 +1,19 @@
+docs/superpowers/specs/2026-05-13-tdd-fast-inner-loop-design.md
+  s_9ef434f15e2ccb::t_2459b61cc96294 7,12,14-17,21-25,27,32,34,36-38,40,44,46-48,52,54-56,60,62,64-66,68,70,72,79,81,83,102-126,130,132-134,136,138,140,146,148-154,160-175,177
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "8fc1ca6f2ea091af2fe8461186d7dde60fbabbfa",
+  "prompts": {},
+  "sessions": {
+    "s_9ef434f15e2ccb": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "81eb1e06-8574-4576-88ae-0d1c3ef7f0f3",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Dariusz Gafka <dgafka.mail@gmail.com>"
+    }
+  }
+}
