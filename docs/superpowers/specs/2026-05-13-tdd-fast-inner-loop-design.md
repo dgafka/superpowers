@@ -86,6 +86,35 @@ The current checklist contains `- [ ] All tests pass`. Replace it with two more 
 
 Leave every other checklist item untouched.
 
+### Change 7 — Reframe testing tactic as Detroit/Chicago School
+
+Remove every mention of "mock", "mocks", and "mocking" from `SKILL.md`, and reframe the preferred testing tactic positively as **Detroit/Chicago School** (real collaborators, state-based assertions). This is a labeling change, not a stance change — the existing stance ("no mocks unless unavoidable") is the Detroit/Chicago position. We're naming it correctly and removing the negative framing.
+
+Quick definition the implementer should use (one sentence, not a section):
+
+> Detroit/Chicago School TDD: drive code through real collaborators, assert on observable state or return values, not on interactions between units.
+
+Specific edits, all inside `skills/test-driven-development/SKILL.md`:
+
+a) **RED — Write Failing Test, lead-in.** Add one sentence at the very top of the section (before "Write one minimal test showing what should happen."): *"Default to **Detroit/Chicago School TDD**: real collaborators, assertions on observable state — not on interactions."*
+
+b) **RED, "Good test" paragraph.** Currently: "the body drives the real implementation through real code without mocks; and the assertions check what the code returned, not what intermediate steps were called." Reframe to: "the body drives the real implementation through real collaborators (Detroit/Chicago School); and the assertions check what the code returned or the observable state, not what intermediate steps were called."
+
+c) **RED, "Bad test" paragraph.** Currently: "heavy mock setup that pre-arranges the answer; assertions on the mock's interaction count rather than the result. You're testing the mock, not the code." Reframe to: "heavy test-double setup that pre-arranges the answer; assertions on interactions between collaborators rather than the result. You're testing your test scaffold, not the code."
+
+d) **RED, Requirements bullet list.** Replace `- Real code (no mocks unless unavoidable)` with `- Detroit/Chicago School: real collaborators, state-based assertions`.
+
+e) **Verification Checklist.** Replace `- [ ] Tests use real code (mocks only if unavoidable)` with `- [ ] Tests follow Detroit/Chicago School (real collaborators, state-based)`.
+
+f) **When Stuck table.** Replace the row `Must mock everything | Code too coupled. Use dependency injection.` with `Hard to test without faking every collaborator | Code too coupled. Use dependency injection or test at a higher boundary.`
+
+g) **Testing Anti-Patterns section.** Replace the lead-in `When adding mocks or test utilities, read @testing-anti-patterns.md to avoid common pitfalls:` with `If you must reach for test doubles (rare under Detroit/Chicago School), read @testing-anti-patterns.md to avoid common pitfalls:`. Also rephrase the bullets that use mock-language:
+   - `Testing mock behavior instead of real behavior` → `Testing test-double behavior instead of real behavior`
+   - `Mocking without understanding dependencies` → `Substituting collaborators without understanding what they do`
+   - Leave `Adding test-only methods to production classes` unchanged.
+
+Do **not** edit the `testing-anti-patterns.md` companion file. Internal references to it stay valid because the file still exists and still covers test-double pitfalls — only the entry point in `SKILL.md` is being reframed.
+
 ## Non-changes (explicit)
 
 The following are **not** part of this spec and must not be touched:
@@ -94,9 +123,11 @@ The following are **not** part of this spec and must not be touched:
 - The Red-Green-Refactor flowchart (graphviz).
 - The "Why Order Matters" section.
 - The "Example: Bug Fix" section (already uses single-test runs, no change needed).
-- The "When Stuck", "Debugging Integration", "Testing Anti-Patterns", or "Final Rule" sections.
+- The "Debugging Integration" and "Final Rule" sections.
 - The `testing-anti-patterns.md` companion file.
 - Any other skill in the repo.
+
+(Note: `When Stuck` and `Testing Anti-Patterns` sections are **in scope** under Change 7 for the limited surgery described there. No other edits to those sections are permitted.)
 
 If during implementation an edit appears to require touching one of these, stop and surface the conflict — do not silently expand scope.
 
@@ -104,12 +135,13 @@ If during implementation an edit appears to require touching one of these, stop 
 
 The implementation is done when:
 
-1. `skills/test-driven-development/SKILL.md` reflects all six changes above, and no others.
+1. `skills/test-driven-development/SKILL.md` reflects all seven changes above, and no others.
 2. The `Other tests still pass` bullet and the `Other tests fail? Fix now.` line are gone from "Verify GREEN".
 3. A new `## Inner Loop Scope` section exists, placed between `## Red-Green-Refactor` and `## Good Tests`, and contains: the rule, the why, the tradeoff sentence, the pointer to `verification-before-completion`, and one concrete command example.
 4. The two new entries (one rationalization row, one red-flag bullet) exist in their respective lists, with no reordering of existing entries.
 5. The verification checklist replaces `All tests pass` with the two new items.
 6. The file still reads as one coherent skill in the existing voice — no orphaned references to "other tests" or "full suite" inside the inner-loop sections.
+7. No reference to "mock", "mocks", or "mocking" remains anywhere in `SKILL.md`. The preferred testing tactic is framed as Detroit/Chicago School, with a one-sentence definition in the RED section lead-in.
 
 ## Testing
 
@@ -118,5 +150,6 @@ This is a skill-file edit. Verification is by reading the resulting `SKILL.md`:
 - Re-read the full file end-to-end after edits. Confirm internal consistency: no section references the removed "other tests still pass" check, and no section contradicts the new "Inner Loop Scope" rule.
 - Confirm the file still parses as well-formed Markdown (tables intact, code fences balanced, headings nested correctly).
 - Confirm the YAML frontmatter (`name`, `description`) is unchanged.
+- Grep the file for `mock` (case-insensitive). Expect zero matches under Change 7.
 
 No code tests are appropriate for this change.
