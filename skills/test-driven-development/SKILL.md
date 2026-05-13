@@ -112,18 +112,17 @@ Don't add features, refactor other code, or "improve" beyond the test.
 
 **MANDATORY.**
 
+Run only the test you just wrote. Not the file, not the suite.
+
 ```bash
-vendor/bin/phpunit tests/Path/SomeTest.php
+vendor/bin/phpunit --filter testMethodName tests/Path/SomeTest.php
 ```
 
 Confirm:
 - Test passes
-- Other tests still pass
 - Output pristine (no errors, warnings)
 
 **Test fails?** Fix code, not test.
-
-**Other tests fail?** Fix now.
 
 ### REFACTOR - Clean Up
 
