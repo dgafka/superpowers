@@ -1,0 +1,25 @@
+CLAUDE.md
+  s_6069767a79b989::t_3b665f3b934051 13
+skills/brainstorming/SKILL.md
+  s_6069767a79b989::t_2654601b1232ae 48,64-66
+  s_6069767a79b989::t_9e34a73685291a 119-137,139
+  s_6069767a79b989::t_028a52f82bfe2c 209
+  s_6069767a79b989::t_fac4282278a0cf 29-35
+  s_6069767a79b989::t_cebb94d36c62ab 186
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "f7d1c8a863231a154dcb35ff917cc10ae3f176fd",
+  "prompts": {},
+  "sessions": {
+    "s_6069767a79b989": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "31de7933-e83f-4726-82d3-5428f73adb15",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Dariusz Gafka <dgafka.mail@gmail.com>"
+    }
+  }
+}
