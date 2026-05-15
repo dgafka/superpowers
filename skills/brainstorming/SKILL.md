@@ -26,12 +26,13 @@ You MUST create a task for each of these items and complete them in order:
 3. **Ask clarifying questions** — one at a time, understand purpose/constraints/success criteria
 4. **Propose 2-3 approaches** — with trade-offs and your recommendation
 5. **Present design** — in sections scaled to their complexity, get user approval after each section
-6. **Map required skills** — dispatch a subagent on the approved design summary to identify which available skills apply, categorize each, and return structured expectations (see Skill Mapping (Before Writing) below)
-7. **Re-investigate design against skill expectations** — walk each `(skill, expectation)` pair against the approved design and apply silently for technical gaps; ask the user only when a gap would change behaviour, flow, or business logic (see Re-investigation below)
-8. **Write design doc** — save to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md` and commit; the `## Required Skills` block is written inline as part of this step using the Step 6 mapping output filtered by category
-9. **Spec self-review** — quick inline check for placeholders, contradictions, ambiguity, scope (see below)
-10. **User reviews written spec** — ask user to review the spec file before proceeding
-11. **Transition to implementation** — invoke executing-specs skill to implement the approved spec
+6. **Confirm skill mapping** — ask the user whether to run skill mapping for this design; skip steps 7 and 8 if declined (see Confirm Skill Mapping below)
+7. **Map required skills** — only if the user confirmed at step 6: dispatch a subagent on the approved design summary to identify which available skills apply, categorize each, and return structured expectations (see Skill Mapping (Before Writing) below)
+8. **Re-investigate design against skill expectations** — only if the user confirmed at step 6: walk each `(skill, expectation)` pair against the approved design and apply silently for technical gaps; ask the user only when a gap would change behaviour, flow, or business logic (see Re-investigation below)
+9. **Write design doc** — save to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md` and commit; the `## Required Skills` block is written inline as part of this step (using the Step 7 mapping output filtered by category, or the zero-listable-skills fallback if the user declined skill mapping)
+10. **Spec self-review** — quick inline check for placeholders, contradictions, ambiguity, scope (see below)
+11. **User reviews written spec** — ask user to review the spec file before proceeding
+12. **Transition to implementation** — invoke executing-specs skill to implement the approved spec
 
 ## Process Flow
 
@@ -44,6 +45,7 @@ digraph brainstorming {
     "Propose 2-3 approaches" [shape=box];
     "Present design sections" [shape=box];
     "User approves design?" [shape=diamond];
+    "Run skill mapping?" [shape=diamond];
     "Map required skills\n(dispatch subagent)" [shape=box];
     "Re-investigate design\nagainst skill expectations" [shape=box];
     "Write design doc" [shape=box];
@@ -59,7 +61,9 @@ digraph brainstorming {
     "Propose 2-3 approaches" -> "Present design sections";
     "Present design sections" -> "User approves design?";
     "User approves design?" -> "Present design sections" [label="no, revise"];
-    "User approves design?" -> "Map required skills\n(dispatch subagent)" [label="yes"];
+    "User approves design?" -> "Run skill mapping?" [label="yes"];
+    "Run skill mapping?" -> "Map required skills\n(dispatch subagent)" [label="yes"];
+    "Run skill mapping?" -> "Write design doc" [label="no, skip"];
     "Map required skills\n(dispatch subagent)" -> "Re-investigate design\nagainst skill expectations";
     "Re-investigate design\nagainst skill expectations" -> "Write design doc";
     "Write design doc" -> "Spec self-review\n(fix inline)";
@@ -112,8 +116,27 @@ digraph brainstorming {
 
 ## After the Design
 
+**Confirm Skill Mapping:**
+After the user verbally approves the design, ask whether to run skill mapping for this design before dispatching the mapping subagent. Skill mapping shapes the spec body and the `## Required Skills` block, but is overhead for small or throwaway changes.
+
+Use `AskUserQuestion` with two options:
+
+| Option | When to choose |
+|---|---|
+| **Yes, run skill mapping** | Non-trivial feature; you want skill expectations to shape the spec body and the `## Required Skills` block. |
+| **Skip — small feature, write spec directly** | Small or throwaway change. TDD and verification-before-completion still apply at execution time — `executing-specs` invokes them via its own required workflow skills, independent of the spec's `## Required Skills` block. You only lose the spec-body refinement and the explicit Required Skills listing. |
+
+Do not mark a default — the right answer depends on the design.
+
+If the user picks **Skip**:
+- Do not dispatch the mapping subagent.
+- Do not run the re-investigation pass.
+- Proceed directly to Documentation. The spec's `## Required Skills` block uses the zero-listable-skills fallback.
+
+If the user picks **Yes**, continue with Skill Mapping (Before Writing) below.
+
 **Skill Mapping (Before Writing):**
-After the user verbally approves the design (Step 5) and before writing the spec file, dispatch a subagent to identify which available skills apply to this implementation. The subagent receives the approved design summary (not a spec path — the spec doesn't exist yet), returns structured expectations per matched skill, and assigns each matched skill exactly one category so the brainstormer can later filter the `## Required Skills` block. The subagent edits no files.
+After the user confirms skill mapping at the Confirm Skill Mapping step and before writing the spec file, dispatch a subagent to identify which available skills apply to this implementation. The subagent receives the approved design summary (not a spec path — the spec doesn't exist yet), returns structured expectations per matched skill, and assigns each matched skill exactly one category so the brainstormer can later filter the `## Required Skills` block. The subagent edits no files.
 
 Dispatch a `general-purpose` agent with a self-contained prompt. The prompt MUST include:
 
@@ -160,7 +183,7 @@ Category does not affect re-investigation logic — every expectation, regardles
 
 After the loop, if any silent changes were applied, surface a one-line transparency note to the user before writing the spec, e.g. "Applied 3 skill-driven refinements: enumerated evidence in Acceptance Criteria, added grep-check to Testing, tightened Scope to call out frontmatter integrity." This is a statement, not a question.
 
-Skip the re-investigation pass entirely if Skill Mapping returned no skills.
+Skip the re-investigation pass entirely if the user declined skill mapping at the Confirm Skill Mapping step or if Skill Mapping returned no skills.
 
 **Documentation:**
 
@@ -183,7 +206,7 @@ The block format:
 - **<skill name>** — <one-sentence why_relevant>
 ~~~
 
-**Zero-listable-skills fallback:** if after filtering the block would contain no entries (every matched skill was `spec-driving`, or Skill Mapping returned an empty list), the block becomes:
+**Zero-listable-skills fallback:** if after filtering the block would contain no entries (every matched skill was `spec-driving`, Skill Mapping returned an empty list, or the user declined skill mapping at the Confirm Skill Mapping step), the block becomes:
 
 ~~~
 ## Required Skills
