@@ -243,14 +243,14 @@ Skip the entire Walk-through if the user declined skill mapping at the Confirm S
 
 **Documentation:**
 
-- Write the validated design (spec) to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md`
-  - (User preferences for spec location override this default)
-- Use elements-of-style:writing-clearly-and-concisely skill if available
-- Commit the design document to git
+- Write the validated design (spec) to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md`, baking in every Phase 1 proposal the user confirmed (using the final wording from any refinement loop, not the original subagent wording when the user negotiated a revision).
+- The `## Required Skills` block at the top of the spec lists every Phase 2 skill the user did **not** opt out of. The block format is unchanged from today.
+- (User preferences for spec location override the default path.)
+- Use `elements-of-style:writing-clearly-and-concisely` skill if available.
+- **Delete the proposals file** with `rm docs/superpowers/specs/YYYY-MM-DD-<topic>-skill-proposals.md`. The file is ephemeral. Verify the deletion succeeded before continuing (e.g., `ls` the path and confirm it returns a "no such file" error).
+- Commit only the design spec to git.
 
-The spec body bakes in the skill-driven refinements applied during Re-investigation. The `## Required Skills` block at the top of the spec is written inline as part of this step.
-
-**Filter rule for the `## Required Skills` block:** list *only* skills whose category (from Skill Mapping) is `behaviour-driving` or `spec-behaviour-driving`. Skills categorized `spec-driving` are excluded — the executor has no runtime job for them, and their contribution is already in the spec body. Do not list spec-driving skills in any auxiliary section either; the spec is silent about them.
+**Filter rule for the `## Required Skills` block:** list every Phase 2 candidate that the user did not opt out of. No category-based filtering happens at this step — Phase 2 *is* the filter. Skills assigned `spec-driving` by the subagent never appear in the block because they never reach Phase 2 in the first place.
 
 The block format:
 
@@ -262,7 +262,7 @@ The block format:
 - **<skill name>** — <one-sentence why_relevant>
 ~~~
 
-**Zero-listable-skills fallback:** if after filtering the block would contain no entries (every matched skill was `spec-driving`, Skill Mapping returned an empty list, or the user declined skill mapping at the Confirm Skill Mapping step), the block becomes:
+**Zero-listable-skills fallback:** if after Phase 2 the user opted out of every Phase 2 candidate (including both defaults), OR if the user declined skill mapping at the Confirm Skill Mapping step, the block becomes:
 
 ~~~
 ## Required Skills
