@@ -134,7 +134,7 @@ Do not mark a default — the right answer depends on the design.
 
 If the user picks **Skip**:
 - Do not dispatch the mapping subagent.
-- Do not run the re-investigation pass.
+- Do not run the Phase 1 / Phase 2 walk-through.
 - Proceed directly to Documentation. The spec's `## Required Skills` block uses the zero-listable-skills fallback.
 
 If the user picks **Yes**, continue with Skill Mapping (Before Writing) below.
