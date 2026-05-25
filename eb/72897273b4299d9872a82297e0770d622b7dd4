@@ -1,0 +1,26 @@
+docs/superpowers/specs/2026-05-25-skill-mapping-proposals-walkthrough-design.md
+  s_a913136fbe3862::t_90400d23dab572 234-237,240
+  s_a913136fbe3862::t_3936cdd139bd88 278-280
+  s_a913136fbe3862::t_c4e4126912f629 37-38
+  s_a913136fbe3862::t_dfc18852d1bf5f 246
+  s_a913136fbe3862::t_a78569435a9abc 1-36,39-233,238-239,241-245,247-263,265-277,286-297,300-316
+  s_a913136fbe3862::t_0e1f233a94f395 298-299
+  s_a913136fbe3862::t_13f89dfd93a58e 264
+  s_a913136fbe3862::t_245e70bfd70bf9 281-285
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.1",
+  "base_commit_sha": "eb72897273b4299d9872a82297e0770d622b7dd4",
+  "prompts": {},
+  "sessions": {
+    "s_a913136fbe3862": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b7c72150-130c-4fa6-90f4-e8667b23ca6f",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Dariusz Gafka <dgafka.mail@gmail.com>"
+    }
+  }
+}
