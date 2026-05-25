@@ -205,25 +205,41 @@ Category reference table:
 | **spec-driving** | The skill's value can be captured by editing the spec — content, examples, structural requirements, acceptance items. After the change lands, the executor has no runtime job. | "Collect comments on related pull requests and surface anything worth investigating" — the output becomes spec context; no runtime invocation needed. | No (changes are absorbed into the spec body via Phase 1) |
 | **behaviour-driving** | The skill governs *how* the executor works at runtime. The spec body cannot absorb the value. | `superpowers:test-driven-development` — RED → GREEN → REFACTOR at runtime; spec doesn't restate the cycle. | Yes (added to the block in Phase 2, subject to user opt-out) |
 
-**Re-investigation:**
-For each `(skill, expectation)` pair returned by the Skill Mapping step, classify the expectation against the approved design into one of four states:
+**Walk-through (Phase 1 + Phase 2):**
+After the subagent returns the proposals file path, read the file. Run Phase 1, then Phase 2. Both phases always run, even when one is empty.
 
-| State | Action |
-|---|---|
-| **Covered** | The design already specifies what the expectation asks for. Move on. |
-| **Silent — technical only** | The expectation only refines HOW the work is verified or structured (verification evidence, testing detail, scope clarification, restructuring to a skill's expected template). Apply directly: incorporate the requirement into the spec content you are about to write. **No user question.** |
-| **Silent — affects flow or business logic** | The expectation would change WHAT gets built, the task decomposition, external dependencies, or the order of work. Ask the user a clarifying question — one at a time, per the existing rule. |
-| **Contradicts** | The design specifies something incompatible with the expectation. Surface the conflict; the user either revises the design or consciously waives the expectation. Record any waiver as a deliberate deviation in the spec body. |
+**Phase 1 — Proposed spec changes.** Show the user a single batched message listing every Phase 1 proposal by number, title, and rationale (collapsed enough to scan; full proposal text is in the file if the user wants to see it):
 
-Decision heuristic:
+> Phase 1 — Proposed spec changes:
+> 1. <title> — <one-line rationale>
+> 2. <title> — <one-line rationale>
+> 3. <title> — <one-line rationale>
+>
+> Reply with: `confirm all`, a list of numbers to confirm (e.g. `1, 3`), `refine N` to negotiate a specific change, or `reject all` to discard everything.
 
-> Apply silently when the skill expectation only specifies HOW to verify or structure work the user already approved; ask when it would change WHAT gets built, the decomposition, or external dependencies.
+If Phase 1 has zero proposals, the message becomes "Phase 1 — No proposed spec changes. Moving on." and you proceed directly to Phase 2.
 
-Category does not affect re-investigation logic — every expectation, regardless of the source skill's category, is walked through the four-state table. Category is consulted only at the Documentation step to filter which skills appear in the `## Required Skills` block.
+When the user picks `refine N`: enter a focused exchange on that one proposal. After the user is satisfied with the revised wording, ask them to `confirm` or `reject` it. Then re-show the remaining unresolved Phase 1 items. Track each item's disposition (confirmed / refined-and-confirmed / rejected) in memory.
 
-After the loop, if any silent changes were applied, surface a one-line transparency note to the user before writing the spec, e.g. "Applied 3 skill-driven refinements: enumerated evidence in Acceptance Criteria, added grep-check to Testing, tightened Scope to call out frontmatter integrity." This is a statement, not a question.
+When Phase 1 is fully resolved (every numbered proposal either confirmed or rejected), proceed to Phase 2.
 
-Skip the re-investigation pass entirely if the user declined skill mapping at the Confirm Skill Mapping step or if Skill Mapping returned no skills.
+**Phase 2 — Behaviour-driven skills.** Show the user a single batched message listing all Phase 2 candidates. Defaults (items 1 and 2) are marked `[default]`:
+
+> Phase 2 — Required Skills candidates (all pre-accepted, opt out as needed):
+> 1. `superpowers:test-driven-development`  [default]
+> 2. `superpowers:verification-before-completion`  [default]
+> 3. `<subagent candidate>` — <one-sentence why relevant>
+> 4. `<subagent candidate>` — <one-sentence why relevant>
+>
+> Reply with: `accept all` (default), `opt out N` or `opt out 1, 3`, or `none` to clear the block.
+
+If Phase 2 has only the two defaults and no subagent candidates, show those two and ask the same question.
+
+Track which Phase 2 candidates the user opted out of. Everything not opted out is accepted.
+
+**Rejected, refined-then-rejected, and opted-out items never appear in the design spec.** No record of them survives to disk after the proposals file is deleted.
+
+Skip the entire Walk-through if the user declined skill mapping at the Confirm Skill Mapping step.
 
 **Documentation:**
 
