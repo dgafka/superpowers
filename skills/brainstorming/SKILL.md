@@ -46,8 +46,10 @@ digraph brainstorming {
     "Present design sections" [shape=box];
     "User approves design?" [shape=diamond];
     "Run skill mapping?" [shape=diamond];
-    "Map required skills\n(dispatch subagent)" [shape=box];
-    "Re-investigate design\nagainst skill expectations" [shape=box];
+    "Subagent writes proposals file" [shape=box];
+    "Phase 1: walk through spec changes" [shape=box];
+    "Phase 2: confirm behaviour skills" [shape=box];
+    "Delete proposals file" [shape=box];
     "Write design doc" [shape=box];
     "Spec self-review\n(fix inline)" [shape=box];
     "User reviews spec?" [shape=diamond];
@@ -62,10 +64,12 @@ digraph brainstorming {
     "Present design sections" -> "User approves design?";
     "User approves design?" -> "Present design sections" [label="no, revise"];
     "User approves design?" -> "Run skill mapping?" [label="yes"];
-    "Run skill mapping?" -> "Map required skills\n(dispatch subagent)" [label="yes"];
+    "Run skill mapping?" -> "Subagent writes proposals file" [label="yes"];
     "Run skill mapping?" -> "Write design doc" [label="no, skip"];
-    "Map required skills\n(dispatch subagent)" -> "Re-investigate design\nagainst skill expectations";
-    "Re-investigate design\nagainst skill expectations" -> "Write design doc";
+    "Subagent writes proposals file" -> "Phase 1: walk through spec changes";
+    "Phase 1: walk through spec changes" -> "Phase 2: confirm behaviour skills";
+    "Phase 2: confirm behaviour skills" -> "Delete proposals file";
+    "Delete proposals file" -> "Write design doc";
     "Write design doc" -> "Spec self-review\n(fix inline)";
     "Spec self-review\n(fix inline)" -> "User reviews spec?";
     "User reviews spec?" -> "Write design doc" [label="changes requested"];
