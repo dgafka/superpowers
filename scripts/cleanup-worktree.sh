@@ -36,6 +36,49 @@ cw_main_root() {
     cw_abspath "${line#worktree }"
 }
 
+# --- Makefile discovery -----------------------------------------------------
+
+# Teardown-ish target names, in preference order.
+CW_MAKE_TARGETS="down stop teardown destroy compose-down docker-down kill clean rm"
+
+# Return 0 if the make dry-run expansion in $1 actually tears docker down.
+cw_expansion_is_teardown() {
+    printf '%s\n' "$1" | grep -Eq \
+        'docker[ -]compose[^&|;]*[[:space:]](down|stop|rm|kill)|docker[[:space:]]+(rm|stop|kill)[[:space:]]'
+}
+
+# Return 0 if the expansion in $1 removes named volumes.
+cw_expansion_removes_volumes() {
+    printf '%s\n' "$1" | grep -Eq -- '(^|[[:space:]])(-v|--volumes)([[:space:]]|$)'
+}
+
+# Discover Makefile teardown targets under ROOT. For each Makefile directory,
+# emit at most one line: "<dir>\t<target>\t<volumes|novolumes>" for the highest
+# preference target whose `make -n` expansion actually tears docker down.
+# Returns 0 if at least one candidate was emitted.
+cw_find_make_teardown() {
+    local root="${1:-.}" mf dir target expansion found=1
+    command -v make >/dev/null 2>&1 || return 1
+    while IFS= read -r mf; do
+        [ -n "$mf" ] || continue
+        dir="$(cw_abspath "$(dirname "$mf")")"
+        for target in $CW_MAKE_TARGETS; do
+            expansion="$(make -C "$dir" -n "$target" 2>/dev/null)" || continue
+            cw_expansion_is_teardown "$expansion" || continue
+            if cw_expansion_removes_volumes "$expansion"; then
+                printf '%s\t%s\t%s\n' "$dir" "$target" "volumes"
+            else
+                printf '%s\t%s\t%s\n' "$dir" "$target" "novolumes"
+            fi
+            found=0
+            break
+        done
+    done < <(find "$root" -maxdepth 3 \
+        \( -name node_modules -o -name vendor -o -name .git \) -prune -o \
+        -type f \( -name Makefile -o -name makefile -o -name GNUmakefile \) -print 2>/dev/null | sort)
+    return $found
+}
+
 # --- CLI dispatch -----------------------------------------------------------
 
 cw_main() {

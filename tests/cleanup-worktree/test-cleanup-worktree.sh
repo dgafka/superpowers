@@ -91,6 +91,49 @@ test_guard_detects_main_vs_worktree() {
 
 run_test test_guard_detects_main_vs_worktree
 
+# ---------------------------------------------------------------------------
+# Task 2: Makefile teardown-target discovery (dry-run validated, no docker)
+# ---------------------------------------------------------------------------
+test_makefile_discovery() {
+    # shellcheck source=/dev/null
+    source "$SCRIPT_UNDER_TEST"
+    local root out
+
+    # A: single Makefile, `down` removes volumes.
+    root="$(mktemp -d)"
+    printf 'down:\n\tdocker compose down -v\n' > "$root/Makefile"
+    out="$(cw_find_make_teardown "$root")"
+    assert_true $? "find_make_teardown succeeds when a docker teardown target exists"
+    assert_contains "$out" "$(cw_abspath "$root")	down	volumes" "picks 'down' target and detects volume removal"
+    rm -rf "$root"
+
+    # B: prefer `down` over `stop` when both are docker teardowns.
+    root="$(mktemp -d)"
+    printf 'stop:\n\tdocker compose stop\ndown:\n\tdocker compose down\n' > "$root/Makefile"
+    out="$(cw_find_make_teardown "$root")"
+    assert_contains "$out" "	down	novolumes" "prefers 'down' over 'stop'; no -v means novolumes"
+    rm -rf "$root"
+
+    # C: a 'down' target that does not touch docker is rejected.
+    root="$(mktemp -d)"
+    printf 'down:\n\techo nothing-to-do\n' > "$root/Makefile"
+    out="$(cw_find_make_teardown "$root")"
+    assert_false $? "rejects a teardown-named target that does not tear docker down"
+    assert_equals "$out" "" "no candidate emitted for non-docker target"
+    rm -rf "$root"
+
+    # D: two Makefiles in different dirs -> ambiguous (two candidates).
+    root="$(mktemp -d)"
+    mkdir -p "$root/a" "$root/b"
+    printf 'down:\n\tdocker compose down\n' > "$root/a/Makefile"
+    printf 'down:\n\tdocker compose down\n' > "$root/b/Makefile"
+    out="$(cw_find_make_teardown "$root")"
+    assert_equals "$(printf '%s\n' "$out" | grep -c '	down	')" "2" "emits one candidate per Makefile dir (ambiguous)"
+    rm -rf "$root"
+}
+
+run_test test_makefile_discovery
+
 echo
 if [[ "$FAILURES" -eq 0 ]]; then
     echo "All tests passed."
