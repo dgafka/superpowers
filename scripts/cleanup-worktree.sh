@@ -90,17 +90,30 @@ cw_container_label() {
     docker inspect -f "{{index .Config.Labels \"$2\"}}" "$1" 2>/dev/null
 }
 
+# Return 0 if candidate path $1 is ROOT ($2) or under it. Robust to a
+# candidate that no longer exists on disk (falls back to literal matching),
+# so a straggler whose working_dir was already removed is still matched.
+cw_path_under() {
+    local c="$1" r="$2" cr rr
+    rr="$(cw_abspath "$r" 2>/dev/null)"; [ -n "$rr" ] || rr="$r"
+    cr="$(cw_abspath "$c" 2>/dev/null)"
+    if [ -n "$cr" ]; then
+        case "$cr" in "$rr"|"$rr"/*) return 0 ;; esac
+    fi
+    case "$c" in "$rr"|"$rr"/*|"$r"|"$r"/*) return 0 ;; esac
+    return 1
+}
+
 # Echo container IDs (running or stopped) whose compose working_dir label is
 # ROOT or under it. Empty output (rc 0) when docker is unavailable.
 cw_list_worktree_containers() {
     local root id wd
-    root="$(cw_abspath "${1:-.}")" || return 0
+    root="${1:-.}"
     docker ps -aq 2>/dev/null | while read -r id; do
         [ -n "$id" ] || continue
         wd="$(cw_container_label "$id" "$CW_WD_LABEL")"
         [ -n "$wd" ] || continue
-        wd="$(cw_abspath "$wd" 2>/dev/null)" || continue
-        case "$wd" in "$root"|"$root"/*) echo "$id" ;; esac
+        cw_path_under "$wd" "$root" && echo "$id"
     done
 }
 
@@ -114,6 +127,41 @@ cw_discover_compose_projects() {
         cfg="$(cw_container_label "$id" "$CW_CFG_LABEL")"
         [ -n "$proj" ] && printf '%s\t%s\n' "$proj" "$cfg"
     done | sort -u
+}
+
+# --- teardown + removal -----------------------------------------------------
+
+# Run a Makefile teardown target from its directory.
+cw_run_make_teardown() {
+    local dir="$1" target="$2"
+    make -C "$dir" "$target"
+}
+
+# Tear down a compose project reconstructed from its recorded labels.
+# $1=project  $2=comma-separated config_files (may be empty)  $3=volumes|novolumes
+cw_compose_down() {
+    local proj="$1" cfg="${2:-}" vols="${3:-novolumes}"
+    local args=() vflag=() f files
+    IFS=',' read -ra files <<< "$cfg"
+    for f in ${files[@]+"${files[@]}"}; do [ -n "$f" ] && args+=( -f "$f" ); done
+    [ "$vols" = volumes ] && vflag=(-v)
+    docker compose -p "$proj" ${args[@]+"${args[@]}"} down ${vflag[@]+"${vflag[@]}"} --remove-orphans
+}
+
+# Force-remove any straggler container whose working_dir is under ROOT.
+cw_backstop_remove() {
+    local root="$1" id
+    cw_list_worktree_containers "$root" | while read -r id; do
+        [ -n "$id" ] && docker rm -f "$id" >/dev/null 2>&1
+    done
+}
+
+# Remove the git worktree at WT (from the safe MAIN cwd) and prune.
+cw_remove_worktree() {
+    local main="$1" wt="$2"
+    git -C "$main" worktree remove --force "$wt" || return 1
+    [ -d "$wt" ] && rm -rf "$wt"
+    git -C "$main" worktree prune
 }
 
 # --- CLI dispatch -----------------------------------------------------------

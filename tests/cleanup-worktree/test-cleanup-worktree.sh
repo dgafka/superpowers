@@ -193,6 +193,62 @@ test_container_discovery() {
 
 run_test test_container_discovery
 
+# ---------------------------------------------------------------------------
+# Task 4a: worktree removal (no docker)
+# ---------------------------------------------------------------------------
+test_worktree_removal() {
+    # shellcheck source=/dev/null
+    source "$SCRIPT_UNDER_TEST"
+    local roots main wt
+    roots="$(make_repo_with_worktree)"
+    main="${roots%% *}"; wt="${roots##* }"
+    local wt_abs; wt_abs="$(cw_abspath "$wt")"
+
+    cw_remove_worktree "$main" "$wt"
+    assert_true $? "remove_worktree exits zero"
+    [ ! -d "$wt" ]; assert_true $? "worktree directory is gone"
+    if git -C "$main" worktree list --porcelain | grep -Fq "worktree $wt_abs"; then
+        fail "worktree no longer registered in git"
+    else
+        pass "worktree no longer registered in git"
+    fi
+    rm -rf "$(dirname "$main")"
+}
+
+run_test test_worktree_removal
+
+# ---------------------------------------------------------------------------
+# Task 4b: compose teardown + backstop (needs docker daemon)
+# ---------------------------------------------------------------------------
+test_teardown_and_backstop() {
+    if ! docker_available; then skip "teardown + backstop (no docker daemon)"; return; fi
+    # shellcheck source=/dev/null
+    source "$SCRIPT_UNDER_TEST"
+
+    # compose_down tears the discovered stack down.
+    local dir proj id
+    dir="$(mktemp -d)"; proj="cwtd$RANDOM"
+    compose_up_stack "$dir" "$proj"
+    local line cfg
+    line="$(cw_discover_compose_projects "$dir")"
+    cfg="${line#*$'\t'}"
+    cw_compose_down "$proj" "$cfg" novolumes
+    assert_equals "$(cw_list_worktree_containers "$dir" | grep -c .)" "0" "compose_down removes the stack's containers"
+    rm -rf "$dir"
+
+    # backstop force-removes a straggler labelled under the root.
+    local sroot sid
+    sroot="$(mktemp -d)"
+    sid="$(docker run -d --label com.docker.compose.project.working_dir="$sroot/svc" "$TEST_IMAGE" redis-server 2>/dev/null)"
+    assert_equals "$(cw_list_worktree_containers "$sroot" | grep -c .)" "1" "straggler is discovered before backstop"
+    cw_backstop_remove "$sroot"
+    assert_equals "$(cw_list_worktree_containers "$sroot" | grep -c .)" "0" "backstop force-removes the straggler"
+    docker rm -f "$sid" >/dev/null 2>&1 || true
+    rm -rf "$sroot"
+}
+
+run_test test_teardown_and_backstop
+
 echo
 if [[ "$FAILURES" -eq 0 ]]; then
     echo "All tests passed."
