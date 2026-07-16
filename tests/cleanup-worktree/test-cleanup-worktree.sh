@@ -269,6 +269,26 @@ test_cli_refuses_main() {
 run_test test_cli_refuses_main
 
 # ---------------------------------------------------------------------------
+# Task 5c: plan reports uncommitted changes (removal uses --force)
+# ---------------------------------------------------------------------------
+test_plan_reports_dirty_worktree() {
+    local roots main wt out
+    roots="$(make_repo_with_worktree)"
+    main="${roots%% *}"; wt="${roots##* }"
+
+    out="$(bash "$SCRIPT_UNDER_TEST" plan "$wt" 2>&1)"
+    assert_contains "$out" "DIRTY=no" "clean worktree reports DIRTY=no"
+
+    echo "scratch" > "$wt/untracked.txt"
+    out="$(bash "$SCRIPT_UNDER_TEST" plan "$wt" 2>&1)"
+    assert_contains "$out" "DIRTY=yes" "worktree with untracked file reports DIRTY=yes"
+
+    rm -rf "$(dirname "$main")"
+}
+
+run_test test_plan_reports_dirty_worktree
+
+# ---------------------------------------------------------------------------
 # Task 5b: CLI plan + execute end-to-end (needs docker daemon)
 # ---------------------------------------------------------------------------
 test_cli_plan_and_execute() {

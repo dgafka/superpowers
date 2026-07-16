@@ -36,13 +36,14 @@ bash "${CLAUDE_PLUGIN_ROOT}/scripts/cleanup-worktree.sh" plan <DIR>
     or `none` (nothing to tear down; only the worktree will be removed)
   - the containers that will be removed (`CONTAINERS:`)
   - whether named volumes will be removed (`VOLUMES=yes|no`)
+  - whether the worktree has uncommitted/untracked changes (`DIRTY=yes|no`)
 
 ## Step 2 — Confirm
 
 Ask the user to confirm before anything destructive runs. If `MECHANISM` is
 `make-ambiguous`, present the candidate `MAKE_CANDIDATES` lines and ask which
-`<dir>`/`<target>` to use. If a worktree has uncommitted changes and you can see
-that, warn that `--force` discards them.
+`<dir>`/`<target>` to use. If `DIRTY=yes`, warn the user that removal uses
+`--force` and will discard those uncommitted/untracked changes.
 
 Do not proceed to Step 3 until the user confirms.
 

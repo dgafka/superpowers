@@ -220,6 +220,11 @@ cw_cmd_plan() {
         echo "  (none)"
     fi
     [ "$vols" = volumes ] && echo "VOLUMES=yes" || echo "VOLUMES=no"
+    if [ -n "$(git -C "$root" status --porcelain 2>/dev/null)" ]; then
+        echo "DIRTY=yes"
+    else
+        echo "DIRTY=no"
+    fi
     return 0
 }
 
