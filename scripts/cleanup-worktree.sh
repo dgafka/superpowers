@@ -166,9 +166,160 @@ cw_remove_worktree() {
 
 # --- CLI dispatch -----------------------------------------------------------
 
+# Decide teardown mechanism from discovery. Echoes "make|make-ambiguous|compose|none".
+cw_decide_mechanism() {
+    local make_count="$1" have_compose="$2"
+    if [ "$make_count" = "1" ]; then echo make
+    elif [ "$make_count" -gt 1 ] 2>/dev/null; then echo make-ambiguous
+    elif [ "$have_compose" = "1" ]; then echo compose
+    else echo none
+    fi
+}
+
+cw_cmd_plan() {
+    local dir="${1:-.}" root main
+    root="$(cw_resolve_root "$dir")" || { echo "Error: '$dir' is not inside a git repository." >&2; return 3; }
+    if cw_is_main_checkout "$root"; then
+        echo "Refusing: '$root' is the main checkout — the shared stack lives here." >&2
+        echo "Run this from inside the worktree you want to remove." >&2
+        return 2
+    fi
+    main="$(cw_main_root "$root")"
+
+    local make_cands make_count proj_lines have_compose containers mech vols
+    make_cands="$(cw_find_make_teardown "$root")" || make_cands=""
+    make_count="$(printf '%s' "$make_cands" | grep -c . )"
+    proj_lines="$(cw_discover_compose_projects "$root")"
+    [ -n "$proj_lines" ] && have_compose=1 || have_compose=0
+    containers="$(cw_list_worktree_containers "$root")"
+    mech="$(cw_decide_mechanism "$make_count" "$have_compose")"
+
+    case "$mech" in
+        make)  vols="$(printf '%s' "$make_cands" | head -1 | cut -f3)" ;;
+        compose) vols="volumes" ;;
+        *) vols="novolumes" ;;
+    esac
+
+    echo "WORKTREE_ROOT=$root"
+    echo "MAIN_ROOT=$main"
+    echo "MECHANISM=$mech"
+    if [ -n "$make_cands" ]; then
+        echo "MAKE_CANDIDATES:"
+        printf '%s\n' "$make_cands" | sed 's/^/  /'
+    fi
+    if [ -n "$proj_lines" ]; then
+        echo "COMPOSE_PROJECTS:"
+        printf '%s\n' "$proj_lines" | sed 's/^/  /'
+    fi
+    echo "CONTAINERS:"
+    if [ -n "$containers" ]; then
+        printf '%s\n' "$containers" | while read -r id; do
+            [ -n "$id" ] && echo "  $id $(docker inspect -f '{{.Name}}' "$id" 2>/dev/null | sed 's#^/##')"
+        done
+    else
+        echo "  (none)"
+    fi
+    [ "$vols" = volumes ] && echo "VOLUMES=yes" || echo "VOLUMES=no"
+    return 0
+}
+
+cw_cmd_execute() {
+    local dir="." make_target="" make_dir="" force_compose=0 vols="" yes=0
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            --make-target) make_target="$2"; shift 2 ;;
+            --make-dir)    make_dir="$2"; shift 2 ;;
+            --compose)     force_compose=1; shift ;;
+            --volumes)     vols=volumes; shift ;;
+            --no-volumes)  vols=novolumes; shift ;;
+            --yes)         yes=1; shift ;;
+            -*)            echo "Error: unknown flag '$1'." >&2; return 1 ;;
+            *)             dir="$1"; shift ;;
+        esac
+    done
+    [ "$yes" -eq 1 ] || { echo "Refusing: destructive 'execute' requires --yes (run 'plan' first)." >&2; return 1; }
+
+    local root main
+    root="$(cw_resolve_root "$dir")" || { echo "Error: '$dir' is not inside a git repository." >&2; return 3; }
+    if cw_is_main_checkout "$root"; then
+        echo "Refusing: '$root' is the main checkout — the shared stack lives here." >&2
+        return 2
+    fi
+    main="$(cw_main_root "$root")"
+
+    # 1. Teardown.
+    if [ -n "$make_target" ] && [ -n "$make_dir" ]; then
+        echo "Tearing down via: make -C $make_dir $make_target"
+        cw_run_make_teardown "$make_dir" "$make_target" || echo "Warning: make teardown returned non-zero; continuing." >&2
+    else
+        local mech make_cands make_count proj_lines have_compose
+        if [ "$force_compose" -eq 1 ]; then
+            mech=compose
+        else
+            make_cands="$(cw_find_make_teardown "$root")" || make_cands=""
+            make_count="$(printf '%s' "$make_cands" | grep -c . )"
+            proj_lines="$(cw_discover_compose_projects "$root")"
+            [ -n "$proj_lines" ] && have_compose=1 || have_compose=0
+            mech="$(cw_decide_mechanism "$make_count" "$have_compose")"
+            if [ "$mech" = make ]; then
+                make_dir="$(printf '%s' "$make_cands" | head -1 | cut -f1)"
+                make_target="$(printf '%s' "$make_cands" | head -1 | cut -f2)"
+            elif [ "$mech" = make-ambiguous ]; then
+                echo "Refusing: multiple Makefile teardown targets found — pass --make-dir/--make-target." >&2
+                printf '%s\n' "$make_cands" | sed 's/^/  /' >&2
+                return 1
+            fi
+        fi
+        case "$mech" in
+            make)
+                echo "Tearing down via: make -C $make_dir $make_target"
+                cw_run_make_teardown "$make_dir" "$make_target" || echo "Warning: make teardown returned non-zero; continuing." >&2 ;;
+            compose)
+                cw_discover_compose_projects "$root" | while IFS=$'\t' read -r proj cfg; do
+                    [ -n "$proj" ] || continue
+                    echo "Tearing down compose project: $proj"
+                    cw_compose_down "$proj" "$cfg" "${vols:-volumes}"
+                done ;;
+            none)
+                echo "No Docker teardown mechanism detected — nothing to bring down." ;;
+        esac
+    fi
+
+    # 2. Backstop.
+    cw_backstop_remove "$root"
+
+    # 3. Remove worktree.
+    cw_remove_worktree "$main" "$root" || { echo "Error: failed to remove worktree '$root'." >&2; return 1; }
+    echo "Worktree $root removed."
+    return 0
+}
+
+cw_usage() {
+    cat >&2 <<'EOF'
+Usage: cleanup-worktree.sh <command> [DIR] [options]
+
+Commands:
+  plan [DIR]       Read-only. Show the teardown plan for DIR's worktree.
+  execute [DIR]    Destructive. Tear down and remove the worktree. Requires --yes.
+
+execute options:
+  --yes                   Confirm the destructive run (required).
+  --make-target T         Use make target T for teardown.
+  --make-dir D            Directory to run the make target from.
+  --compose               Force the container-label compose fallback.
+  --volumes|--no-volumes  Remove named volumes (compose fallback; default: remove).
+EOF
+}
+
 cw_main() {
-    echo "cleanup-worktree: not yet implemented" >&2
-    return 1
+    local cmd="${1:-}"
+    [ $# -gt 0 ] && shift
+    case "$cmd" in
+        plan)    cw_cmd_plan "$@" ;;
+        execute) cw_cmd_execute "$@" ;;
+        ""|-h|--help|help) cw_usage; [ -z "$cmd" ] && return 1 || return 0 ;;
+        *)       echo "Error: unknown command '$cmd'." >&2; cw_usage; return 1 ;;
+    esac
 }
 
 # Only run when executed, not when sourced.

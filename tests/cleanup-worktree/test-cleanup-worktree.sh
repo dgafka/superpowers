@@ -249,6 +249,56 @@ test_teardown_and_backstop() {
 
 run_test test_teardown_and_backstop
 
+# ---------------------------------------------------------------------------
+# Task 5a: CLI guard/plan (no docker needed for the refusal path)
+# ---------------------------------------------------------------------------
+test_cli_refuses_main() {
+    local roots main out rc
+    roots="$(make_repo_with_worktree)"
+    main="${roots%% *}"
+
+    out="$(bash "$SCRIPT_UNDER_TEST" plan "$main" 2>&1)"; rc=$?
+    assert_equals "$rc" "2" "plan on the main checkout exits 2 (refused)"
+    assert_contains "$out" "main checkout" "refusal message mentions the main checkout"
+
+    out="$(bash "$SCRIPT_UNDER_TEST" execute "$main" --yes 2>&1)"; rc=$?
+    assert_equals "$rc" "2" "execute on the main checkout exits 2 (refused)"
+    rm -rf "$(dirname "$main")"
+}
+
+run_test test_cli_refuses_main
+
+# ---------------------------------------------------------------------------
+# Task 5b: CLI plan + execute end-to-end (needs docker daemon)
+# ---------------------------------------------------------------------------
+test_cli_plan_and_execute() {
+    if ! docker_available; then skip "CLI plan/execute end-to-end (no docker daemon)"; return; fi
+    local roots main wt proj out rc cid
+    roots="$(make_repo_with_worktree)"
+    main="${roots%% *}"; wt="${roots##* }"
+    proj="cwte$RANDOM"
+    compose_up_stack "$wt" "$proj"
+    cid="$(cd "$wt" && docker compose -p "$proj" ps -q cache)"
+
+    out="$(bash "$SCRIPT_UNDER_TEST" plan "$wt" 2>&1)"; rc=$?
+    assert_equals "$rc" "0" "plan on the worktree exits 0"
+    assert_contains "$out" "MECHANISM=compose" "plan detects compose fallback when no Makefile"
+    assert_contains "$out" "WORKTREE_ROOT=$(cd "$wt" && pwd -P)" "plan reports the worktree root"
+    assert_contains "$out" "${cid:0:12}" "plan lists the container to be removed"
+
+    out="$(bash "$SCRIPT_UNDER_TEST" execute "$wt" --yes 2>&1)"; rc=$?
+    assert_equals "$rc" "0" "execute exits 0"
+    assert_contains "$out" "removed" "execute confirms worktree removal"
+    [ ! -d "$wt" ]; assert_true $? "worktree directory removed after execute"
+    assert_equals "$(docker ps -aq --filter "id=$cid" | grep -c .)" "0" "stack container removed after execute"
+
+    # Safety net in case execute failed partway.
+    compose_down_stack "$wt" "$proj"
+    rm -rf "$(dirname "$main")"
+}
+
+run_test test_cli_plan_and_execute
+
 echo
 if [[ "$FAILURES" -eq 0 ]]; then
     echo "All tests passed."
