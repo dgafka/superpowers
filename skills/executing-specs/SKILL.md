@@ -1,6 +1,6 @@
 ---
 name: executing-specs
-description: Use when you have an approved design spec from brainstorming and need to implement it — asks how to execute (in this session or via a subagent at sonnet 1M / opus), then either runs the work here or dispatches the executing-specs subagent
+description: Use when you have an approved design spec from brainstorming and need to implement it — asks how to execute (in this session or via a subagent at sonnet 5), with an optional custom-instructions follow-up, then either runs the work here or dispatches the executing-specs subagent
 ---
 
 # Executing Specs
@@ -11,7 +11,7 @@ Run the end-to-end TDD implementation of an approved spec. This skill runs in th
 
 1. Loads the spec and sanity-checks it
 2. Confirms the working branch is sane
-3. Asks the user how to execute: in this session, via subagent (sonnet 1M), via subagent (opus), or hold
+3. Asks the user how to execute: in this session or via subagent (sonnet 5), then optionally takes custom instructions on approach
 4. Either executes the work here OR dispatches the executing-specs subagent
 5. Relays the result back to the user (when dispatched) or wraps up directly (when run in-session)
 
@@ -41,16 +41,21 @@ Before going further:
 
 ### Step 3: Ask Execution Mode
 
-Use **AskUserQuestion** with these four options:
+Use **AskUserQuestion** with these two options:
 
 | Option | When to recommend |
 |---|---|
 | **Continue in this session** | Small specs, or when the user wants to stay in this context. The parent runs the TDD loop directly. |
-| **Subagent — sonnet 1M** | Default for most specs. Large context window, lower cost, isolates the long TDD loop from this conversation. |
-| **Subagent — opus** | Specs that need stronger reasoning (intricate refactors, novel design decisions during execution). |
-| **Hold — manual changes first** | Pause so the user can make changes; they'll re-invoke when ready. |
+| **Subagent — sonnet 5** | Default for most specs. Isolates the long TDD loop from this conversation, at lower cost to the parent's context. |
 
 Phrase the question so the user can choose by trade-off, not by guessing. Do not mark a default — the right answer depends on the spec.
+
+After the user picks one of the two options, ask a follow-up question (free text, optional):
+
+> "Any custom instructions for how to approach this execution? (optional — leave blank for standard auto-decomposition)"
+
+- **Blank** — proceed exactly as normal: standard spec re-read → decompose → parallel-safe grouping → per-task TDD → final verification.
+- **Non-blank** — fold the instructions in as an additional constraint layered on top of the spec, before decomposition. See Step 4 for how each execution path applies this.
 
 ### Step 4: Execute
 
@@ -61,30 +66,28 @@ Branch on the user's selection.
 The parent session runs the implementation directly, following the same internal process the subagent would:
 
 1. Re-read the spec (already in context, but re-anchor).
-2. Decompose the spec into bite-sized tasks.
-3. Identify parallel-safe groups (where applicable).
-4. For each task: RED → GREEN → commit (TDD discipline per `superpowers:test-driven-development`).
-5. After all tasks: run `superpowers:verification-before-completion` for the full-suite check.
-6. Go straight to Step 5 to report back and ask about integration.
+2. If the user gave custom instructions in Step 3's follow-up, keep them in view as an extra constraint alongside the spec.
+3. Decompose the spec into bite-sized tasks.
+4. Identify parallel-safe groups (where applicable).
+5. For each task: RED → GREEN → commit (TDD discipline per `superpowers:test-driven-development`).
+6. After all tasks: run `superpowers:verification-before-completion` for the full-suite check.
+7. Go straight to Step 5 to report back and ask about integration.
 
 This path keeps everything in one conversation but burns context. Use it for small specs.
 
-#### 4b. Subagent — sonnet 1M (or opus)
+#### 4b. Subagent — sonnet 5
 
 Invoke the `executing-specs` agent via the Agent tool (`subagent_type: "executing-specs"`) with a self-contained prompt:
 
 - Absolute path to the spec
 - The branch the work should land on
 - Any user-stated constraints surfaced in Step 1
+- Any custom instructions the user gave in Step 3's follow-up, included verbatim
 - The instruction to follow the agent's own internal process: decompose → parallel-safe grouping → per-task TDD → final-suite verification via verification-before-completion → report back
 
-For sonnet 1M, use the agent's default model (defined in `agents/executing-specs.md` frontmatter). For opus, pass `model: "opus"` to the Agent tool to override.
+Use the agent's default model (defined in `agents/executing-specs.md` frontmatter, currently `sonnet`).
 
 The subagent has its own tool access and is responsible for the entire implementation. **Do not** decompose tasks or write code in the parent session when running via subagent — that defeats the purpose of the dispatch.
-
-#### 4c. Hold
-
-Stop here. The user will re-invoke when ready.
 
 ### Step 5: Relay the Result
 
@@ -119,6 +122,7 @@ If the subagent reports it could not finish (blocker, missing context, escalatio
 ## Remember
 
 - Ask the execution-mode question (Step 3) every time. Do not pick a default for the user.
+- Always follow the mode question with the optional custom-instructions follow-up; fold any answer into whichever path (4a or 4b) the user picked.
 - When running in-session (4a), follow the same canonical TDD process the subagent would.
 - When dispatching (4b), the parent does not write code or decompose tasks — the subagent owns that.
 - Don't start work on main/master without explicit user consent.
@@ -133,7 +137,7 @@ If the subagent reports it could not finish (blocker, missing context, escalatio
 - **superpowers:brainstorming** — terminal handoff after the user approves the spec
 
 **Dispatches to (when user selects subagent):**
-- **executing-specs agent** (sonnet 1M by default; opus on user choice) — implements the spec end-to-end
+- **executing-specs agent** (sonnet 5) — implements the spec end-to-end
 
 **Follow-up (optional):**
 - **superpowers:recognize-and-learn** — post-implementation retrospective on friction points
