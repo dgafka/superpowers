@@ -79,6 +79,43 @@ cw_find_make_teardown() {
     return $found
 }
 
+# --- container-label discovery (docker) -------------------------------------
+
+CW_WD_LABEL='com.docker.compose.project.working_dir'
+CW_PROJ_LABEL='com.docker.compose.project'
+CW_CFG_LABEL='com.docker.compose.project.config_files'
+
+# Read one label ($2) off a container ($1).
+cw_container_label() {
+    docker inspect -f "{{index .Config.Labels \"$2\"}}" "$1" 2>/dev/null
+}
+
+# Echo container IDs (running or stopped) whose compose working_dir label is
+# ROOT or under it. Empty output (rc 0) when docker is unavailable.
+cw_list_worktree_containers() {
+    local root id wd
+    root="$(cw_abspath "${1:-.}")" || return 0
+    docker ps -aq 2>/dev/null | while read -r id; do
+        [ -n "$id" ] || continue
+        wd="$(cw_container_label "$id" "$CW_WD_LABEL")"
+        [ -n "$wd" ] || continue
+        wd="$(cw_abspath "$wd" 2>/dev/null)" || continue
+        case "$wd" in "$root"|"$root"/*) echo "$id" ;; esac
+    done
+}
+
+# Echo unique "<project>\t<config_files>" for compose stacks whose containers
+# live under ROOT.
+cw_discover_compose_projects() {
+    local root="${1:-.}" id proj cfg
+    cw_list_worktree_containers "$root" | while read -r id; do
+        [ -n "$id" ] || continue
+        proj="$(cw_container_label "$id" "$CW_PROJ_LABEL")"
+        cfg="$(cw_container_label "$id" "$CW_CFG_LABEL")"
+        [ -n "$proj" ] && printf '%s\t%s\n' "$proj" "$cfg"
+    done | sort -u
+}
+
 # --- CLI dispatch -----------------------------------------------------------
 
 cw_main() {

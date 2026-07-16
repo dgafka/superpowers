@@ -10,6 +10,27 @@ ONLY="${1:-}"
 
 pass() { echo "  [PASS] $1"; }
 fail() { echo "  [FAIL] $1"; FAILURES=$((FAILURES + 1)); }
+skip() { echo "  [SKIP] $1"; }
+
+docker_available() { command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1; }
+
+TEST_IMAGE="redis:7.2-alpine"
+
+# Bring up a one-service compose stack rooted at $1, project name $2.
+compose_up_stack() {
+    local dir="$1" proj="$2"
+    cat > "$dir/docker-compose.yml" <<EOF
+services:
+  cache:
+    image: $TEST_IMAGE
+    command: ["redis-server"]
+EOF
+    ( cd "$dir" && docker compose -p "$proj" up -d ) >/dev/null 2>&1
+}
+compose_down_stack() {
+    local dir="$1" proj="$2"
+    ( cd "$dir" && docker compose -p "$proj" down -v ) >/dev/null 2>&1 || true
+}
 
 assert_equals() {
     local actual="$1" expected="$2" desc="$3"
@@ -133,6 +154,44 @@ test_makefile_discovery() {
 }
 
 run_test test_makefile_discovery
+
+# ---------------------------------------------------------------------------
+# Task 3: container-label discovery (needs docker daemon)
+# ---------------------------------------------------------------------------
+test_container_discovery() {
+    if ! docker_available; then skip "container discovery (no docker daemon)"; return; fi
+    # shellcheck source=/dev/null
+    source "$SCRIPT_UNDER_TEST"
+
+    local in_dir out_dir in_proj out_proj in_id
+    in_dir="$(mktemp -d)"; in_proj="cwtin$RANDOM"
+    out_dir="$(mktemp -d)"; out_proj="cwtout$RANDOM"
+
+    compose_up_stack "$in_dir" "$in_proj"
+    compose_up_stack "$out_dir" "$out_proj"
+
+    local listed
+    listed="$(cw_list_worktree_containers "$in_dir")"
+    in_id="$(cd "$in_dir" && docker compose -p "$in_proj" ps -q cache)"
+
+    assert_contains "$listed" "${in_id:0:12}" "lists the container whose working_dir is under the target root"
+    assert_equals "$(printf '%s\n' "$listed" | grep -c .)" "1" "lists exactly the in-root container, excludes the other stack"
+
+    local projs
+    projs="$(cw_discover_compose_projects "$in_dir")"
+    assert_contains "$projs" "$in_proj" "discovers the compose project name from container labels"
+    if printf '%s' "$projs" | grep -Fq "$out_proj"; then
+        fail "compose project discovery excludes stacks outside the root"
+    else
+        pass "compose project discovery excludes stacks outside the root"
+    fi
+
+    compose_down_stack "$in_dir" "$in_proj"
+    compose_down_stack "$out_dir" "$out_proj"
+    rm -rf "$in_dir" "$out_dir"
+}
+
+run_test test_container_discovery
 
 echo
 if [[ "$FAILURES" -eq 0 ]]; then
