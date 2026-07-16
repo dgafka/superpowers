@@ -94,6 +94,11 @@ When the work finishes (subagent returns, or in-session implementation completes
 - Surface any blockers, deviations, or open questions
 - Ask the user how they want to integrate the work (merge, push + PR, keep the branch, discard) — this skill never decides integration
 - Offer the **recognize-and-learn** skill as an optional follow-up to capture friction points from this implementation cycle
+- **If the current checkout is a linked worktree**, offer to clean it up (this item is last, after integration): recommend the user run **`/cleanup-worktree`**, which tears down the worktree's Docker stack and removes the worktree in one step. Two caveats to state in the offer:
+  - It is **user-invocable only** — recommend it, do not run it yourself.
+  - Do it **after integration** — removal is destructive (`--force` discards anything uncommitted), so the work must be merged / PR'd / preserved first.
+
+  Detect a linked worktree agnostically: the current checkout is linked when `git rev-parse --git-dir` differs from `git rev-parse --git-common-dir`. If they match (the main checkout) or the directory is not a git repo, skip this item silently.
 
 If the subagent reports it could not finish (blocker, missing context, escalation), bring that back to the user with the subagent's own framing. Do not silently retry.
 
@@ -117,6 +122,7 @@ If the subagent reports it could not finish (blocker, missing context, escalatio
 - Don't start work on main/master without explicit user consent.
 - Relay subagent escalations faithfully; never silently retry.
 - After the work finishes, offer **recognize-and-learn** as a retrospective option.
+- If the work was done in a linked worktree, offer `/cleanup-worktree` at the end (after integration) — recommend it, don't run it.
 
 ## Integration
 
@@ -128,6 +134,7 @@ If the subagent reports it could not finish (blocker, missing context, escalatio
 
 **Follow-up (optional):**
 - **superpowers:recognize-and-learn** — post-implementation retrospective on friction points
+- **/cleanup-worktree** — offered at wrap-up when the work was done in a linked worktree; tears down its Docker stack and removes the worktree
 
 **Required workflow skills:**
 - **superpowers:test-driven-development** — applied per task during execution (in-session or in subagent)
