@@ -17,7 +17,7 @@ Run the end-to-end TDD implementation of an approved spec. This skill runs in th
 
 **Announce at start:** "I'm using the executing-specs skill — first I'll sanity-check the spec and confirm execution mode."
 
-**Input:** A design spec from brainstorming, typically at `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md`. If the user didn't name a path, use the most recent spec in that directory or ask.
+**Input:** A design spec from brainstorming, typically at `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md`. If the user didn't name a path, use the most recent spec in that directory or ask. Some specs are marked ephemeral (generated for direct execution without a user review pass) — see Step 1 and Step 5 for how those are handled differently.
 
 ## The Process
 
@@ -26,9 +26,10 @@ Run the end-to-end TDD implementation of an approved spec. This skill runs in th
 1. Read the spec file end-to-end
 2. Look for blockers — missing sections, contradictions, undefined references, ambiguity that would stop execution
 3. If any concern blocks execution: raise it with the user before continuing
-4. If clear: continue
+4. Check whether the spec carries the ephemeral marker (`> **Ephemeral spec** — ...` near the top). If present, remember this for Step 5 — the spec was generated for direct execution without a user review pass, and must be deleted after the work is relayed.
+5. If clear: continue
 
-This is a quick check, not a deep review. The spec was reviewed at design time. The goal here is to catch obvious gaps before starting work.
+This is a quick check, not a deep review. For a reviewed spec, the design was already vetted at design time. For an ephemeral spec (no review pass happened), give the read slightly more scrutiny before continuing — this is the first check anyone has given it.
 
 ### Step 2: Confirm Branch State
 
@@ -91,6 +92,7 @@ When the work finishes (subagent returns, or in-session implementation completes
 
 - Summarize what shipped (one or two sentences)
 - Show the branch name and final commit SHA(s)
+- **If the spec was marked ephemeral** (noted in Step 1): delete it now — `rm <path>` — verify the deletion succeeded (e.g., `ls` the path and confirm it returns a "no such file" error), then commit the removal separately from the implementation commits.
 - Surface any blockers, deviations, or open questions
 - Ask the user how they want to integrate the work (merge, push + PR, keep the branch, discard) — this skill never decides integration
 - Offer the **recognize-and-learn** skill as an optional follow-up to capture friction points from this implementation cycle
@@ -121,6 +123,7 @@ If the subagent reports it could not finish (blocker, missing context, escalatio
 - When dispatching (4b), the parent does not write code or decompose tasks — the subagent owns that.
 - Don't start work on main/master without explicit user consent.
 - Relay subagent escalations faithfully; never silently retry.
+- If the spec was marked ephemeral, delete it after relaying results and commit the removal — verify the deletion succeeded.
 - After the work finishes, offer **recognize-and-learn** as a retrospective option.
 - If the work was done in a linked worktree, offer `/cleanup-worktree` at the end (after integration) — recommend it, don't run it.
 

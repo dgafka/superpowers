@@ -26,12 +26,12 @@ You MUST create a task for each of these items and complete them in order:
 3. **Ask clarifying questions** — one at a time, understand purpose/constraints/success criteria
 4. **Propose 2-3 approaches** — with trade-offs and your recommendation
 5. **Present design** — in sections scaled to their complexity, get user approval after each section
-6. **Confirm skill mapping** — ask the user whether to run skill mapping for this design; skip steps 7 and 8 if declined (see Confirm Skill Mapping below)
-7. **Dispatch skill-mapping subagent to write proposals file** — only if the user confirmed at step 6: dispatch a general-purpose subagent on the approved design summary to write `docs/superpowers/specs/YYYY-MM-DD-<topic>-skill-proposals.md`, with Phase 1 (proposed spec changes) and Phase 2 (behaviour-driven skill candidates). Subagent returns only the file path (see Skill Mapping (Before Writing) below).
-8. **Walk user through proposals** — only if the user confirmed at step 6: Phase 1 first (confirm/refine/reject per spec change, batched), then Phase 2 (opt-out batched for behaviour skills; the two defaults `superpowers:test-driven-development` and `superpowers:verification-before-completion` are always pre-accepted) (see Walk-through (Phase 1 + Phase 2) below).
-9. **Write design doc** — save to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md` with Phase 1 confirmations baked into the body and a `## Required Skills` block listing every Phase 2 skill the user did not opt out of. Delete the proposals file with `rm` before committing. Commit only the design spec.
+6. **Confirm execution path** — ask the user to choose: run skill mapping, skip mapping but write the spec normally, or execute directly (skip mapping and the spec review gate); skip steps 7 and 8 unless the user chose skill mapping (see Confirm Execution Path below)
+7. **Dispatch skill-mapping subagent to write proposals file** — only if the user chose skill mapping at step 6: dispatch a general-purpose subagent on the approved design summary to write `docs/superpowers/specs/YYYY-MM-DD-<topic>-skill-proposals.md`, with Phase 1 (proposed spec changes) and Phase 2 (behaviour-driven skill candidates). Subagent returns only the file path (see Skill Mapping (Before Writing) below).
+8. **Walk user through proposals** — only if the user chose skill mapping at step 6: Phase 1 first (confirm/refine/reject per spec change, batched), then Phase 2 (opt-out batched for behaviour skills; the two defaults `superpowers:test-driven-development` and `superpowers:verification-before-completion` are always pre-accepted) (see Walk-through (Phase 1 + Phase 2) below).
+9. **Write design doc** — save to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md` with Phase 1 confirmations baked into the body and a `## Required Skills` block listing every Phase 2 skill the user did not opt out of. If the user chose execute-directly at step 6, stamp the spec with the ephemeral marker (see below). Delete the proposals file with `rm` before committing. Commit only the design spec.
 10. **Spec self-review** — quick inline check for placeholders, contradictions, ambiguity, scope (see below)
-11. **User reviews written spec** — ask user to review the spec file before proceeding
+11. **User reviews written spec** — ask user to review the spec file before proceeding; skipped entirely if the user chose execute-directly at step 6
 12. **Transition to implementation** — invoke executing-specs skill to implement the approved spec
 
 ## Process Flow
@@ -45,13 +45,14 @@ digraph brainstorming {
     "Propose 2-3 approaches" [shape=box];
     "Present design sections" [shape=box];
     "User approves design?" [shape=diamond];
-    "Run skill mapping?" [shape=diamond];
+    "Choose execution path?" [shape=diamond];
     "Subagent writes proposals file" [shape=box];
     "Phase 1: walk through spec changes" [shape=box];
     "Phase 2: confirm behaviour skills" [shape=box];
     "Delete proposals file" [shape=box];
     "Write design doc" [shape=box];
     "Spec self-review\n(fix inline)" [shape=box];
+    "Execute directly chosen?" [shape=diamond];
     "User reviews spec?" [shape=diamond];
     "Invoke executing-specs skill" [shape=doublecircle];
 
@@ -63,15 +64,18 @@ digraph brainstorming {
     "Propose 2-3 approaches" -> "Present design sections";
     "Present design sections" -> "User approves design?";
     "User approves design?" -> "Present design sections" [label="no, revise"];
-    "User approves design?" -> "Run skill mapping?" [label="yes"];
-    "Run skill mapping?" -> "Subagent writes proposals file" [label="yes"];
-    "Run skill mapping?" -> "Write design doc" [label="no, skip"];
+    "User approves design?" -> "Choose execution path?" [label="yes"];
+    "Choose execution path?" -> "Subagent writes proposals file" [label="run skill mapping"];
+    "Choose execution path?" -> "Write design doc" [label="skip mapping, write spec"];
+    "Choose execution path?" -> "Write design doc" [label="execute directly"];
     "Subagent writes proposals file" -> "Phase 1: walk through spec changes";
     "Phase 1: walk through spec changes" -> "Phase 2: confirm behaviour skills";
     "Phase 2: confirm behaviour skills" -> "Delete proposals file";
     "Delete proposals file" -> "Write design doc";
     "Write design doc" -> "Spec self-review\n(fix inline)";
-    "Spec self-review\n(fix inline)" -> "User reviews spec?";
+    "Spec self-review\n(fix inline)" -> "Execute directly chosen?";
+    "Execute directly chosen?" -> "Invoke executing-specs skill" [label="yes"];
+    "Execute directly chosen?" -> "User reviews spec?" [label="no"];
     "User reviews spec?" -> "Write design doc" [label="changes requested"];
     "User reviews spec?" -> "Invoke executing-specs skill" [label="approved"];
 }
@@ -120,15 +124,16 @@ digraph brainstorming {
 
 ## After the Design
 
-**Confirm Skill Mapping:**
-After the user verbally approves the design, ask whether to run skill mapping for this design before dispatching the mapping subagent. Skill mapping shapes the spec body and the `## Required Skills` block, but is overhead for small or throwaway changes.
+**Confirm Execution Path:**
+After the user verbally approves the design, ask how to proceed before dispatching the mapping subagent. Skill mapping shapes the spec body and the `## Required Skills` block, but is overhead for small or throwaway changes. Separately, some changes don't need a human eye on the spec at all before implementation starts.
 
-Use `AskUserQuestion` with two options:
+Use `AskUserQuestion` with three options:
 
 | Option | When to choose |
 |---|---|
 | **Yes, run skill mapping** | Non-trivial feature; you want skill expectations to shape the spec body and the `## Required Skills` block. |
-| **Skip — small feature, write spec directly** | Small or throwaway change. TDD and verification-before-completion still apply at execution time — `executing-specs` invokes them via its own required workflow skills, independent of the spec's `## Required Skills` block. You only lose the spec-body refinement and the explicit Required Skills listing. |
+| **Skip — small feature, write spec directly** | Small or throwaway change. TDD and verification-before-completion still apply at execution time — `executing-specs` invokes them via its own required workflow skills, independent of the spec's `## Required Skills` block. You only lose the spec-body refinement and the explicit Required Skills listing. The user still reviews the written spec before implementation starts. |
+| **Execute directly — skip mapping and spec review** | Small, low-risk, or urgent change where waiting for a spec review adds no value. Skips skill mapping AND the user review gate — the spec still gets written (so `executing-specs`' file-based contract is unchanged) but is marked ephemeral and deleted by `executing-specs` after implementation completes. |
 
 Do not mark a default — the right answer depends on the design.
 
@@ -136,11 +141,19 @@ If the user picks **Skip**:
 - Do not dispatch the mapping subagent.
 - Do not run the Phase 1 / Phase 2 walk-through.
 - Proceed directly to Documentation. The spec's `## Required Skills` block uses the zero-listable-skills fallback.
+- The User Review Gate still runs.
+
+If the user picks **Execute directly**:
+- Do not dispatch the mapping subagent.
+- Do not run the Phase 1 / Phase 2 walk-through.
+- Proceed directly to Documentation. The spec's `## Required Skills` block uses the zero-listable-skills fallback, and the spec is stamped with the ephemeral marker (see Documentation below).
+- Run Spec Self-Review as usual (it's an internal check, no user interaction).
+- Skip the User Review Gate entirely — go straight to Implementation.
 
 If the user picks **Yes**, continue with Skill Mapping (Before Writing) below.
 
 **Skill Mapping (Before Writing):**
-After the user confirms skill mapping at the Confirm Skill Mapping step and before writing the spec file, dispatch a `general-purpose` subagent to **write a proposals file** at `docs/superpowers/specs/YYYY-MM-DD-<topic>-skill-proposals.md`. The subagent returns only the file path. It writes no other file. The brainstormer determines the topic slug and date before dispatching, and passes the exact path in the prompt.
+After the user chooses to run skill mapping at the Confirm Execution Path step and before writing the spec file, dispatch a `general-purpose` subagent to **write a proposals file** at `docs/superpowers/specs/YYYY-MM-DD-<topic>-skill-proposals.md`. The subagent returns only the file path. It writes no other file. The brainstormer determines the topic slug and date before dispatching, and passes the exact path in the prompt.
 
 The proposals file structure the subagent MUST produce:
 
@@ -239,12 +252,17 @@ Track which Phase 2 candidates the user opted out of. Everything not opted out i
 
 **Rejected, refined-then-rejected, and opted-out items never appear in the design spec.** No record of them survives to disk after the proposals file is deleted.
 
-Skip the entire Walk-through if the user declined skill mapping at the Confirm Skill Mapping step.
+Skip the entire Walk-through if the user did not choose to run skill mapping at the Confirm Execution Path step.
 
 **Documentation:**
 
 - Write the validated design (spec) to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md`, baking in every Phase 1 proposal the user confirmed (using the final wording from any refinement loop, not the original subagent wording when the user negotiated a revision).
 - The `## Required Skills` block at the top of the spec lists every Phase 2 skill the user did **not** opt out of. The block format is unchanged from today.
+- If the user chose **Execute directly** at the Confirm Execution Path step, stamp the spec with an ephemeral marker directly under the title heading:
+  ~~~
+  > **Ephemeral spec** — generated for direct execution without user review. Delete after implementation completes.
+  ~~~
+  This tells `executing-specs` to delete the file after it relays results, instead of leaving it on disk.
 - (User preferences for spec location override the default path.)
 - Use `elements-of-style:writing-clearly-and-concisely` skill if available.
 - **Delete the proposals file** with `rm docs/superpowers/specs/YYYY-MM-DD-<topic>-skill-proposals.md`. The file is ephemeral. Verify the deletion succeeded before continuing (e.g., `ls` the path and confirm it returns a "no such file" error).
@@ -262,7 +280,7 @@ The block format:
 - **<skill name>** — <one-sentence why_relevant>
 ~~~
 
-**Zero-listable-skills fallback:** if after Phase 2 the user opted out of every Phase 2 candidate (including both defaults), OR if the user declined skill mapping at the Confirm Skill Mapping step, the block becomes:
+**Zero-listable-skills fallback:** if after Phase 2 the user opted out of every Phase 2 candidate (including both defaults), OR if the user did not choose to run skill mapping at the Confirm Execution Path step (Skip or Execute directly), the block becomes:
 
 ~~~
 ## Required Skills
@@ -283,7 +301,9 @@ After writing the spec document, look at it with fresh eyes:
 Fix any issues inline. No need to re-review — just fix and move on.
 
 **User Review Gate:**
-After the spec review loop passes, ask the user to review the written spec before proceeding:
+Skip this entirely if the user chose **Execute directly** at the Confirm Execution Path step — go straight to Implementation.
+
+Otherwise, after the spec review loop passes, ask the user to review the written spec before proceeding:
 
 > "Spec written and committed to `<path>`. Please review it and let me know if you want to make any changes before we start implementing."
 
