@@ -100,9 +100,12 @@ Structure the review in this order, weighted by the Phase 1 classification:
 
 ### 5. Action loop
 
-- **Peer-review:** walk the numbered list with the user. For each point: agree (post immediately as an inline GitHub PR comment via `gh api repos/{owner}/{repo}/pulls/{pull_number}/comments` at the cited file:line) / skip / edit wording before posting. **Never submit an overall approve/request-changes/comment verdict** — that judgment call belongs to the user.
-- **Self-review:** walk the numbered list. For findings in the mechanically-automatable checks (unsafe-default question resolved, false-positive-prone test, infra-parity discrepancy with a concrete fix, recurring-pattern instance), agree → apply directly in the current session (Edit tool) to the local file. For judgment-requiring findings (design pivots, cross-subsystem root-cause hypotheses, doc/product judgment calls), present with a stated hypothesis and take no action — these are never auto-fixed.
-- If peer-review was chosen but no PR could be identified (Step 2's auto-detect found nothing), the numbered list is the final output — no posting mechanism is offered, same as self-review's baseline.
+Present the full numbered list at once and ask the user for a **single consolidated response** that dispositions every point by number — e.g. "1, 3 approve; 2 skip; 4 improve: <replacement wording>". Don't walk the list one point at a time waiting for a reply after each. Accept any reasonable free-form phrasing of that response (grouped numbers, ranges, per-number notes); if the response leaves any point's disposition ambiguous, ask a single follow-up listing just the unresolved numbers rather than re-presenting the whole list.
+
+Once every point has a disposition, execute them:
+- **Peer-review:** for each approved point, post it as an inline GitHub PR comment via `gh api repos/{owner}/{repo}/pulls/{pull_number}/comments` at the cited file:line (using the user's replacement wording for "improve" points). Skipped points get no action. **Never submit an overall approve/request-changes/comment verdict** — that judgment call belongs to the user.
+- **Self-review:** for each approved point among the mechanically-automatable checks (unsafe-default question resolved, false-positive-prone test, infra-parity discrepancy with a concrete fix, recurring-pattern instance), apply the fix directly in the current session (Edit tool) to the local file (using the user's replacement approach for "improve" points). Judgment-requiring findings (design pivots, cross-subsystem root-cause hypotheses, doc/product judgment calls) are presented with a stated hypothesis and never auto-fixed regardless of disposition — approving one of these means the user will act on it themselves, not that the command applies it.
+- If peer-review was chosen but no PR could be identified (Step 2's auto-detect found nothing), the numbered list and the user's dispositions are recorded in chat only — no posting mechanism is offered, same as self-review's baseline.
 
 ## Guardrails
 
