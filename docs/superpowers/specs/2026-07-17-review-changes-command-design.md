@@ -1,4 +1,4 @@
-# Design Spec: `/changes-review` command
+# Design Spec: `/review-changes` command
 
 **Date:** 2026-07-17
 **Status:** Approved, ready for implementation
@@ -9,16 +9,16 @@ _No specific skills required beyond defaults._
 
 ## Goal
 
-Add a generic, portable slash command `commands/changes-review.md` that reviews a set of code changes — either a GitHub pull request or the current branch's diff — through a two-phase process: first building and confirming understanding of *why* the change exists and *what* it does at a high level, then running a structured, severity-tiered review whose findings the user can act on immediately (posting agreed-upon points as inline PR comments, or applying agreed-upon fixes locally). Like `create-pull-request.md`, everything repo-specific (PR template, ticket format, Jira instance) is detected or asked, never hardcoded. The command's review focus and voice are informed by two research tracks: how mature review processes (human and AI) structure themselves, and the reviewer's own observed review-comment history on a real codebase — both distilled into portable, generic principles rather than project-specific rules.
+Add a generic, portable slash command `commands/review-changes.md` that reviews a set of code changes — either a GitHub pull request or the current branch's diff — through a two-phase process: first building and confirming understanding of *why* the change exists and *what* it does at a high level, then running a structured, severity-tiered review whose findings the user can act on immediately (posting agreed-upon points as inline PR comments, or applying agreed-upon fixes locally). Like `create-pull-request.md`, everything repo-specific (PR template, ticket format, Jira instance) is detected or asked, never hardcoded. The command's review focus and voice are informed by two research tracks: how mature review processes (human and AI) structure themselves, and the reviewer's own observed review-comment history on a real codebase — both distilled into portable, generic principles rather than project-specific rules.
 
 ## Deliverable
 
-A single self-contained file: `commands/changes-review.md`. No supporting reference files — self-contained and portable, following the same pattern as `create-pull-request.md`.
+A single self-contained file: `commands/review-changes.md`. No supporting reference files — self-contained and portable, following the same pattern as `create-pull-request.md`.
 
 ### Frontmatter
 
-- `name: changes-review`
-- `description`: triggers on requests to review a PR, review the current branch's changes, review changes before opening a PR, or the explicit `/changes-review` invocation.
+- `name: review-changes`
+- `description`: triggers on requests to review a PR, review the current branch's changes, review changes before opening a PR, or the explicit `/review-changes` invocation.
 - `allowed-tools`: `Bash(gh pr view:*)`, `Bash(gh pr diff:*)`, `Bash(gh api:*)`, `Bash(git diff:*)`, `Bash(git log:*)`, `Bash(git status:*)`, `Bash(git branch:*)`, `Bash(git rev-parse:*)`, `Bash(git symbolic-ref:*)`, `Bash(git remote:*)`. (`Edit`/`Read` are core tools, not declared here; if a Jira-related MCP tool is available in-session, use it dynamically — never hardcode a specific MCP tool name, since installations vary.)
 - `disable-model-invocation: false`
 
