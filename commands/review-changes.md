@@ -98,6 +98,11 @@ Then:
     (solution space) — always paired, never the resulting flow alone. This
     pairing applies wherever a flow diagram shows up in this command's
     output, including inside Phase 2 findings.
+  - Ground both spaces in the actual diff, not just prose: pull short code
+    snippets from the changed lines to back up each claim in the narrative,
+    so the reader can jump from the high-level explanation straight to the
+    code it describes. When the logic behind a claim is long or intricate,
+    sketch it as short pseudocode instead of pasting the whole thing.
   - The classification and reasoning.
   - If this is a partial slice: which part of the overall functionality this
     change delivers, and what's intentionally deferred.
