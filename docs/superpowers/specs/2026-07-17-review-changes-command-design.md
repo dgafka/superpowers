@@ -9,7 +9,7 @@ _No specific skills required beyond defaults._
 
 ## Goal
 
-Add a generic, portable slash command `commands/review-changes.md` that reviews a set of code changes — either a GitHub pull request or the current branch's diff — through a two-phase process: first building and confirming understanding of *why* the change exists and *what* it does at a high level, then running a structured, severity-tiered review whose findings the user can act on immediately (posting agreed-upon points as inline PR comments, or applying agreed-upon fixes locally). Like `create-pull-request.md`, everything repo-specific (PR template, ticket format, Jira instance) is always detected or asked at runtime. The command's review focus and voice are informed by two research tracks: how mature review processes (human and AI) structure themselves, and the reviewer's own observed review-comment history on a real codebase — both distilled into portable, generic principles rather than project-specific rules.
+Add a generic, portable slash command `commands/review-changes.md` that reviews a set of code changes — either a GitHub pull request or the current branch's diff — through a phased process: first building and confirming understanding of *why* the change exists and *what* it does at a high level (Phase 1), then, for two of its three modes, running a structured, severity-tiered review whose findings the user can act on immediately (posting agreed-upon points as inline PR comments, or applying agreed-upon fixes locally) (Phase 2). A third mode stops after Phase 1 by design, for when the user just wants the context and understanding without a review. Like `create-pull-request.md`, everything repo-specific (PR template, ticket format, Jira instance) is always detected or asked at runtime. The command's review focus and voice are informed by two research tracks: how mature review processes (human and AI) structure themselves, and the reviewer's own observed review-comment history on a real codebase — both distilled into portable, generic principles rather than project-specific rules.
 
 ## Deliverable
 
@@ -18,7 +18,7 @@ A single self-contained file: `commands/review-changes.md`. No supporting refere
 ### Frontmatter
 
 - `name: review-changes`
-- `description`: triggers on requests to review a PR, review the current branch's changes, review changes before opening a PR, or the explicit `/review-changes` invocation.
+- `description`: triggers on requests to review a PR, review the current branch's changes, review changes before opening a PR, understand/get context on a set of changes without reviewing them, or the explicit `/review-changes` invocation.
 - `allowed-tools`: `Bash(gh pr view:*)`, `Bash(gh pr diff:*)`, `Bash(gh api:*)`, `Bash(git diff:*)`, `Bash(git log:*)`, `Bash(git status:*)`, `Bash(git branch:*)`, `Bash(git rev-parse:*)`, `Bash(git symbolic-ref:*)`, `Bash(git remote:*)`. (`Edit`/`Read` are core tools, not declared here; whichever Jira-related MCP tool or CLI is present in the session at runtime is used dynamically, since installations vary.)
 - `disable-model-invocation: false`
 
@@ -30,14 +30,14 @@ A single self-contained file: `commands/review-changes.md`. No supporting refere
 - No argument → diff the current branch against its detected default branch, reusing `create-pull-request.md`'s detection: `git symbolic-ref refs/remotes/origin/HEAD` (strip to branch name), probing `main` then `master` if that fails. The detected branch, whatever it turns out to be, is used as `<base>` for every command below.
 - **Guard:** if diffing the current branch and it *is* the default branch, stop and tell the user there's nothing to diff against.
 
-### 2. Mode & focus (explicit, upfront, both apply regardless of input source)
+### 2. Mode & focus (explicit, upfront, applies regardless of input source)
 
-- Ask explicitly: **self-review** or **peer-review**? (Asked independently of input source — a PR link can be self-reviewed, e.g. to apply local fixes before merge; a local branch diff can be peer-reviewed, e.g. reviewing a colleague's checked-out branch.)
-- Immediately after, ask: "Anything specific you'd like this review to focus on or verify?" — optional, blank means standard checks only. The answer feeds Phase 1's context-gathering and Phase 2's checks, not just a final filter.
+- Ask explicitly: **self-review**, **peer-review**, or **context-review**? (Asked independently of input source — a PR link can be self-reviewed, e.g. to apply local fixes before merge; a local branch diff can be peer-reviewed, e.g. reviewing a colleague's checked-out branch.) **Context-review** runs Phase 1 only and stops there by design — no Phase 2, no findings, no action loop. It exists for when the user wants the context and understanding of a change without asking for a review of it.
+- Immediately after, ask: "Anything specific you'd like this review to focus on or verify?" — optional, blank means standard checks only. The answer feeds Phase 1's context-gathering and (for self-review/peer-review) Phase 2's checks, not just a final filter. Still worth asking for context-review, since it can shape what Phase 1 looks for.
 - If peer-review is chosen and no PR argument was given, try to auto-detect an open PR for the current branch (`gh pr view` with no arguments resolves the PR tied to the current branch). If none exists, tell the user inline posting won't be available for this run and proceed chat-only (Phase 2's action loop still runs, just without the posting mechanism).
 - No subagent option — this command always runs in the current session.
 
-### 3. Phase 1 — Understanding (always runs, both modes)
+### 3. Phase 1 — Understanding (always runs, all three modes)
 
 Gather context in parallel:
 - The diff itself (`gh pr diff` or `git diff <base>...HEAD`).
@@ -57,6 +57,7 @@ Then:
   - **If this is a partial slice:** state explicitly which part of the overall functionality this change aims to deliver, and what's intentionally deferred to later PRs.
 - **Peer-review:** pause and ask "Any questions before we move to the review, or should we proceed to Phase 2?" Answer follow-ups, re-summarize if needed, proceed once the user says go.
 - **Self-review:** present the same summary, then proceed straight into Phase 2 without pausing — the user already has the context; the summary is for confirmation, not a gate.
+- **Context-review:** present the same summary, answer any follow-up questions the user has, then stop. Phase 2 never runs in this mode — there's no review to proceed to.
 
 ### 4. Phase 2 — Review
 
@@ -114,7 +115,7 @@ Once every point has a disposition, execute them:
 
 A command file is prose, not executable code — no unit test. Verify by:
 1. Self-review against every requirement in this spec (mode question, focus prompt, Phase 1 context-gathering and diagram pairing, classification, Phase 2's phased checks and checks library, severity taxonomy, action loop per mode, behavioral guarantees).
-2. A real dry-run in both modes: peer-review against an actual open PR (confirm it detects context, produces the old+new diagram pairing, classifies correctly, and produces a preview of inline comments, posting them only once explicitly confirmed) and self-review against the current branch (confirm findings split correctly into fix-eligible vs. flag-only, editing a local file only once explicitly confirmed).
+2. A real dry-run across all three modes: peer-review against an actual open PR (confirm it detects context, produces the old+new diagram pairing, classifies correctly, and produces a preview of inline comments, posting them only once explicitly confirmed); self-review against the current branch (confirm findings split correctly into fix-eligible vs. flag-only, editing a local file only once explicitly confirmed); and context-review against either input source (confirm it produces the same Phase 1 summary and diagram pairing, then stops — no findings, no action loop).
 
 ## Out of scope
 
