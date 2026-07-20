@@ -38,6 +38,7 @@ Before going further:
 - Check `git status` and the current branch
 - If on `main`/`master`, stop and ask the user whether to create a feature branch first
 - Never start implementation on the default branch without explicit user consent
+- Also detect whether the current checkout is a linked worktree: the checkout is linked when `git rev-parse --git-dir` differs from `git rev-parse --git-common-dir`. If linked, capture the absolute worktree root (`git rev-parse --show-toplevel`) — it's needed for Step 4b's subagent dispatch prompt. If they match (the main checkout), there is no worktree scope to pass along.
 
 ### Step 3: Ask Execution Mode
 
@@ -65,13 +66,14 @@ Branch on the user's selection.
 
 The parent session runs the implementation directly, following the same internal process the subagent would:
 
-1. Re-read the spec (already in context, but re-anchor).
-2. If the user gave custom instructions in Step 3's follow-up, keep them in view as an extra constraint alongside the spec.
-3. Decompose the spec into bite-sized tasks.
-4. Identify parallel-safe groups (where applicable).
-5. For each task: RED → GREEN → commit (TDD discipline per `superpowers:test-driven-development`).
-6. After all tasks: run `superpowers:verification-before-completion` for the full-suite check.
-7. Go straight to Step 5 to report back and ask about integration.
+1. If the spec's `## Environment & Test Execution` section lists setup commands and the environment isn't already up, run them now — before doing anything else.
+2. Re-read the spec (already in context, but re-anchor).
+3. If the user gave custom instructions in Step 3's follow-up, keep them in view as an extra constraint alongside the spec.
+4. Decompose the spec into bite-sized tasks.
+5. Identify parallel-safe groups (where applicable).
+6. For each task: RED → GREEN → commit (TDD discipline per `superpowers:test-driven-development`).
+7. After all tasks: run `superpowers:verification-before-completion` for the full-suite check.
+8. Go straight to Step 5 to report back and ask about integration.
 
 This path keeps everything in one conversation but burns context. Use it for small specs.
 
@@ -83,6 +85,8 @@ Invoke the `executing-specs` agent via the Agent tool (`subagent_type: "executin
 - The branch the work should land on
 - Any user-stated constraints surfaced in Step 1
 - Any custom instructions the user gave in Step 3's follow-up, included verbatim
+- If Step 2 detected a linked worktree: the absolute worktree root path, framed as the subagent's **exclusive project scope** — instruct it to read, write, and run all commands only inside this path, and never touch the main checkout or any sibling worktree under `.claude/worktrees/`.
+- The spec's `## Environment & Test Execution` section, copied verbatim into the prompt, with an instruction to run its setup commands before starting task decomposition.
 - The instruction to follow the agent's own internal process: decompose → parallel-safe grouping → per-task TDD → final-suite verification via verification-before-completion → report back
 
 Use the agent's default model (defined in `agents/executing-specs.md` frontmatter, currently `sonnet`).

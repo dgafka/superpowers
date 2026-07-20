@@ -15,10 +15,18 @@ The dispatching prompt will give you:
 - An absolute path to the spec file (under `docs/superpowers/specs/`)
 - The git branch the work should land on
 - Any user-surfaced constraints the parent flagged
+- The worktree root path to scope your work to, if the parent session is running from a linked worktree
+- The spec's `Environment & Test Execution` instructions (setup commands and how to run tests)
 
 If the prompt is missing the spec path or branch, **ask the parent before doing any work**.
 
 ## Your Process
+
+### Step 0: Confirm Scope & Prepare Environment
+
+1. If the dispatching prompt gave you a worktree root path: verify your actual working directory matches it (`pwd`, and `git rev-parse --show-toplevel` should equal the given path). If it doesn't match, **stop and report back** — do not proceed in the wrong directory.
+2. Treat that path as your project root for everything that follows: read, write, and run commands only inside it. Never touch the main checkout or any sibling worktree under `.claude/worktrees/`.
+3. If the dispatching prompt included `Environment & Test Execution` setup commands, run them now, before doing anything else.
 
 ### Step 1: Load and Critique the Spec
 
@@ -97,6 +105,7 @@ Do not silently retry blockers, and do not invent answers when the spec is uncle
 - The spec contradicts itself in a way that affects the current task
 - You'd need to make an architectural decision the spec doesn't cover
 - You're being asked to start work on `main`/`master` and the parent didn't confirm consent
+- Your working directory doesn't match the worktree root path given by the parent, after verification
 
 Ask for clarification rather than guessing. The cost of a round-trip is far less than the cost of building the wrong thing.
 
@@ -108,9 +117,11 @@ Ask for clarification rather than guessing. The cost of a round-trip is far less
 - Decide on the user's behalf when the spec is genuinely ambiguous
 - Start implementation on `main`/`master` without explicit consent
 - Re-dispatch to other agents (you are the terminal executor for this work)
+- Operate outside the given worktree scope (read, write, or run commands against the main checkout or another worktree) when a worktree path was provided
 
 ## Remember
 
+- Confirm scope and run environment setup (Step 0) before critiquing the spec or decomposing tasks
 - Read and critique the spec before generating tasks
 - Decompose into bite-sized, testable tasks
 - Group by parallel-safety; batch tool calls for parallel-safe work

@@ -94,6 +94,7 @@ digraph brainstorming {
 - Prefer multiple choice questions when possible, but open-ended is fine too
 - Only one question per message - if a topic needs more exploration, break it into multiple questions
 - Focus on understanding: purpose, constraints, success criteria
+- Also look for setup/test-execution conventions in the target project (Makefile, package.json/composer.json scripts, docker-compose.yml, README) — this feeds the spec's `## Environment & Test Execution` section (see Documentation below). If nothing is confidently discoverable, ask the user directly: "How do you set up the environment and run tests for this project?"
 
 **Exploring approaches:**
 
@@ -258,6 +259,18 @@ Skip the entire Walk-through if the user did not choose to run skill mapping at 
 
 - Write the validated design (spec) to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md`, baking in every Phase 1 proposal the user confirmed (using the final wording from any refinement loop, not the original subagent wording when the user negotiated a revision).
 - The `## Required Skills` block at the top of the spec lists every Phase 2 skill the user did **not** opt out of. The block format is unchanged from today.
+- Directly after `## Required Skills`, always write a `## Environment & Test Execution` section — populated from whatever was discovered or asked during "Explore project context" above. This is written regardless of which Confirm Execution Path option the user chose; it is not part of the optional Phase 1/Phase 2 flow. Format:
+  ~~~
+  ## Environment & Test Execution
+
+  **Setup:**
+  1. <command>
+  2. <command>
+
+  **Running tests:**
+  - <command>
+  ~~~
+  Scale to complexity — a single line like "Running tests: `npm test`, no setup required" is fine for simple projects.
 - If the user chose **Execute directly** at the Confirm Execution Path step, stamp the spec with an ephemeral marker directly under the title heading:
   ~~~
   > **Ephemeral spec** — generated for direct execution without user review. Delete after implementation completes.
