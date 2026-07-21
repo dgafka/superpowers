@@ -1,6 +1,6 @@
 ---
 name: executing-specs
-description: Use when you have an approved design spec from brainstorming and need to implement it — asks how to execute (in this session or via a subagent at sonnet 5), with an optional custom-instructions follow-up, then either runs the work here or dispatches the executing-specs subagent
+description: Use when you have an approved design spec from brainstorming and need to implement it — asks how to execute (in this session or via a subagent at sonnet 5), then either runs the work here or dispatches the executing-specs subagent. Ephemeral specs (marked for direct execution) skip the question and run in this session.
 ---
 
 # Executing Specs
@@ -11,7 +11,7 @@ Run the end-to-end TDD implementation of an approved spec. This skill runs in th
 
 1. Loads the spec and sanity-checks it
 2. Confirms the working branch is sane
-3. Asks the user how to execute: in this session or via subagent (sonnet 5), then optionally takes custom instructions on approach
+3. Asks the user how to execute: in this session or via subagent (sonnet 5) — unless the spec is ephemeral, which runs in this session without asking
 4. Either executes the work here OR dispatches the executing-specs subagent
 5. Relays the result back to the user (when dispatched) or wraps up directly (when run in-session)
 
@@ -26,7 +26,7 @@ Run the end-to-end TDD implementation of an approved spec. This skill runs in th
 1. Read the spec file end-to-end
 2. Look for blockers — missing sections, contradictions, undefined references, ambiguity that would stop execution
 3. If any concern blocks execution: raise it with the user before continuing
-4. Check whether the spec carries the ephemeral marker (`> **Ephemeral spec** — ...` near the top). If present, remember this for Step 5 — the spec was generated for direct execution without a user review pass, and must be deleted after the work is relayed.
+4. Check whether the spec carries the ephemeral marker (`> **Ephemeral spec** — ...` near the top). If present, remember this for Step 3 and Step 5: the spec was generated for direct execution without a user review pass, so **skip the execution-mode question entirely and run in this session** (Step 3), and it must be deleted after the work is relayed (Step 5).
 5. If clear: continue
 
 This is a quick check, not a deep review. For a reviewed spec, the design was already vetted at design time. For an ephemeral spec (no review pass happened), give the read slightly more scrutiny before continuing — this is the first check anyone has given it.
@@ -42,7 +42,9 @@ Before going further:
 
 ### Step 3: Ask Execution Mode
 
-Use **AskUserQuestion** with these two options:
+**If the spec is ephemeral** (marked for direct execution, detected in Step 1): skip this step entirely. Do not ask the execution-mode question — run the work in this session (path 4a) and go straight to Step 4.
+
+Otherwise, use **AskUserQuestion** with these two options:
 
 | Option | When to recommend |
 |---|---|
@@ -51,12 +53,7 @@ Use **AskUserQuestion** with these two options:
 
 Phrase the question so the user can choose by trade-off, not by guessing. Do not mark a default — the right answer depends on the spec.
 
-After the user picks one of the two options, ask a follow-up question (free text, optional):
-
-> "Any custom instructions for how to approach this execution? (optional — leave blank for standard auto-decomposition)"
-
-- **Blank** — proceed exactly as normal: standard spec re-read → decompose → parallel-safe grouping → per-task TDD → final verification.
-- **Non-blank** — fold the instructions in as an additional constraint layered on top of the spec, before decomposition. See Step 4 for how each execution path applies this.
+Once the user picks an option, go straight to Step 4 — do not ask any follow-up question. Execution proceeds with standard auto-decomposition.
 
 ### Step 4: Execute
 
@@ -68,12 +65,11 @@ The parent session runs the implementation directly, following the same internal
 
 1. If the spec's `## Environment & Test Execution` section lists setup commands and the environment isn't already up, run them now — before doing anything else.
 2. Re-read the spec (already in context, but re-anchor).
-3. If the user gave custom instructions in Step 3's follow-up, keep them in view as an extra constraint alongside the spec.
-4. Decompose the spec into bite-sized tasks.
-5. Identify parallel-safe groups (where applicable).
-6. For each task: RED → GREEN → commit (TDD discipline per `superpowers:test-driven-development`).
-7. After all tasks: run `superpowers:verification-before-completion` for the full-suite check.
-8. Go straight to Step 5 to report back and ask about integration.
+3. Decompose the spec into bite-sized tasks.
+4. Identify parallel-safe groups (where applicable).
+5. For each task: RED → GREEN → commit (TDD discipline per `superpowers:test-driven-development`).
+6. After all tasks: run `superpowers:verification-before-completion` for the full-suite check.
+7. Go straight to Step 5 to report back and ask about integration.
 
 This path keeps everything in one conversation but burns context. Use it for small specs.
 
@@ -84,7 +80,6 @@ Invoke the `executing-specs` agent via the Agent tool (`subagent_type: "executin
 - Absolute path to the spec
 - The branch the work should land on
 - Any user-stated constraints surfaced in Step 1
-- Any custom instructions the user gave in Step 3's follow-up, included verbatim
 - If Step 2 detected a linked worktree: the absolute worktree root path, framed as the subagent's **exclusive project scope** — instruct it to read, write, and run all commands only inside this path, and never touch the main checkout or any sibling worktree under `.claude/worktrees/`.
 - The spec's `## Environment & Test Execution` section, copied verbatim into the prompt, with an instruction to run its setup commands before starting task decomposition.
 - The instruction to follow the agent's own internal process: decompose → parallel-safe grouping → per-task TDD → final-suite verification via verification-before-completion → report back
@@ -125,8 +120,9 @@ If the subagent reports it could not finish (blocker, missing context, escalatio
 
 ## Remember
 
-- Ask the execution-mode question (Step 3) every time. Do not pick a default for the user.
-- Always follow the mode question with the optional custom-instructions follow-up; fold any answer into whichever path (4a or 4b) the user picked.
+- Ask the execution-mode question (Step 3) for every non-ephemeral spec. Do not pick a default for the user.
+- For an ephemeral spec, skip the execution-mode question and run in this session (4a).
+- Never ask a custom-instructions follow-up after the mode choice — execution always uses standard auto-decomposition.
 - When running in-session (4a), follow the same canonical TDD process the subagent would.
 - When dispatching (4b), the parent does not write code or decompose tasks — the subagent owns that.
 - Don't start work on main/master without explicit user consent.
