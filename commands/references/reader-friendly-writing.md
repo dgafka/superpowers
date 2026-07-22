@@ -1,10 +1,11 @@
 # Reader-Friendly Writing for Reviewer-Facing Output
 
 Shared rule set for any write-up a reviewer reads — the PR body produced by
-`/create-pull-request` and the Phase 1 understanding summary produced by
-`/review-changes`. Apply every rule below to that narrative. Each command adds
-its own specializations on top; where a command's own instruction conflicts
-with a rule here, the command wins.
+`/create-pull-request`, the Phase 1 understanding summary produced by
+`/review-changes`, and the reviewer zone of a design spec produced by the
+`brainstorming` skill. Apply every rule below to that narrative. Each caller
+adds its own specializations on top; where a caller's own instruction conflicts
+with a rule here, the caller wins.
 
 ## North star — make the "why" cheap to understand
 
