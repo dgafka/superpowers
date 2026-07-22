@@ -1,6 +1,6 @@
 ---
 name: create-pull-request
-allowed-tools: Bash(gh pr create:*), Bash(gh pr list:*), Bash(gh pr view:*), Bash(git log:*), Bash(git diff:*), Bash(git status:*), Bash(git branch:*), Bash(git rev-parse:*), Bash(git symbolic-ref:*), Bash(git push:*), Bash(git remote:*)
+allowed-tools: Bash(gh pr create:*), Bash(gh pr list:*), Bash(gh pr view:*), Bash(gh pr checks:*), Bash(gh pr comment:*), Bash(gh run view:*), Bash(gh api:*), Bash(git log:*), Bash(git diff:*), Bash(git status:*), Bash(git branch:*), Bash(git rev-parse:*), Bash(git symbolic-ref:*), Bash(git push:*), Bash(git add:*), Bash(git commit:*), Bash(git remote:*)
 disable-model-invocation: false
 description: >-
   Create a pull request for the current branch, detecting the repo's own
@@ -215,6 +215,69 @@ and re-show the preview.
 - Do not add labels, GIFs, or any other project-specific decoration that
   wasn't detected from this repo's own conventions or template.
 - Return the PR URL to the user.
+
+### 9. Offer to Observe the PR
+
+After returning the PR URL, ask the user (yes/no) whether to observe the
+PR — watch its CI and reviewer comments and act on them until it merges
+or closes.
+
+- If **no** — the command is done.
+- If **yes** — record the **observation context**, so every later
+  wake-up knows exactly what it's watching:
+  - repository (owner/name from `git remote get-url origin`)
+  - PR number (from the PR just created)
+  - feature branch
+  - `<base>` branch (detected in Step 1)
+  - a **last-handled marker** for comments (initially empty), used to
+    dedupe already-processed comments.
+
+### 10. Observe the PR
+
+Observation runs as a **background, auto-resuming loop**: one pass per
+wake-up, rescheduled with `ScheduleWakeup`, so this session stays free
+between passes. The loop **stops only when the PR is `MERGED` or
+`CLOSED`** (or a guard below fires). Each wake-up re-reads live PR state
+rather than trusting stale in-context state.
+
+Each pass:
+
+1. **Terminal-state check** — `gh pr view <n> --json state`. If `MERGED`
+   or `CLOSED`, report the final summary (CI fixes pushed, comments
+   replied to, decisions escalated) and stop — do not reschedule.
+
+2. **CI pass** — `gh pr checks`. If any check is **failing**: pull the
+   failing logs (`gh run view --log-failed`), diagnose, fix on the
+   feature branch, commit, and push. The push re-triggers CI. Autonomous
+   — do not ask before pushing.
+
+3. **Comment pass** — fetch actionable comments via
+   `gh pr view <n> --json comments,reviews` plus `gh api` for inline
+   review-comment threads and their IDs. Include inline review comments,
+   review summaries (request-changes / approve bodies), and general PR
+   comments, from **both humans and bots** (linters, review bots).
+   Exclude your own replies. **Dedupe** by comment ID against the stored
+   last-handled marker; process only unseen comments, then advance the
+   marker.
+
+4. **Triage each new comment:**
+
+   | Category | Examples | Action |
+   |---|---|---|
+   | **Auto-fixable** | styling, code improvements, refactoring, questions | Apply the fix (or, for a pure question, compose the answer); push if code changed; **reply on that thread** stating what was done. Autonomous — no confirmation. |
+   | **Decision-required** | flow changes, business-rule changes, critical failures | **Do not act.** Print to console (`⚠ decision-required comment on PR #<n>: "<comment>"`) and **wait for the user's input**, then act on their instruction. |
+
+5. **Reschedule** with an **adaptive cadence**:
+   - ~3 minutes while CI is running or a fix is in flight.
+   - ~15–20 minutes while idle and only watching for new comments.
+
+**Retry guards (prevent loops):**
+
+- ≥3 CI-fix attempts without CI going green → stop fixing CI and escalate
+  to the user (print to console, wait for input).
+- A fix that reintroduces the same failure it just fixed → escalate
+  immediately.
+- The user can interrupt the observation at any time.
 
 ## Guardrails
 

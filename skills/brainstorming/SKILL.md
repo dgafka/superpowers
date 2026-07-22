@@ -113,7 +113,7 @@ Questions should be a glance-and-pick, not a paragraph to parse and a reply to t
 **Presenting the design:**
 
 - Once you believe you understand what you're building, present the design
-- Present it why-first and scannable, following the shared rule set in `commands/references/reader-friendly-writing.md` (the same rules as the spec's reviewer zone — see Documentation)
+- Present it why-first and scannable, following the shared rule set in @commands/references/reader-friendly-writing.md (the same rules as the spec's reviewer zone — see Documentation)
 - Scale each section to its complexity: a few sentences if straightforward, up to 200-300 words if nuanced
 - Ask after each section whether it looks right so far
 - Cover: architecture, components, data flow, error handling, testing
@@ -280,7 +280,7 @@ Every spec follows a fixed shape so a reviewer always knows where to look. It ha
 - **Required Skills** — block format below.
 - **Environment & Test Execution** — format below.
 
-For how to *write* the reviewer zone, read `commands/references/reader-friendly-writing.md` and apply its rule set (BLUF, why-before-what, behaviour-not-code, scannable, visuals only when they earn their place). Two brainstorming specializations override it:
+For how to *write* the reviewer zone, read @commands/references/reader-friendly-writing.md and apply its rule set (BLUF, why-before-what, behaviour-not-code, scannable, visuals only when they earn their place). Two brainstorming specializations override it:
 
 - It governs the **reviewer zone and the in-conversation design presentation only**. Clarifying questions follow **Asking questions** above instead — they're interactive cards, not narrative.
 - Unlike a PR body, the spec has a dedicated **AI Technical Notes** section, so *all* file/symbol navigation goes there. The reviewer zone names no classes, methods, or config files — stricter than the reference's "one entry point is fine."
