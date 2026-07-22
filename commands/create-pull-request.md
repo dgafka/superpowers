@@ -15,6 +15,14 @@ the repo's own PR template, or asking the user**. Never hardcode a
 project's conventions (ticket prefixes, service tags, labels, mandatory
 decorations, a specific language).
 
+## Reader-Friendly Output
+
+Before composing the body, read `commands/references/reader-friendly-writing.md`
+and apply its rule set to everything a reviewer will read. Reviewers scan many
+PRs a day — the body should be why-first, behavior-level, scannable, and free of
+code they can already see in the diff. The specializations in Steps 4–6 below
+build on that shared rule set.
+
 ## Process
 
 ### 1. Gather Context
@@ -107,6 +115,10 @@ Apply this motivation discipline when writing the why:
   you're explaining how something evaluates internally, stop — that's
   implementation detail.
 - **No code snippets in the motivation.** The reviewer can read the diff.
+- **Front-load every sentence and bullet.** Put the most important word first
+  — readers scan line-starts, not line-ends.
+- **Objective facts, no marketese.** Drop "cleanly refactored," "nicely
+  handles," and similar self-praise; state plain facts.
 - **Keep it short.** 2–5 sentences or bullet points. No novels.
 
 ### 5. Select Explanatory Aids From the Classification
@@ -115,7 +127,7 @@ Match aids to the change's intent from Step 3. Add nothing that doesn't
 earn its place — a refactor gets none of these; a flow change gets a
 diagram; a userland-visible change gets an example.
 
-| Change type | Mermaid (after-only) | Code example | Motivation emphasis |
+| Change type | Mermaid (after-only) | Usage example | Motivation emphasis |
 |---|---|---|---|
 | Refactor / internal cleanup | no | no | the role/design mismatch being fixed |
 | Bug fix | no | only if usage-affecting | the incorrect behavior and why it was wrong |
@@ -126,8 +138,9 @@ diagram; a userland-visible change gets an example.
 
 - **Mermaid diagrams are after-only.** Show the resulting flow, not a
   before/after pair — the diff already conveys the prior state, and a
-  before diagram is noise. Only produce one for flow/state/pipeline
-  changes. Format:
+  before diagram is noise. Produce one **only when order, parallelism, or
+  multiple participants is the essence of the change** — a diagram of
+  linear steps is noise, so skip it. Format:
 
   ````
   ```mermaid
@@ -136,10 +149,11 @@ diagram; a userland-visible change gets an example.
   ```
   ````
 
-- **Code examples** are realistic and copy-pasteable, written in the
-  repository's own language, showing how a user interacts with the
-  changed behavior — so a reader can get a feel for it without reading
-  the diff.
+- **A minimal usage example** — copy-pasteable, in the repository's own
+  language — shows how a user *interacts* with a userland-visible / API
+  change, so a reader gets a feel for it without reading the diff. Show
+  usage only; never paste changed source, and never name classes or
+  methods. Include it only for userland-visible / API changes.
 
 ### 6. Compose the PR
 
@@ -158,8 +172,11 @@ diagram; a userland-visible change gets an example.
 - **If a PR template was found in Step 2** — fill every section it
   defines, honoring its inline comments and checkboxes. Never invent
   extra top-level sections and never leave one of its sections blank.
-  Place the explanatory aids from Step 5 in whichever existing section
-  fits best (e.g. a "Description" or "Changes" section).
+  Apply the reader-friendly rules *within* each section — even where a
+  section asks "what changed," answer at the level of behavior and flows,
+  in scannable bullets, not a class/method list. Place the explanatory
+  aids from Step 5 in whichever existing section fits best (e.g. a
+  "Description" or "Changes" section).
 - **If no template was found** — use this default structure:
 
   ```
@@ -175,7 +192,7 @@ diagram; a userland-visible change gets an example.
   <mermaid diagram, only if selected in Step 5>
 
   ### Example
-  <code example, only if selected in Step 5>
+  <minimal usage example, only if selected in Step 5>
 
   <attribution line, only if any skills were invoked>
   ```

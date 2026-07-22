@@ -21,6 +21,15 @@ template, ticket format, Jira instance) is always detected or asked at
 runtime — this command carries none of a project's own conventions as fixed
 values.
 
+## Reader-Friendly Output
+
+Before writing the Phase 1 summary, read
+`commands/references/reader-friendly-writing.md` and apply its rule set. The
+summary is a write-up a reviewer reads to understand the change — it should be
+why-first, behavior-level, scannable, and free of code the reader can already
+see in the diff. This shapes Phase 1 only; Phase 2 findings keep their code
+citations (see below).
+
 ## Process
 
 ### 1. Detect Input Source
@@ -86,7 +95,11 @@ Then:
   step above) with sibling tickets not yet resolved, or session context. Ask
   the user directly if it's ambiguous. This matters because a partial slice
   changes what "complete" means for Phase 2's intent-alignment check.
-- **Summarize** for the user:
+- **Summarize** for the user. Lead with a one-line TL;DR of what the change
+  achieves, then keep the rest scannable — bullets, one idea each,
+  front-loaded. Describe everything at the level of behavior and flows;
+  never paste diff/implementation/mechanism code and never name classes or
+  methods (the reader has the diff). Cover:
   - **Problem space** — the business intent behind the change: what need or
     problem this addresses, described through the relevant flow(s) (e.g. the
     current/prior flow, where applicable). This is about *why*, from a
@@ -97,12 +110,12 @@ Then:
     prior flow (problem space) together with one of the resulting flow
     (solution space) — always paired, never the resulting flow alone. This
     pairing applies wherever a flow diagram shows up in this command's
-    output, including inside Phase 2 findings.
-  - Ground both spaces in the actual diff, not just prose: pull short code
-    snippets from the changed lines to back up each claim in the narrative,
-    so the reader can jump from the high-level explanation straight to the
-    code it describes. When the logic behind a claim is long or intricate,
-    sketch it as short pseudocode instead of pasting the whole thing.
+    output, including inside Phase 2 findings. Use a diagram only when
+    order, parallelism, or multiple participants is the essence of the
+    change; for linear logic, prose or a bullet list is clearer.
+  - A **minimal usage example** is allowed only for a userland-visible /
+    API change — showing how a user interacts with the new behavior, never
+    changed source.
   - The classification and reasoning.
   - If this is a partial slice: which part of the overall functionality this
     change delivers, and what's intentionally deferred.
