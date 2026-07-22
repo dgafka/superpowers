@@ -90,11 +90,19 @@ digraph brainstorming {
 - Check out the current project state first (files, docs, recent commits)
 - Before asking detailed questions, assess scope: if the request describes multiple independent subsystems (e.g., "build a platform with chat, file storage, billing, and analytics"), flag this immediately. Don't spend questions refining details of a project that needs to be decomposed first.
 - If the project is too large for a single spec, help the user decompose into sub-projects: what are the independent pieces, how do they relate, what order should they be built? Then brainstorm the first sub-project through the normal design flow. Each sub-project gets its own spec → plan → implementation cycle.
-- For appropriately-scoped projects, ask questions one at a time to refine the idea
-- Prefer multiple choice questions when possible, but open-ended is fine too
-- Only one question per message - if a topic needs more exploration, break it into multiple questions
+- For appropriately-scoped projects, ask questions one at a time to refine the idea (see **Asking questions** below for how)
 - Focus on understanding: purpose, constraints, success criteria
 - Also look for setup/test-execution conventions in the target project (Makefile, package.json/composer.json scripts, docker-compose.yml, README) — this feeds the spec's `## Environment & Test Execution` section (see Documentation below). If nothing is confidently discoverable, ask the user directly: "How do you set up the environment and run tests for this project?"
+
+**Asking questions:**
+
+Questions should be a glance-and-pick, not a paragraph to parse and a reply to type. The reader is brainstorming several changes a day — keep each question restful.
+
+- Default to the `AskUserQuestion` option-card picker for clarifying questions.
+- One decision per question. Each answer shapes the next, so don't batch unrelated decisions into one prompt.
+- Keep options high-level and plain-language: a short label and a one-line description of what each choice means and its trade-off — no jargon, no implementation nouns. Put your recommended option first and mark it "(Recommended)".
+- **Prefer visualization.** When a choice is easier to *see* than to read — a layout, a structure, a flow, a before/after shape — give each option a `preview` so a small ASCII sketch, mini-diagram, or snippet renders beside it. The test for every question: *would a picture make this decision easier than a sentence?* (`preview` is single-select only and renders as monospace markdown in a side-by-side view. It's the terminal-native complement to the visual companion — no browser needed.)
+- Fall back to open-ended text only when cards genuinely don't fit — free-form names or values.
 
 **Exploring approaches:**
 
@@ -105,6 +113,7 @@ digraph brainstorming {
 **Presenting the design:**
 
 - Once you believe you understand what you're building, present the design
+- Present it why-first and scannable — short paragraphs, bullets, and tables over long prose, mirroring the spec's reviewer zone (see Documentation)
 - Scale each section to its complexity: a few sentences if straightforward, up to 200-300 words if nuanced
 - Ask after each section whether it looks right so far
 - Cover: architecture, components, data flow, error handling, testing
@@ -255,10 +264,28 @@ Track which Phase 2 candidates the user opted out of. Everything not opted out i
 
 Skip the entire Walk-through if the user did not choose to run skill mapping at the Confirm Execution Path step.
 
+**Spec template (two zones):**
+
+Every spec follows a fixed shape so a reviewer always knows where to look. It has two zones: a **reviewer zone** anyone can read and stop at, and an **executor zone** that grounds the implementing agent. A reviewer reads the top and can stop; the implementing agent reads all of it.
+
+*Reviewer zone — why-first, scannable, behaviour not code:*
+
+- **Why** — the problem and context: what's wrong today, why this change, why now. Leads the doc (most important first).
+- **What changes** — high-level flows as bullets, before/after tables, and an optional flow diagram. Describe behaviour, not code. No class/method/config-file names here.
+- **Out of scope** — what we are deliberately not doing.
+
+*Executor zone — clearly fenced off as not part of the review:*
+
+- **AI Technical Notes** — concrete grounding for the implementing agent: files/modules/symbols in play, integration points, where changes land. This is the **only** place code appears — in fenced blocks, each prefixed by a one-line statement of intent. Open the section with a short marker line, e.g. `> Not part of the review. Grounding for the implementing agent.`
+- **Required Skills** — block format below.
+- **Environment & Test Execution** — format below.
+
+Style across the reviewer zone: short 2–3 sentence paragraphs, bullets and tables over prose, concise, scaled to the change's size. Omit a reviewer-zone section only when it's genuinely empty (e.g. nothing worth calling out of scope).
+
 **Documentation:**
 
 - Write the validated design (spec) to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md`, baking in every Phase 1 proposal the user confirmed (using the final wording from any refinement loop, not the original subagent wording when the user negotiated a revision).
-- The `## Required Skills` block at the top of the spec lists every Phase 2 skill the user did **not** opt out of. The block format is unchanged from today.
+- In the executor zone (below the reviewer zone and the AI Technical Notes), the `## Required Skills` block lists every Phase 2 skill the user did **not** opt out of. The block format is unchanged from today. (`executing-specs` locates this block by its heading, so its position in the file doesn't matter — only the exact heading text.)
 - Directly after `## Required Skills`, always write a `## Environment & Test Execution` section — populated from whatever was discovered or asked during "Explore project context" above. This is written regardless of which Confirm Execution Path option the user chose; it is not part of the optional Phase 1/Phase 2 flow. Format:
   ~~~
   ## Environment & Test Execution
@@ -329,8 +356,8 @@ Wait for the user's response. If they request changes, make them and re-run the 
 
 ## Key Principles
 
-- **One question at a time** - Don't overwhelm with multiple questions
-- **Multiple choice preferred** - Easier to answer than open-ended when possible
+- **One question at a time** - Each answer shapes the next; don't batch unrelated decisions
+- **Glance-and-pick over prose** - Default to `AskUserQuestion` cards with plain-language options; prefer a `preview` visual when a picture beats a sentence
 - **YAGNI ruthlessly** - Remove unnecessary features from all designs
 - **Explore alternatives** - Always propose 2-3 approaches before settling
 - **Incremental validation** - Present design, get approval before moving on
