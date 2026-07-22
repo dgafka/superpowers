@@ -17,11 +17,11 @@ decorations, a specific language).
 
 ## Reader-Friendly Output
 
-Before composing the body, read `commands/references/reader-friendly-writing.md`
-and apply its rule set to everything a reviewer will read. Reviewers scan many
-PRs a day — the body should be why-first, behavior-level, scannable, and free of
-code they can already see in the diff. The specializations in Steps 4–6 below
-build on that shared rule set.
+Before composing the body, apply the shared reader-friendly rule set —
+@commands/references/reader-friendly-writing.md — to everything a reviewer will
+read. Reviewers scan many PRs a day — the body should be why-first,
+behavior-level, scannable, and free of code they can already see in the diff.
+The specializations in Steps 4–6 below build on that shared rule set.
 
 ## Process
 

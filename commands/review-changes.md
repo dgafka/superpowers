@@ -23,12 +23,12 @@ values.
 
 ## Reader-Friendly Output
 
-Before writing the Phase 1 summary, read
-`commands/references/reader-friendly-writing.md` and apply its rule set. The
-summary is a write-up a reviewer reads to understand the change — it should be
-why-first, behavior-level, scannable, and free of code the reader can already
-see in the diff. This shapes Phase 1 only; Phase 2 findings keep their code
-citations (see below).
+Before writing the Phase 1 summary, apply the shared reader-friendly rule set —
+@commands/references/reader-friendly-writing.md. The summary is a write-up a
+reviewer reads to understand the change — it should be why-first,
+behavior-level, scannable, and free of code the reader can already see in the
+diff. This shapes Phase 1 only; Phase 2 findings keep their code citations (see
+below).
 
 ## Process
 
