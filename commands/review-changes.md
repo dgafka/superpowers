@@ -98,8 +98,9 @@ Then:
 - **Summarize** for the user. Lead with a one-line TL;DR of what the change
   achieves, then keep the rest scannable — bullets, one idea each,
   front-loaded. Describe everything at the level of behavior and flows;
-  never paste diff/implementation/mechanism code and never name classes or
-  methods (the reader has the diff). Cover:
+  never paste diff/implementation/mechanism code and don't enumerate
+  classes or methods — though naming the single entry point / where to
+  start reading is fine (the reader has the diff). Cover:
   - **Problem space** — the business intent behind the change: what need or
     problem this addresses, described through the relevant flow(s) (e.g. the
     current/prior flow, where applicable). This is about *why*, from a

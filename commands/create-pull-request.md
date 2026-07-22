@@ -152,8 +152,9 @@ diagram; a userland-visible change gets an example.
 - **A minimal usage example** — copy-pasteable, in the repository's own
   language — shows how a user *interacts* with a userland-visible / API
   change, so a reader gets a feel for it without reading the diff. Show
-  usage only; never paste changed source, and never name classes or
-  methods. Include it only for userland-visible / API changes.
+  usage only; never paste changed source. Name the public interface a user
+  calls, but don't enumerate internal classes or methods. Include it only
+  for userland-visible / API changes.
 
 ### 6. Compose the PR
 
