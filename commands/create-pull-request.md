@@ -158,6 +158,14 @@ example is warranted.
   ```
   ````
 
+- **One alert, only for a must-not-miss fact.** When the change carries a
+  single constraint a reviewer must not miss — a feature-flag gate, a
+  breaking change, a required deploy ordering — lead the body with one
+  GitHub alert (`> [!IMPORTANT]`, `> [!WARNING]`, `> [!CAUTION]`). It goes
+  first because the riskiest item deserves the freshest attention. At most
+  one per body; a second halves the first one's signal. Omit it entirely
+  when no such fact exists — most PRs have none.
+
 - **A minimal usage example** — copy-pasteable, in the repository's own
   language — shows how a user *interacts* with a userland-visible / API
   change, so a reader gets a feel for it without reading the diff. Show
@@ -191,11 +199,15 @@ example is warranted.
   Heading *levels* differ by one between the two paths — here everything
   is `###` beneath the template's own `##`; in the no-template structure
   below, Why is itself `##`. The **order and the names** are identical
-  either way, which is what a daily reader navigates by.
+  either way, which is what a daily reader navigates by. An alert, if Step
+  5 selected one, leads that primary prose section.
 - **If no template was found** — use this default structure:
 
   ```
   ## Why
+
+  <one GitHub alert, only when a single fact must not be missed —
+  omit otherwise>
 
   <opening sentence states the outcome and stands alone, then 2-4
   sentences or bullets of problem and context from Step 4>
