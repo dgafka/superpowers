@@ -21,7 +21,7 @@ Before composing the body, apply the shared reader-friendly rule set —
 @commands/references/reader-friendly-writing.md — to everything a reviewer will
 read. Reviewers scan many PRs a day — the body should be why-first,
 behavior-level, scannable, and free of code they can already see in the diff.
-The specializations in Steps 4–6 below build on that shared rule set.
+The specializations in Steps 4–7 below build on that shared rule set.
 
 ## Process
 
@@ -37,7 +37,8 @@ Run these in parallel:
   `<base>` for every command below.
 - `git log <base>..HEAD --oneline` — commits on this branch
 - `git diff <base>...HEAD --stat` — changed-files summary
-- `git diff <base>...HEAD` — full diff
+- `git diff <base>...HEAD` — full diff, used to **verify** the motivation
+  drawn from session context, not as the source to narrate from
 - `git remote get-url origin` — repository identity
 
 **Guards:**
@@ -88,8 +89,11 @@ body is drafted.
 
 - Draw the "why" from the **current session's context first** — what was
   the user working on, what problem prompted it, what approach did they
-  take and why. Fall back to the diff itself when the session doesn't
-  make the motivation clear.
+  take and why. Draft from that session context; consult the diff only to
+  check the draft is accurate. Narrating from the diff produces diff
+  restatement — that is the failure this ordering prevents. If the session
+  genuinely doesn't carry the motivation, ask the user rather than
+  reverse-engineering it from changed lines.
 - If the motivation is still unclear, ask the user directly:
   > What problem does this PR solve, and why is this change needed now?
 - Optionally add an attribution line listing skills invoked this session
@@ -107,8 +111,11 @@ Apply this motivation discipline when writing the why:
 - **One idea per sentence.** Don't compress a problem, its scope, and its
   consequence into one sentence — split them, and drop the ones that
   aren't motivation (see below).
-- **Exact domain terms.** Use the project's own vocabulary precisely; a
-  near-synonym signals shaky understanding of the problem.
+- **Exact domain terms, not code identifiers.** Use the project's own
+  vocabulary precisely ("payout settlement", "funding source") — but never
+  a class, event, or command name. A near-synonym signals shaky
+  understanding; a code identifier signals you're narrating the diff. If a
+  term only exists in code, it is not a domain term.
 - **Scope and counts are evidence, not motivation.** "7 of 9 places have
   this problem" belongs in a comment or dev note, not the motivation.
 - **Mechanism belongs in inline review comments**, not the PR body. If
@@ -123,29 +130,31 @@ Apply this motivation discipline when writing the why:
 
 ### 5. Select Explanatory Aids From the Classification
 
-Match aids to the change's intent from Step 3. Add nothing that doesn't
-earn its place — a refactor gets none of these; a flow change gets a
-diagram; a userland-visible change gets an example.
+Match aids to the change's intent from Step 3. A visual is the default
+(see the shared rule set) — this table says *which* visual, and when an
+example is warranted.
 
-| Change type | Mermaid (after-only) | Usage example | Motivation emphasis |
+| Change type | Visual | Usage example | Motivation emphasis |
 |---|---|---|---|
-| Refactor / internal cleanup | no | no | the role/design mismatch being fixed |
-| Bug fix | no | only if usage-affecting | the incorrect behavior and why it was wrong |
-| New feature | if it introduces a flow | if userland-visible | what the feature enables |
-| Flow / state / pipeline change | **yes** | if userland-visible | what the new flow achieves |
-| Userland-visible behavior / API | if flow-related | **yes** | what changes for users |
-| Config / docs / tooling | no | no | why the change is needed |
+| Refactor / internal cleanup | `graph LR` if structural, else before/after table | no | the role/design mismatch being fixed |
+| Bug fix | before/after table | only if usage-affecting | the incorrect behavior and why it was wrong |
+| New feature | type per the shared menu | if userland-visible | what the feature enables |
+| Flow / state / pipeline change | `stateDiagram-v2` or `graph TD` | if userland-visible | what the new flow achieves |
+| Userland-visible behavior / API | before/after table, or `sequenceDiagram` if multi-party | **yes** | what changes for users |
+| Config / docs / tooling | skip if no structural element | no | why the change is needed |
 
-- **Mermaid diagrams are after-only.** Show the resulting flow, not a
-  before/after pair — the diff already conveys the prior state, and a
-  before diagram is noise. Produce one **only when order, parallelism, or
-  multiple participants is the essence of the change** — a diagram of
-  linear steps is noise, so skip it. Format:
+- **Diagrams here are after-only.** Show the resulting flow, not a
+  before/after pair — the diff already conveys the prior state. This
+  deliberately differs from `/review-changes`, which pairs them: that
+  command optimizes a reviewer's comprehension of an unfamiliar change,
+  while a PR body optimizes brevity for a reader who has the diff.
+  Format:
 
   ````
   ```mermaid
-  graph TD
-      A[Step 1] --> B[Step 2]
+  stateDiagram-v2
+      [*] --> Awaiting
+      Awaiting --> Reconciled
   ```
   ````
 
@@ -171,26 +180,33 @@ diagram; a userland-visible change gets an example.
 **Body:**
 
 - **If a PR template was found in Step 2** — fill every section it
-  defines, honoring its inline comments and checkboxes. Never invent
-  extra top-level sections and never leave one of its sections blank.
-  Apply the reader-friendly rules *within* each section — even where a
-  section asks "what changed," answer at the level of behavior and flows,
-  in scannable bullets, not a class/method list. Place the explanatory
-  aids from Step 5 in whichever existing section fits best (e.g. a
-  "Description" or "Changes" section).
+  defines, honoring its inline comments and checkboxes. **Keep its
+  top-level sections exactly as defined** — never add, remove, or rename
+  a `##` heading, and never leave one blank. Inside the template's
+  primary prose section (whatever it calls the why — "Motivation",
+  "Description", "Summary"), use the same ordered shape as the default
+  structure below: `### Why`, then the visual (`### Resulting flow` or
+  `### Before / after`), then `### Out of scope`, then `### Example` if
+  Step 5 selected one. Omit a subheading when it is genuinely empty.
+  Heading *levels* differ by one between the two paths — here everything
+  is `###` beneath the template's own `##`; in the no-template structure
+  below, Why is itself `##`. The **order and the names** are identical
+  either way, which is what a daily reader navigates by.
 - **If no template was found** — use this default structure:
 
   ```
   ## Why
 
-  <2-5 sentences or bullets from Step 4>
+  <opening sentence states the outcome and stands alone, then 2-4
+  sentences or bullets of problem and context from Step 4>
 
-  ## What changed
+  ### Resulting flow          <- heading when the visual is a diagram
+  ### Before / after          <- heading when the visual is a table
+  <one visual, per Step 5 and the shared rule set; omit only when
+  justified>
 
-  <concise bullet list>
-
-  ### New Flow
-  <mermaid diagram, only if selected in Step 5>
+  ### Out of scope
+  <deferred work as links — `#1234` per sibling change, not prose>
 
   ### Example
   <minimal usage example, only if selected in Step 5>
@@ -198,7 +214,19 @@ diagram; a userland-visible change gets an example.
   <attribution line, only if any skills were invoked>
   ```
 
-### 7. Preview & Confirm
+**There is deliberately no "What changed" section.** An uncapped
+what-section fills with code identifiers, which is the failure this
+structure removes. The behavior delta belongs in Why's opening sentence,
+stated as an outcome; the visual carries the rest.
+
+### 7. Trim
+
+Run the trim-pass checklist from
+@commands/references/reader-friendly-writing.md against the drafted body.
+Fix every failing item **before** showing the user anything — this step is
+not optional and not a judgment call about whether the body "seems fine".
+
+### 8. Preview & Confirm
 
 Show the user the complete title and body. Ask:
 
@@ -207,7 +235,7 @@ Show the user the complete title and body. Ask:
 Do not create anything until the user approves. Apply requested changes
 and re-show the preview.
 
-### 8. Push and Create
+### 9. Push and Create
 
 - If the branch hasn't been pushed, push it: `git push -u origin <branch>`.
 - Create the PR: `gh pr create --title "..." --body "..."`. Always create
@@ -216,7 +244,7 @@ and re-show the preview.
   wasn't detected from this repo's own conventions or template.
 - Return the PR URL to the user.
 
-### 9. Offer to Observe the PR
+### 10. Offer to Observe the PR
 
 After returning the PR URL, ask the user (yes/no) whether to observe the
 PR — watch its CI and reviewer comments and act on them until it merges
@@ -232,7 +260,7 @@ or closes.
   - a **last-handled marker** for comments (initially empty), used to
     dedupe already-processed comments.
 
-### 10. Observe the PR
+### 11. Observe the PR
 
 Observation runs as a **background, auto-resuming loop**: one pass per
 wake-up, rescheduled with `ScheduleWakeup`, so this session stays free
