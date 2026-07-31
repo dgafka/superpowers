@@ -39,6 +39,10 @@ carefully. Optimize so the important part is found fast **and** reads clearly.
 - **Don't enumerate classes/methods — but naming the *one* entry point is fine.**
   Pointing the reader at the single file or function to start reading is
   navigation, not diff-restatement. Listing every changed symbol is noise.
+- **Domain vocabulary, not code identifiers.** Use the project's own terms
+  precisely ("payout settlement", "funding source") — but never a class, event,
+  command, or file name in the narrative. If a term exists only in code, it is
+  not a domain term.
 - **Never restate the diff.** Line-by-line narration of changed code is noise —
   the reviewer will read the diff.
 - **No code in the narrative**, with one exception: a **minimal usage example**
@@ -49,6 +53,13 @@ carefully. Optimize so the important part is found fast **and** reads clearly.
 - **Link out instead of inlining background.** Reference the ticket, design doc,
   or benchmark rather than pasting it. Keep enough inline that the write-up
   stands on its own if a link rots.
+- **Reference sibling changes as links, not prose.** `#1234` and
+  `owner/repo#1234` auto-expand to the title and current state, so a
+  deferred-work list stays accurate as those changes land. A paragraph
+  describing three follow-ups becomes three lines.
+- **Point at code, don't paste it.** A commit permalink with a line range
+  (`.../blob/<sha>/path/to/file#L10-L24`) renders as an embedded snippet, stays
+  anchored to a commit, and costs no body length.
 
 ## Scannability — shape it for a skimmer, then a reader
 
@@ -82,12 +93,29 @@ carefully. Optimize so the important part is found fast **and** reads clearly.
   autopilot. Consistency is itself a load-reducer; the exact section list is the
   calling command's choice.
 
-## Visuals — a diagram or screenshot only when it earns its place
+## Visuals — include one by default
 
-- **Diagram** only when order, parallelism, or multiple participants is the
-  essence of the change (auth flows, state machines, service interactions).
-  Skip it for linear steps or a simple list — a diagram of linear logic is
-  noise.
+- **Default to a visual.** Include one unless the change is a **single linear
+  step**, or is pure text/config with **no structural element** at all. This is
+  the reverse of "earn its place" — the burden is on omitting a visual, not on
+  including one.
+- **A visual that replaces a paragraph is a net reduction.** Prefer the visual
+  to the prose it displaces; that is the point of using it.
+- **Match the type to the change:**
+
+  | The change is about | Use |
+  |---|---|
+  | States and transitions | `stateDiagram-v2` |
+  | Multiple participants exchanging messages | `sequenceDiagram` |
+  | Dependencies between packages or services | `graph LR` |
+  | An ordered pipeline or flow | `graph TD` |
+  | A behavior swap with no ordering | before/after table |
+
+- **Diagram or table, never both.** They carry the same delta; two visuals of
+  one change is duplication, and the budget below allows one visual.
+- **Before/after tables: at most ~4 rows, and every row states a behavior.** A
+  table whose rows are symbol renames is an inventory in a nicer wrapper — the
+  exact failure this replaced.
 - **Keep diagrams small:** ≤10–15 nodes, one idea per diagram; if it needs more
   than ~20, split it or drop it. An oversized diagram costs more attention than
   the prose it replaced.
@@ -97,10 +125,50 @@ carefully. Optimize so the important part is found fast **and** reads clearly.
 - **Before/after screenshots** (with alt text) for any UI or user-visible output
   change — the diff can't show the result.
 
+## Highlighting — one shared attention budget
+
+GitHub renders five alert types as coloured callouts. Use one for the single
+fact a reviewer must not miss — a flag gate, a breaking change, a required
+deploy ordering:
+
+````
+> [!IMPORTANT]
+> Inert until the feature flag is enabled. Nothing dispatches this yet.
+````
+
+`[!NOTE]` / `[!TIP]` / `[!IMPORTANT]` / `[!WARNING]` / `[!CAUTION]` are the five
+available.
+
+**Alerts, bold, tables, diagrams and `<details>` all draw on one attention
+budget.** Per write-up, at most:
+
+- **1 alert** — a second one halves the first one's signal
+- **1 visual** — diagram *or* table, not both
+- **3 bolded terms**
+
+Over budget? **Cut the weakest device, don't reflow it.** A write-up using every
+available device highlights nothing.
+
 ## Point the reader
 
 - Tell the reviewer **where to look** — the most important area first — and flag
   known shortcomings honestly.
+
+## Trim pass — run before showing anyone
+
+A rule that isn't a step doesn't run. Callers invoke this as an explicit step,
+and fix every failure before the reader sees the draft.
+
+- [ ] Does the first sentence state the outcome, and stand alone?
+- [ ] Zero code identifiers in the narrative — no class, event, command, or file
+      names?
+- [ ] Is a visual present, or is its absence justified by single-linear-step /
+      no-structure?
+- [ ] Does every sentence aid the *why* or direct attention? Cut the rest.
+- [ ] Is verification evidence out of the narrative, confined to a test-plan
+      section where the template has one?
+- [ ] Within the highlighting budget — ≤1 alert, ≤1 visual, ≤3 bolded terms?
+- [ ] Is long detail behind `<details>` rather than inline?
 
 ## Anti-patterns (each raises reader load)
 
@@ -111,10 +179,13 @@ carefully. Optimize so the important part is found fast **and** reads clearly.
 - Walls of text — or walls of ungrouped bullets.
 - Clever or vague headings.
 - Marketese / self-praise.
-- A diagram for simple or linear logic, or an oversized one.
+- No visual where states, participants, or ordering are the essence.
+- An oversized diagram, or both a diagram and a table for one change.
+- A before/after table whose rows are symbol names rather than behaviors.
 - Over-bolding.
 - Inconsistent structure across write-ups, forcing the reader to re-learn the
   shape every time.
+- Two or more highlighting devices competing for the same attention.
 
 ## Sources
 
@@ -145,3 +216,9 @@ carefully. Optimize so the important part is found fast **and** reads clearly.
   https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/getting-started/helping-others-review-your-changes
 - Pragmatic Engineer — Pull request / diff best practices:
   https://blog.pragmaticengineer.com/pull-request-or-diff-best-practices/
+- GitHub Docs — Basic writing and formatting syntax (alerts):
+  https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#alerts
+- GitHub Docs — Creating a permanent link to a code snippet:
+  https://docs.github.com/en/repositories/working-with-files/using-files/getting-permanent-links-to-files
+- GitHub Docs — Autolinked references and URLs:
+  https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/autolinked-references-and-urls
