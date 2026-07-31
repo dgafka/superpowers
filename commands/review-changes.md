@@ -27,7 +27,8 @@ Before writing the Phase 1 summary, apply the shared reader-friendly rule set �
 @commands/references/reader-friendly-writing.md. The summary is a write-up a
 reviewer reads to understand the change — it should be why-first,
 behavior-level, scannable, and free of code the reader can already see in the
-diff. This shapes Phase 1 only; Phase 2 findings keep their code citations (see
+diff. This shapes Phase 1 only — including the shared rule set's highlighting
+budget and its trim pass; Phase 2 findings keep their code citations (see
 below).
 
 ## Process
@@ -95,31 +96,47 @@ Then:
   step above) with sibling tickets not yet resolved, or session context. Ask
   the user directly if it's ambiguous. This matters because a partial slice
   changes what "complete" means for Phase 2's intent-alignment check.
-- **Summarize** for the user. Lead with a one-line TL;DR of what the change
-  achieves, then keep the rest scannable — bullets, one idea each,
-  front-loaded. Describe everything at the level of behavior and flows;
-  never paste diff/implementation/mechanism code and don't enumerate
-  classes or methods — though naming the single entry point / where to
-  start reading is fine (the reader has the diff). Cover:
-  - **Problem space** — the business intent behind the change: what need or
-    problem this addresses, described through the relevant flow(s) (e.g. the
-    current/prior flow, where applicable). This is about *why*, from a
-    business angle — not a restatement of what the old code did.
-  - **Solution space** — how that intent was solved: the approach taken,
-    described through the resulting flow(s).
-  - When a flow/state/pipeline is involved, show a Mermaid diagram of the
-    prior flow (problem space) together with one of the resulting flow
-    (solution space) — always paired, never the resulting flow alone. This
-    pairing applies wherever a flow diagram shows up in this command's
-    output, including inside Phase 2 findings. Use a diagram only when
-    order, parallelism, or multiple participants is the essence of the
-    change; for linear logic, prose or a bullet list is clearer.
-  - A **minimal usage example** is allowed only for a userland-visible /
-    API change — showing how a user interacts with the new behavior, never
-    changed source.
-  - The classification and reasoning.
-  - If this is a partial slice: which part of the overall functionality this
-    change delivers, and what's intentionally deferred.
+- **Summarize** for the user in this fixed shape, every time:
+
+  ```
+  <one-line TL;DR of what the change achieves>
+
+  ### Problem space
+  <the business intent: what need or problem this addresses, described
+  through the relevant flow(s). Why, from a business angle — not a
+  restatement of what the old code did.>
+
+  ### Solution space
+  <how that intent was solved: the approach taken, described through the
+  resulting flow(s). Paired diagrams go here.>
+
+  ### Scope
+  <the classification and reasoning; if this is a partial slice, which part
+  it delivers and what is intentionally deferred>
+  ```
+
+  Keep it scannable — bullets, one idea each, front-loaded. Describe
+  everything at the level of behavior and flows; never paste
+  diff/implementation/mechanism code and don't enumerate classes or methods
+  — though naming the single entry point / where to start reading is fine
+  (the reader has the diff).
+- When a flow/state/pipeline is involved, show a Mermaid diagram of the
+  prior flow (problem space) together with one of the resulting flow
+  (solution space) — **always paired, never the resulting flow alone**.
+  This deliberately differs from `/create-pull-request`, which is
+  after-only: that command optimizes brevity for a reader who has the diff,
+  while this phase optimizes comprehension of an unfamiliar change. The
+  pairing applies wherever a flow diagram appears in this command's output,
+  including inside Phase 2 findings. The paired diagrams together count as
+  the **one visual** of the highlighting budget.
+- A **minimal usage example** is allowed only for a userland-visible / API
+  change — showing how a user interacts with the new behavior, never
+  changed source.
+- **Trim before presenting.** Run the trim-pass checklist from
+  @commands/references/reader-friendly-writing.md against the drafted
+  summary and fix every failing item first. The checklist's
+  verification-evidence item does not apply here (there is no test-plan
+  section); every other item does.
 - **Peer-review:** pause — ask "Any questions before we move to the review,
   or should we proceed to Phase 2?" Answer follow-ups, re-summarize if
   useful, proceed once the user says go.
