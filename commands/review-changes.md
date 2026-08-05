@@ -1,6 +1,6 @@
 ---
 name: review-changes
-allowed-tools: Bash(gh pr view:*), Bash(gh pr diff:*), Bash(gh api:*), Bash(git diff:*), Bash(git log:*), Bash(git status:*), Bash(git branch:*), Bash(git rev-parse:*), Bash(git symbolic-ref:*), Bash(git remote:*)
+allowed-tools: Bash(gh pr view:*), Bash(gh pr diff:*), Bash(gh api:*), Bash(git diff:*), Bash(git log:*), Bash(git status:*), Bash(git branch:*), Bash(git rev-parse:*), Bash(git symbolic-ref:*), Bash(git remote:*), Edit, Bash
 disable-model-invocation: false
 description: >-
   Review a set of code changes — a GitHub pull request or the current
@@ -16,7 +16,10 @@ Review a set of code changes end-to-end: first build and confirm understanding
 of why the change exists and what it does, then — unless the user only wants
 context — run a structured review whose findings the user can act on
 immediately: posting agreed points as inline PR comments (peer-review) or
-applying agreed fixes locally (self-review). Everything repo-specific (PR
+applying agreed fixes locally (self-review). Each finding that asserts a
+behavioral defect comes with a test case that fails against the change, so the
+user can judge the finding on evidence and the suite gains the coverage.
+Everything repo-specific (PR
 template, ticket format, Jira instance) is always detected or asked at
 runtime — this command carries none of a project's own conventions as fixed
 values.
@@ -28,8 +31,8 @@ Before writing the Phase 1 summary, apply the shared reader-friendly rule set �
 reviewer reads to understand the change — it should be why-first,
 behavior-level, scannable, and free of code the reader can already see in the
 diff. This shapes Phase 1 only — including the shared rule set's highlighting
-budget and its trim pass; Phase 2 findings keep their code citations (see
-below).
+budget and its trim pass; Phase 2 findings keep their code citations and their
+failing test cases (see below).
 
 ## Process
 
@@ -227,7 +230,36 @@ change didn't introduce are informational context alongside the primary
 findings, not primary findings themselves. CI/dialect/environment/
 version-matrix gaps aren't visible from a diff — call these out as "run the
 full CI/lint matrix to catch this" rather than guessing. Every finding comes
-from reading code and Phase 1's context; the test suite stays CI's to run.
+from reading code and Phase 1's context; the test suite stays CI's to run. The
+only execution this command ever does is the single test it writes for an
+approved self-review point (Step 5).
+
+**Failing test case per finding** — the evidence that makes a finding
+falsifiable, and the thing the user needs in order to judge whether the finding
+is real:
+
+- Every finding that asserts a **behavioral defect** carries a test case that
+  fails against the code in this diff. All severities, both self-review and
+  peer-review.
+- **Match the repo's own test style.** Before writing any example, read an
+  existing test covering the touched area and take its framework, naming
+  convention, assertion style, and fixture/builder helpers from it. The example
+  should read like it was already part of that suite, not like generic
+  pseudo-code.
+- Each test case states three things: the **concrete input or state** that
+  triggers the problem, the **assertion that should hold**, and one line of what
+  the code produces instead today (e.g. "fails today: returns the same date").
+- **Nothing is written to disk here, and no destination file is proposed.** At
+  this stage the test case is evidence in chat — the user reads it to decide
+  whether the finding stands. Writing happens only in Step 5, and only for
+  self-review.
+- A finding that **no test can express** — a design pivot, a naming call, a
+  necessity/YAGNI question — carries no test case, with no placeholder and no
+  explanation of its absence.
+- Code is allowed inside a finding's test case. The no-code rule from
+  @commands/references/reader-friendly-writing.md governs the Phase 1
+  understanding summary only; Phase 2 findings keep their citations and their
+  test cases.
 
 **Severity and output:**
 - Tag every finding **Blocking / Should-fix / Nit / FYI**, sorted by
@@ -237,7 +269,7 @@ from reading code and Phase 1's context; the test suite stays CI's to run.
 - "No blocking issues found" is a complete, valid outcome — only list
   findings that earned their place.
 - Present the output as a numbered list in chat: severity, file:line,
-  description.
+  description, then the failing test case where the finding has one.
 
 ### 5. Action Loop (self-review and peer-review only)
 
@@ -252,18 +284,33 @@ Once every point has a disposition:
 - **Peer-review:** for each approved point, post it immediately as an inline
   GitHub PR comment (`gh api repos/{owner}/{repo}/pulls/{pull_number}/comments`,
   with `commit_id`, `path`, and `line` matching the citation) using the
-  user's replacement wording for "improve" points. Skipped points get no
-  action. Submitting an overall approve/request-changes/comment verdict is
-  always the user's own call — this command doesn't do it.
-- **Self-review:** for each approved point among the mechanically-automatable
-  checks (unsafe-default question resolved, false-positive-prone test,
-  infra-parity discrepancy with a concrete fix, recurring-pattern instance),
-  apply the fix directly to the local file with the Edit tool, using the
-  user's replacement approach for "improve" points. Judgment-requiring
-  findings (design pivots, cross-subsystem root-cause hypotheses,
-  doc/product judgment calls) are presented with a stated hypothesis
-  regardless of disposition — the user acts on these themselves; this
-  command's role is to surface the hypothesis clearly, not to apply it.
+  user's replacement wording for "improve" points. Include the point's failing
+  test case in the comment body as a fenced code block, so the author can paste
+  it straight into the suite. Nothing is written locally and nothing is
+  executed in this mode. Skipped points get no action. Submitting an overall
+  approve/request-changes/comment verdict is always the user's own call — this
+  command doesn't do it.
+- **Self-review — prove the finding first.** For each approved point that has a
+  failing test case, write that test into the test file covering the code in
+  question (the repo's own layout decides where; create the file if none
+  exists), then **run that one test** and report its actual output. Branch on
+  the result:
+  - **Fails as predicted** → the finding is confirmed. Then apply the fix for
+    the mechanically-automatable checks (unsafe-default question resolved,
+    false-positive-prone test, infra-parity discrepancy with a concrete fix,
+    recurring-pattern instance) directly with the Edit tool, using the user's
+    replacement approach for "improve" points, and re-run the same test to
+    confirm it goes green.
+  - **Passes unexpectedly** → say so plainly: the finding was wrong. Remove the
+    test again and apply no fix.
+  - **Judgment-requiring fix** (design pivots, cross-subsystem root-cause
+    hypotheses, doc/product judgment calls) → leave the test on disk failing and
+    surface the hypothesis for the user to act on. This command states the
+    hypothesis clearly; it never applies it.
+
+  Judgment-requiring findings are presented with a stated hypothesis regardless
+  of disposition. An approved point with no expressible test skips straight to
+  the fix/hypothesis handling above — there is nothing to write or run.
 - If peer-review was chosen but no PR could be identified (Step 2), the
   numbered list and the user's dispositions are the final output, recorded
   in chat — same as self-review's baseline.
@@ -275,6 +322,10 @@ Once every point has a disposition:
   this command carries none of them as fixed values.
 - Argument-order/arity mismatches and ordering-dependent test flakiness are
   left entirely to static-analysis/lint tooling, which already covers them.
-- This command never executes the test suite, never auto-applies a
-  judgment-requiring fix, and never submits an overall PR review verdict on
-  the user's behalf.
+- This command never runs the full test suite — that stays CI's job. The one
+  exception is Step 5's self-review path: a single just-written test is run to
+  prove the finding, and nothing else. The broad `Bash` grant in this command's
+  frontmatter exists only so that one test-runner invocation works across
+  repos, whose test commands can't be enumerated ahead of time.
+- This command never auto-applies a judgment-requiring fix and never submits an
+  overall PR review verdict on the user's behalf.
