@@ -125,13 +125,13 @@ Then:
   (the reader has the diff).
 - When a flow/state/pipeline is involved, show a Mermaid diagram of the
   prior flow (problem space) together with one of the resulting flow
-  (solution space) — **always paired, never the resulting flow alone**.
-  This deliberately differs from `/create-pull-request`, which is
-  after-only: that command optimizes brevity for a reader who has the diff,
-  while this phase optimizes comprehension of an unfamiliar change. The
-  pairing applies wherever a flow diagram appears in this command's output,
-  including inside Phase 2 findings. The paired diagrams together count as
-  the **one visual** of the highlighting budget.
+  (solution space) — paired, per the shared rule set. Two specializations
+  here: the pairing is **unconditional in this phase** (a change with no
+  prior flow still gets a diagram of the surrounding flow it plugs into, so
+  the reader sees where it lands), and it applies wherever a flow diagram
+  appears in this command's output, **including inside Phase 2 findings**.
+  Put the prior flow under the Problem space heading and the resulting flow
+  under Solution space; together they are the **one visual** of the budget.
 - A **minimal usage example** is allowed only for a userland-visible / API
   change — showing how a user interacts with the new behavior, never
   changed source.

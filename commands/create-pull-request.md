@@ -143,18 +143,30 @@ example is warranted.
 | Userland-visible behavior / API | before/after table, or `sequenceDiagram` if multi-party | **yes** | what changes for users |
 | Config / docs / tooling | skip if no structural element | no | why the change is needed |
 
-- **Diagrams here are after-only.** Show the resulting flow, not a
-  before/after pair — the diff already conveys the prior state. This
-  deliberately differs from `/review-changes`, which pairs them: that
-  command optimizes a reviewer's comprehension of an unfamiliar change,
-  while a PR body optimizes brevity for a reader who has the diff.
-  Format:
+- **Diagrams are paired — prior flow, then resulting flow** (per the shared
+  rule set). Don't drop the prior flow on the grounds that the diff conveys
+  it: a diff shows changed lines, not the shape of the flow they formed.
+  Omit the prior diagram only when the change replaces nothing. Keep both
+  small — the pair must stay within the one-visual budget, so if pairing
+  pushes past ~10–15 nodes total, narrow the diagrams to the part that
+  actually changed rather than dropping one. Format:
 
   ````
+  **Before**
+
+  ```mermaid
+  stateDiagram-v2
+      [*] --> Awaiting
+      Awaiting --> Settled
+  ```
+
+  **After**
+
   ```mermaid
   stateDiagram-v2
       [*] --> Awaiting
       Awaiting --> Reconciled
+      Reconciled --> Settled
   ```
   ````
 

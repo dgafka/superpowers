@@ -118,10 +118,22 @@ carefully. Optimize so the important part is found fast **and** reads clearly.
   exact failure this replaced.
 - **Keep diagrams small:** ≤10–15 nodes, one idea per diagram; if it needs more
   than ~20, split it or drop it. An oversized diagram costs more attention than
-  the prose it replaced.
+  the prose it replaced. **A pair shares that budget** — when pairing would blow
+  it, narrow both diagrams to the region that actually changed rather than
+  dropping one of them.
 - **Prefer diffable text-based diagrams (Mermaid)** so the diagram is itself
-  reviewable. Whether to show the resulting flow alone or a before/after pair is
-  the calling command's choice — see that command.
+  reviewable.
+- **Pair the flow diagrams — prior flow, then resulting flow.** This is the
+  default everywhere. A reader grasps a change by seeing what it replaced; the
+  delta between two small labelled diagrams is far cheaper than one diagram they
+  must mentally diff against code they haven't read. Label them plainly
+  ("Before" / "After") and put the prior flow first.
+- **"The diff shows the prior state" is not a reason to drop the pair.** A diff
+  shows changed lines, not the shape of the flow those lines formed —
+  reconstructing the old flow from a diff is exactly the work the pair saves.
+- **Omit the prior diagram only when there was no prior flow** — a genuinely new
+  path that replaces nothing. Then show the resulting flow alone.
+- **The pair counts as one visual** against the budget below, not two.
 - **Before/after screenshots** (with alt text) for any UI or user-visible output
   change — the diff can't show the result.
 
@@ -164,6 +176,8 @@ and fix every failure before the reader sees the draft.
       names?
 - [ ] Is a visual present, or is its absence justified by single-linear-step /
       no-structure?
+- [ ] If a flow diagram is present, is the prior flow shown beside it — or was
+      there genuinely no prior flow?
 - [ ] Does every sentence aid the *why* or direct attention? Cut the rest.
 - [ ] Is verification evidence out of the narrative, confined to a test-plan
       section where the template has one?
@@ -181,6 +195,8 @@ and fix every failure before the reader sees the draft.
 - Marketese / self-praise.
 - No visual where states, participants, or ordering are the essence.
 - An oversized diagram, or both a diagram and a table for one change.
+- A resulting-flow diagram standing alone where a prior flow existed, leaving
+  the reader to reconstruct the old shape from the diff.
 - A before/after table whose rows are symbol names rather than behaviors.
 - Over-bolding.
 - Inconsistent structure across write-ups, forcing the reader to re-learn the
