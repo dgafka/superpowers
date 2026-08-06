@@ -1,0 +1,20 @@
+CLAUDE.md
+  s_a913136fbe3862::t_99981e10b89390 17
+  s_a913136fbe3862::t_b122fcd3958849 13
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.1",
+  "base_commit_sha": "81128b7bb09a4d0f174c4656a2417e7921cb51bb",
+  "prompts": {},
+  "sessions": {
+    "s_a913136fbe3862": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b7c72150-130c-4fa6-90f4-e8667b23ca6f",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Dariusz Gafka <dgafka.mail@gmail.com>"
+    }
+  }
+}

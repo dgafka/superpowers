@@ -1,0 +1,26 @@
+docs/superpowers/specs/2026-05-15-skill-driven-spec-design.md
+  s_6069767a79b989::t_eb27ea0995cfea 223
+  s_6069767a79b989::t_ca00785543ff39 26,30
+  s_6069767a79b989::t_b3495e56315bbd 205
+  s_6069767a79b989::t_a6add3a0bb71d6 236
+  s_6069767a79b989::t_c532957f34caa8 163-165,167,177,185
+  s_6069767a79b989::t_ba3f8f1856335f 225
+  s_6069767a79b989::t_decf328f423a72 226
+  s_6069767a79b989::t_c058211f25508b 106,108,111-119,121,125,127-130,132-134
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "3bb844744c1f00f755e4a4e1826edd0b06fe28e7",
+  "prompts": {},
+  "sessions": {
+    "s_6069767a79b989": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "31de7933-e83f-4726-82d3-5428f73adb15",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Dariusz Gafka <dgafka.mail@gmail.com>"
+    }
+  }
+}

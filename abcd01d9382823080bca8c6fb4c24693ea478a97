@@ -1,0 +1,20 @@
+skills/test-driven-development/SKILL.md
+  s_9ef434f15e2ccb::t_6c0e5990e3c721 179
+  s_9ef434f15e2ccb::t_74ac38e4d55409 138-140
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "abcd01d9382823080bca8c6fb4c24693ea478a97",
+  "prompts": {},
+  "sessions": {
+    "s_9ef434f15e2ccb": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "81eb1e06-8574-4576-88ae-0d1c3ef7f0f3",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Dariusz Gafka <dgafka.mail@gmail.com>"
+    }
+  }
+}

@@ -1,0 +1,19 @@
+skills/brainstorming/SKILL.md
+  s_a913136fbe3862::t_721200202ffff0 208-209,211-226,228-234,236,238,240,242
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.1",
+  "base_commit_sha": "3ae8c441a0f30345da3c3186081adc04c1040b88",
+  "prompts": {},
+  "sessions": {
+    "s_a913136fbe3862": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b7c72150-130c-4fa6-90f4-e8667b23ca6f",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Dariusz Gafka <dgafka.mail@gmail.com>"
+    }
+  }
+}
