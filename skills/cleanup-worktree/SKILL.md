@@ -1,4 +1,5 @@
 ---
+name: cleanup-worktree
 description: Tear down the current git worktree's Docker stack, then remove the worktree. Agnostic — discovers the teardown mechanism (Makefile target or compose from container labels). Refuses on the main checkout.
 argument-hint: "[worktree-dir]  (defaults to the current directory)"
 disable-model-invocation: true

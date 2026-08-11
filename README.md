@@ -139,10 +139,20 @@ gemini extensions update superpowers
 **Collaboration** 
 - **brainstorming** - Socratic design refinement
 - **executing-specs** - Hands an approved spec to the executing-specs subagent for TDD execution
+- **recognize-and-learn** - Post-implementation retrospective; proposes process/skill changes on a branch + PR
+
+**Delivery** (user-triggered only — the agent never starts these on its own)
+- **review-changes** - Build understanding of a change, then run a severity-tiered review
+- **create-pull-request** - Open a PR using the repo's own conventions and template
+- **improve-workflow** - Mine a PR's review feedback for repeatable lessons
+- **cleanup-worktree** - Tear down a worktree's Docker stack and remove the worktree
+
+Trigger these with `/review-changes` in Claude Code or `$review-changes` in Codex.
 
 **Meta**
 - **writing-skills** - Create new skills following best practices (includes testing methodology)
 - **using-superpowers** - Introduction to the skills system
+- **reader-friendly-writing** - Shared rule set for reviewer-facing write-ups, invoked by the Delivery skills and brainstorming
 
 ## Philosophy
 
