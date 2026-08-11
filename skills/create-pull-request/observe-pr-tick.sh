@@ -2,7 +2,7 @@
 # Decide what the PR-observation loop does on this tick.
 #
 # Pure decision function: no network, no git, no side effects. The caller
-# probes the PR (see commands/create-pull-request.md Step 11), passes the
+# probes the PR (see skills/create-pull-request/SKILL.md Step 11), passes the
 # resulting state in, and obeys the answer. Keeping the idle/backoff rule
 # here means it is enforced mechanically rather than re-derived from prose
 # on every wake-up.

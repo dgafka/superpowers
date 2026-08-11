@@ -1,7 +1,8 @@
 ---
 name: review-changes
 allowed-tools: Bash(gh pr view:*), Bash(gh pr diff:*), Bash(gh api:*), Bash(git diff:*), Bash(git log:*), Bash(git status:*), Bash(git branch:*), Bash(git rev-parse:*), Bash(git symbolic-ref:*), Bash(git remote:*), Edit, Bash
-disable-model-invocation: false
+disable-model-invocation: true
+argument-hint: "[pr-url or owner/repo#123]  (defaults to the current branch)"
 description: >-
   Review a set of code changes — a GitHub pull request or the current
   branch's diff — by first building shared understanding of why the
@@ -26,8 +27,8 @@ values.
 
 ## Reader-Friendly Output
 
-Before writing the Phase 1 summary, apply the shared reader-friendly rule set —
-@commands/references/reader-friendly-writing.md. The summary is a write-up a
+Before writing the Phase 1 summary, invoke the **reader-friendly-writing** skill
+and apply its shared rule set. The summary is a write-up a
 reviewer reads to understand the change — it should be why-first,
 behavior-level, scannable, and free of code the reader can already see in the
 diff. This shapes Phase 1 only — including the shared rule set's highlighting
@@ -38,10 +39,10 @@ failing test cases (see below).
 
 ### 1. Detect Input Source
 
-- Argument `$ARGUMENTS` is a GitHub PR reference (a URL or `owner/repo#123`)
-  → fetch it: `gh pr view <ref> --json title,body,number,url` and
-  `gh pr diff <ref>`.
-- No argument → diff the current branch against its detected default branch:
+- The user supplied a GitHub PR reference with the request — a URL or
+  `owner/repo#123` → fetch it: `gh pr view <ref> --json title,body,number,url`
+  and `gh pr diff <ref>`.
+- No reference supplied → diff the current branch against its detected default branch:
   `git symbolic-ref refs/remotes/origin/HEAD` (strip to branch name); if that
   fails, probe for `main`, then `master`. Call the result `<base>` and use it
   for every command below: `git diff <base>...HEAD` and
@@ -135,9 +136,9 @@ Then:
 - A **minimal usage example** is allowed only for a userland-visible / API
   change — showing how a user interacts with the new behavior, never
   changed source.
-- **Trim before presenting.** Run the trim-pass checklist from
-  @commands/references/reader-friendly-writing.md against the drafted
-  summary and fix every failing item first. The checklist's
+- **Trim before presenting.** Run the trim-pass checklist from the
+  **reader-friendly-writing** skill against the drafted summary and fix every
+  failing item first (invoke the skill now if it isn't already loaded). The checklist's
   verification-evidence item does not apply here (there is no test-plan
   section); every other item does.
 - **Peer-review:** pause — ask "Any questions before we move to the review,
@@ -256,8 +257,8 @@ is real:
 - A finding that **no test can express** — a design pivot, a naming call, a
   necessity/YAGNI question — carries no test case, with no placeholder and no
   explanation of its absence.
-- Code is allowed inside a finding's test case. The no-code rule from
-  @commands/references/reader-friendly-writing.md governs the Phase 1
+- Code is allowed inside a finding's test case. The no-code rule from the
+  **reader-friendly-writing** skill governs the Phase 1
   understanding summary only; Phase 2 findings keep their citations and their
   test cases.
 

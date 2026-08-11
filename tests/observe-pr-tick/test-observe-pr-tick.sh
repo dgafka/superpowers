@@ -3,7 +3,7 @@ set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-SCRIPT_UNDER_TEST="$REPO_ROOT/scripts/observe-pr-tick.sh"
+SCRIPT_UNDER_TEST="$REPO_ROOT/skills/create-pull-request/observe-pr-tick.sh"
 
 FAILURES=0
 ONLY="${1:-}"

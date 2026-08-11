@@ -3,7 +3,7 @@ set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-SCRIPT_UNDER_TEST="$REPO_ROOT/scripts/cleanup-worktree.sh"
+SCRIPT_UNDER_TEST="$REPO_ROOT/skills/cleanup-worktree/cleanup-worktree.sh"
 
 FAILURES=0
 ONLY="${1:-}"

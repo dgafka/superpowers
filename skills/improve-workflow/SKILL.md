@@ -1,7 +1,8 @@
 ---
 name: improve-workflow
 allowed-tools: Bash(gh pr view:*), Bash(gh pr diff:*), Bash(gh api:*), Bash(git log:*), Bash(git diff:*), Bash(git show:*), Bash(git rev-parse:*), Bash(git symbolic-ref:*), Bash(cat:*), Bash(ls:*)
-disable-model-invocation: false
+disable-model-invocation: true
+argument-hint: "[pr-url or owner/repo#123]  (defaults to the current branch)"
 description: >-
   Mine a pull request's review feedback for repeatable lessons, then hand
   them to brainstorming to turn each into a CI rule or an agent skill/rule
@@ -31,8 +32,8 @@ project's own conventions as fixed values.
 
 ## Reader-Friendly Output
 
-Before presenting the collected summary, apply the shared reader-friendly rule
-set — @commands/references/reader-friendly-writing.md. The summary is a write-up
+Before presenting the collected summary, invoke the **reader-friendly-writing**
+skill and apply its shared rule set. The summary is a write-up
 the user reads to understand what the review surfaced — it should be why-first,
 behavior-level, scannable, and free of code the reader can already see in the
 diff.
@@ -41,11 +42,11 @@ diff.
 
 ### 1. Resolve the PR
 
-- `$ARGUMENTS` is a GitHub PR reference — a URL or `owner/repo#123`. Resolve it
-  to `{owner}`, `{repo}`, and `{number}`.
+- The user may have supplied a GitHub PR reference with the request — a URL or
+  `owner/repo#123`. Resolve it to `{owner}`, `{repo}`, and `{number}`.
 - Confirm access and get the basics: `gh pr view <ref> --json
   title,body,number,url,headRefName,baseRefName,state`.
-- If no argument is given, try `gh pr view --json ...` with no ref to resolve an
+- If no reference was supplied, try `gh pr view --json ...` with no ref to resolve an
   open PR for the current branch. If none exists, stop and ask the user for a PR
   reference.
 

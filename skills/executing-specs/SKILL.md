@@ -98,7 +98,7 @@ When the work finishes (subagent returns, or in-session implementation completes
 - Surface any blockers, deviations, or open questions
 - Ask the user how they want to integrate the work (merge, push + PR, keep the branch, discard) — this skill never decides integration
 - Offer the **recognize-and-learn** skill as an optional follow-up to capture friction points from this implementation cycle
-- **If the current checkout is a linked worktree**, offer to clean it up (this item is last, after integration): recommend the user run **`/cleanup-worktree`**, which tears down the worktree's Docker stack and removes the worktree in one step. Two caveats to state in the offer:
+- **If the current checkout is a linked worktree**, offer to clean it up (this item is last, after integration): recommend the user run the **cleanup-worktree** skill (`/cleanup-worktree` in Claude Code, `$cleanup-worktree` in Codex), which tears down the worktree's Docker stack and removes the worktree in one step. Two caveats to state in the offer:
   - It is **user-invocable only** — recommend it, do not run it yourself.
   - Do it **after integration** — removal is destructive (`--force` discards anything uncommitted), so the work must be merged / PR'd / preserved first.
 
@@ -129,7 +129,7 @@ If the subagent reports it could not finish (blocker, missing context, escalatio
 - Relay subagent escalations faithfully; never silently retry.
 - If the spec was marked ephemeral, delete it after relaying results and commit the removal — verify the deletion succeeded.
 - After the work finishes, offer **recognize-and-learn** as a retrospective option.
-- If the work was done in a linked worktree, offer `/cleanup-worktree` at the end (after integration) — recommend it, don't run it.
+- If the work was done in a linked worktree, offer the **cleanup-worktree** skill at the end (after integration) — recommend it, don't run it.
 
 ## Integration
 
@@ -141,7 +141,7 @@ If the subagent reports it could not finish (blocker, missing context, escalatio
 
 **Follow-up (optional):**
 - **superpowers:recognize-and-learn** — post-implementation retrospective on friction points
-- **/cleanup-worktree** — offered at wrap-up when the work was done in a linked worktree; tears down its Docker stack and removes the worktree
+- **cleanup-worktree** — offered at wrap-up when the work was done in a linked worktree; tears down its Docker stack and removes the worktree. User-invocable only: `/cleanup-worktree` in Claude Code, `$cleanup-worktree` in Codex
 
 **Required workflow skills:**
 - **superpowers:test-driven-development** — applied per task during execution (in-session or in subagent)

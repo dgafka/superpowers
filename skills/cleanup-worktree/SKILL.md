@@ -12,18 +12,25 @@ rather than assuming any layout. **This is destructive** — it removes containe
 named volumes, and the worktree (with `--force`) — so always show the plan and get
 the user's confirmation before executing.
 
-The logic lives in `${CLAUDE_PLUGIN_ROOT}/scripts/cleanup-worktree.sh`. Use it via
-its two subcommands: `plan` (read-only) and `execute` (destructive, needs `--yes`).
+The logic lives in `cleanup-worktree.sh`, which sits in this skill's own
+directory. Resolve its absolute path before the first call — in Claude Code that
+is `${CLAUDE_SKILL_DIR}/cleanup-worktree.sh`; on other platforms it is the
+directory holding this file. The command lines below write it as
+`<SKILL_DIR>/cleanup-worktree.sh` — substitute the resolved path.
 
-Target directory: the argument `$ARGUMENTS` if given, otherwise the current
-directory. Below, `<DIR>` means that path (omit it to use cwd).
+Use it via its two subcommands: `plan` (read-only) and `execute` (destructive,
+needs `--yes`).
+
+Target directory: the path the user supplied with the request if there was one,
+otherwise the current directory. Below, `<DIR>` means that path (omit it to use
+cwd).
 
 ## Step 1 — Plan (read-only)
 
 Run the plan and show it to the user:
 
 ```bash
-bash "${CLAUDE_PLUGIN_ROOT}/scripts/cleanup-worktree.sh" plan <DIR>
+bash "<SKILL_DIR>/cleanup-worktree.sh" plan <DIR>
 ```
 
 - **Exit code 2** means it refused because `<DIR>` is the **main checkout** (the
@@ -53,16 +60,16 @@ Run execute with `--yes`. Pick the invocation matching the confirmed mechanism:
 
 - **Auto** (single Makefile target or compose fallback):
   ```bash
-  bash "${CLAUDE_PLUGIN_ROOT}/scripts/cleanup-worktree.sh" execute <DIR> --yes
+  bash "<SKILL_DIR>/cleanup-worktree.sh" execute <DIR> --yes
   ```
 - **Chosen Makefile target** (e.g. resolving `make-ambiguous`):
   ```bash
-  bash "${CLAUDE_PLUGIN_ROOT}/scripts/cleanup-worktree.sh" execute <DIR> --yes \
+  bash "<SKILL_DIR>/cleanup-worktree.sh" execute <DIR> --yes \
     --make-dir <DIR-of-Makefile> --make-target <target>
   ```
 - **Force the compose fallback** (skip Makefiles):
   ```bash
-  bash "${CLAUDE_PLUGIN_ROOT}/scripts/cleanup-worktree.sh" execute <DIR> --yes --compose
+  bash "<SKILL_DIR>/cleanup-worktree.sh" execute <DIR> --yes --compose
   ```
 - Add `--no-volumes` to keep named volumes (compose fallback only; volumes are
   removed by default).

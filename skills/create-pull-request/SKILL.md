@@ -1,7 +1,7 @@
 ---
 name: create-pull-request
 allowed-tools: Bash(gh pr create:*), Bash(gh pr list:*), Bash(gh pr view:*), Bash(gh pr checks:*), Bash(gh pr comment:*), Bash(gh run view:*), Bash(gh api:*), Bash(git log:*), Bash(git diff:*), Bash(git status:*), Bash(git branch:*), Bash(git rev-parse:*), Bash(git symbolic-ref:*), Bash(git push:*), Bash(git add:*), Bash(git commit:*), Bash(git remote:*)
-disable-model-invocation: false
+disable-model-invocation: true
 description: >-
   Create a pull request for the current branch, detecting the repo's own
   conventions and PR template rather than assuming any project's rules.
@@ -17,9 +17,8 @@ decorations, a specific language).
 
 ## Reader-Friendly Output
 
-Before composing the body, apply the shared reader-friendly rule set —
-@commands/references/reader-friendly-writing.md — to everything a reviewer will
-read. Reviewers scan many PRs a day — the body should be why-first,
+Before composing the body, invoke the **reader-friendly-writing** skill and apply
+its shared rule set to everything a reviewer will read. Reviewers scan many PRs a day — the body should be why-first,
 behavior-level, scannable, and free of code they can already see in the diff.
 The specializations in Steps 4–7 below build on that shared rule set.
 
@@ -245,8 +244,8 @@ stated as an outcome; the visual carries the rest.
 
 ### 7. Trim
 
-Run the trim-pass checklist from
-@commands/references/reader-friendly-writing.md against the drafted body.
+Run the trim-pass checklist from the **reader-friendly-writing** skill against
+the drafted body (invoke the skill now if it isn't already loaded).
 Fix every failing item **before** showing the user anything — this step is
 not optional and not a judgment call about whether the body "seems fine".
 
@@ -336,7 +335,7 @@ observation work.
    a short string, not that these exact expressions are used.
 
    Feed the fingerprint and the stored counters to
-   `scripts/observe-pr-tick.sh` (Step 4) and obey its `action`. In short:
+   `observe-pr-tick.sh` (Step 4) and obey its `action`. In short:
    a `MERGED`/`CLOSED` PR stops with a final summary; an unchanged
    fingerprint is an idle pass that **must not cost an agent boot**; a
    changed or uncomputable fingerprint dispatches, because failing to
@@ -390,10 +389,15 @@ observation work.
 
    **Do not compute this by hand — run the decision script.** It owns the
    idle rule, the backoff, and every guard below, so the constraint holds
-   identically on every wake-up:
+   identically on every wake-up.
+
+   The script `observe-pr-tick.sh` sits in this skill's own directory. Resolve
+   its absolute path before the first call — in Claude Code that is
+   `${CLAUDE_SKILL_DIR}/observe-pr-tick.sh`; on other platforms it is the
+   directory holding this file. Written below as `<SKILL_DIR>/`:
 
    ```
-   scripts/observe-pr-tick.sh --state <state> \
+   <SKILL_DIR>/observe-pr-tick.sh --state <state> \
      --fingerprint "<this pass's probe>" --last-fingerprint "<stored probe>" \
      --idle-count <n> --pass-count <n> --elapsed-minutes <n> [--blocked]
    ```
