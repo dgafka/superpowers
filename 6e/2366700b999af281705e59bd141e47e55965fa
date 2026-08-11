@@ -1,0 +1,65 @@
+skills/brainstorming/SKILL.md
+  s_89069445cb2516::t_9faf90363601d4 116
+  s_89069445cb2516::t_90c8e0e5bc8b98 286
+  s_89069445cb2516::t_f2f5ad73b12fd1 283
+skills/create-pull-request/agents/openai.yaml
+  s_89069445cb2516::t_c6e2b8ea1e123c 1-2
+tests/manual-only-skills/test-manual-only-skills.sh
+  s_89069445cb2516::t_4fb81bd8f57331 1-158
+skills/create-pull-request/SKILL.md
+  s_89069445cb2516::t_989eafac57f7a6 338
+  s_89069445cb2516::t_c98167178af2b3 20-21
+  s_89069445cb2516::t_e433aced8573ff 4
+  s_89069445cb2516::t_57a6f7cac2c365 392-400
+  s_89069445cb2516::t_4e6565d8dcad04 247-248
+skills/reader-friendly-writing/SKILL.md
+  s_89069445cb2516::t_8079fcfcfb792c 1-15
+skills/executing-specs/SKILL.md
+  s_89069445cb2516::t_35f5e6a16687ae 101
+  s_89069445cb2516::t_663a625d0a028c 144
+  s_89069445cb2516::t_9512625c0bfb6a 132
+tests/observe-pr-tick/test-observe-pr-tick.sh
+  s_89069445cb2516::t_4617483f2c634d 6
+skills/improve-workflow/SKILL.md
+  s_89069445cb2516::t_711758e870bfb5 4-5
+  s_89069445cb2516::t_1241c4288cf45e 45-46
+  s_89069445cb2516::t_15fe2027926946 35-36
+  s_89069445cb2516::t_565b6b798d8421 49
+skills/cleanup-worktree/agents/openai.yaml
+  s_89069445cb2516::t_c6e2b8ea1e123c 1-2
+skills/review-changes/SKILL.md
+  s_89069445cb2516::t_86083d02989e31 42-45
+  s_89069445cb2516::t_7669b2561ea4f6 139-141
+  s_89069445cb2516::t_9be4c943cf8415 4-5
+  s_89069445cb2516::t_633dfa8b43e2b7 30-31
+  s_89069445cb2516::t_280e594fc392bc 260-261
+skills/review-changes/agents/openai.yaml
+  s_89069445cb2516::t_c6e2b8ea1e123c 1-2
+skills/create-pull-request/observe-pr-tick.sh
+  s_89069445cb2516::t_4c14061cb2382e 5
+tests/cleanup-worktree/test-cleanup-worktree.sh
+  s_89069445cb2516::t_d7f294fe75048a 6
+skills/improve-workflow/agents/openai.yaml
+  s_89069445cb2516::t_c6e2b8ea1e123c 1-2
+skills/cleanup-worktree/SKILL.md
+  s_89069445cb2516::t_b78c11504f3120 24-26
+  s_89069445cb2516::t_b760cb34d3a1b6 15-22
+  s_89069445cb2516::t_2f107461971f80 33-72
+  s_89069445cb2516::t_11db9ad035f2d5 23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "6e2366700b999af281705e59bd141e47e55965fa",
+  "prompts": {},
+  "sessions": {
+    "s_89069445cb2516": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b7904a37-0bde-4bb6-8140-7c15060fca62",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Dariusz Gafka <dariusz.gafka@lendable.co.uk>"
+    }
+  }
+}
