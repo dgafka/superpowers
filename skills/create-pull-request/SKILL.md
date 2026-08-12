@@ -103,10 +103,9 @@ Apply this motivation discipline when writing the why:
 
 - **WHY, not WHAT.** The diff already shows what changed — don't restate
   it in the motivation.
-- **Role-first.** State the problem as a plain declarative sentence where
-  the subject IS the thing playing the wrong role and the predicate IS
-  the mismatch. If your first sentence needs a setup clause before it
-  makes sense, it isn't role-first yet.
+- **Decision-relevant first.** State the causal fact a reviewer needs to
+  inspect: trigger, affected party, and failure. An outcome-first opening is
+  useful only when the outcome is that fact.
 - **One idea per sentence.** Don't compress a problem, its scope, and its
   consequence into one sentence — split them, and drop the ones that
   aren't motivation (see below).
@@ -129,9 +128,9 @@ Apply this motivation discipline when writing the why:
 
 ### 5. Select Explanatory Aids From the Classification
 
-Match aids to the change's intent from Step 3. A visual is the default
-(see the shared rule set) — this table says *which* visual, and when an
-example is warranted.
+Match aids to the change's intent from Step 3. Select a visual only when it
+reduces reconstruction work compared with concise prose — this table says which
+form may help, not a requirement to add one.
 
 | Change type | Visual | Usage example | Motivation emphasis |
 |---|---|---|---|
@@ -142,13 +141,10 @@ example is warranted.
 | Userland-visible behavior / API | before/after table, or `sequenceDiagram` if multi-party | **yes** | what changes for users |
 | Config / docs / tooling | skip if no structural element | no | why the change is needed |
 
-- **Diagrams are paired — prior flow, then resulting flow** (per the shared
-  rule set). Don't drop the prior flow on the grounds that the diff conveys
-  it: a diff shows changed lines, not the shape of the flow they formed.
-  Omit the prior diagram only when the change replaces nothing. Keep both
-  small — the pair must stay within the one-visual budget, so if pairing
-  pushes past ~10–15 nodes total, narrow the diagrams to the part that
-  actually changed rather than dropping one. Format:
+- **Use a before/after pair only when it reduces reconstruction work.** A
+  comparison helps when the reviewer must inspect the changed relationship;
+  otherwise use one narrow visual or none. Keep any chosen visual small. Format
+  a useful comparison as:
 
   ````
   **Before**
@@ -220,13 +216,13 @@ example is warranted.
   <one GitHub alert, only when a single fact must not be missed —
   omit otherwise>
 
-  <opening sentence states the outcome and stands alone, then 2-4
+  <opening sentence states the decision-relevant causal fact, then 2-4
   sentences or bullets of problem and context from Step 4>
 
   ### Resulting flow          <- heading when the visual is a diagram
   ### Before / after          <- heading when the visual is a table
-  <one visual, per Step 5 and the shared rule set; omit only when
-  justified>
+  <one visual, only when selected in Step 5 because it reduces
+  reconstruction work>
 
   ### Out of scope
   <deferred work as links — `#1234` per sibling change, not prose>
@@ -239,8 +235,8 @@ example is warranted.
 
 **There is deliberately no "What changed" section.** An uncapped
 what-section fills with code identifiers, which is the failure this
-structure removes. The behavior delta belongs in Why's opening sentence,
-stated as an outcome; the visual carries the rest.
+structure removes. The decision-relevant causal fact belongs in Why's opening
+sentence; a visual carries only context it makes easier to inspect.
 
 ### 7. Trim
 
