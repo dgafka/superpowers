@@ -34,9 +34,9 @@ project's own conventions as fixed values.
 
 Before presenting the collected summary, invoke the **reader-friendly-writing**
 skill and apply its shared rule set. The summary is a write-up
-the user reads to understand what the review surfaced — it should be why-first,
-behavior-level, scannable, and free of code the reader can already see in the
-diff.
+the user reads to decide what deserves follow-through — it should open with the
+decision-relevant review signal, then be behavior-level, scannable, and free of
+code the reader can already see in the diff.
 
 ## Process
 
@@ -106,7 +106,7 @@ existing tools can express the rule.
 
 ### 5. Present the Collected Summary
 
-Show the user a why-first, scannable summary of what the review surfaced:
+Show the user a decision-relevant, scannable summary of what the review surfaced:
 threads grouped by draft bucket, each as a one-line **flagged → changed** with
 its proposed bucket. Lead with buckets 2 and 3 (the ones with future value);
 list bucket 1 briefly so the user can see what's being dropped and why. Flag

@@ -112,7 +112,7 @@ Then:
 
   ### Solution space
   <how that intent was solved: the approach taken, described through the
-  resulting flow(s). Paired diagrams go here.>
+  resulting flow(s). Add a visual only when it reduces reconstruction work.>
 
   ### Scope
   <the classification and reasoning; if this is a partial slice, which part
@@ -124,15 +124,11 @@ Then:
   diff/implementation/mechanism code and don't enumerate classes or methods
   — though naming the single entry point / where to start reading is fine
   (the reader has the diff).
-- When a flow/state/pipeline is involved, show a Mermaid diagram of the
-  prior flow (problem space) together with one of the resulting flow
-  (solution space) — paired, per the shared rule set. Two specializations
-  here: the pairing is **unconditional in this phase** (a change with no
-  prior flow still gets a diagram of the surrounding flow it plugs into, so
-  the reader sees where it lands), and it applies wherever a flow diagram
-  appears in this command's output, **including inside Phase 2 findings**.
-  Put the prior flow under the Problem space heading and the resulting flow
-  under Solution space; together they are the **one visual** of the budget.
+- When a flow/state/pipeline is involved, add a visual only when it reduces
+  reconstruction work. Use a prior/result pair when comparison answers the
+  review question; otherwise use one narrow visual or concise prose. Phase 2
+  findings use a visual only when the cited evidence cannot be understood
+  without it.
 - A **minimal usage example** is allowed only for a userland-visible / API
   change — showing how a user interacts with the new behavior, never
   changed source.

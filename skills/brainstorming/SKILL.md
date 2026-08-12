@@ -271,7 +271,10 @@ Every spec follows a fixed shape so a reviewer always knows where to look. It ha
 *Reviewer zone — why-first, scannable, behaviour not code:*
 
 - **Why** — the problem and context: what's wrong today, why this change, why now. Leads the doc (most important first).
-- **What changes** — high-level flows as bullets, and a visual. When a flow/state/pipeline is involved, that visual is a **paired Mermaid diagram: the flow as it works today, then the flow as proposed** — a reviewer approving a design needs to see what it displaces. When the change is a behaviour swap with no ordering, a before/after table serves instead (diagram or table, never both). Describe behaviour, not code. No class/method/config-file names here.
+- **What changes** — high-level flows as bullets. Add a visual only when it reduces reconstruction work for the decision at hand. When comparison is the
+  question, a before/after pair may help; otherwise one narrow visual or prose
+  is better. Describe behaviour, not code. No class/method/config-file names
+  here.
 - **Out of scope** — what we are deliberately not doing.
 
 *Executor zone — clearly fenced off as not part of the review:*
@@ -280,7 +283,10 @@ Every spec follows a fixed shape so a reviewer always knows where to look. It ha
 - **Required Skills** — block format below.
 - **Environment & Test Execution** — format below.
 
-For how to *write* the reviewer zone, invoke the **reader-friendly-writing** skill and apply its rule set (BLUF, why-before-what, behaviour-not-code, scannable, a visual by default, flow diagrams paired before/after). Two brainstorming specializations override it:
+For how to *write* the reviewer zone, invoke the **reader-friendly-writing**
+skill and apply its rule set (decision-relevant opening, why-before-what,
+behaviour-not-code, scannable, and a visual only when it reduces reconstruction
+work). Two brainstorming specializations override it:
 
 - It governs the **reviewer zone and the in-conversation design presentation only**. Clarifying questions follow **Asking questions** above instead — they're interactive cards, not narrative.
 - Unlike a PR body, the spec has a dedicated **AI Technical Notes** section, so *all* file/symbol navigation goes there. The reviewer zone names no classes, methods, or config files — stricter than that skill's "one entry point is fine."

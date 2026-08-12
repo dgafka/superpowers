@@ -1,41 +1,43 @@
 ---
 name: reader-friendly-writing
 description: >-
-  Shared rule set for any write-up a reviewer reads — a pull request body, a
-  review understanding summary, or the reviewer zone of a design spec. Use when
-  drafting or trimming reviewer-facing narrative, or when another skill asks you
-  to apply the reader-friendly-writing rules.
+  Shared rule set for PR bodies, review and workflow-learning summaries, and
+  design reviewer zones. Use when drafting or trimming that reviewer-facing
+  narrative, or when another skill asks you to apply the reader-friendly-writing
+  rules.
 user-invocable: false
 ---
 
 # Reader-Friendly Writing for Reviewer-Facing Output
 
-Shared rule set for any write-up a reviewer reads — the PR body produced by the
-`create-pull-request` skill, the Phase 1 understanding summary produced by the
-`review-changes` skill, and the reviewer zone of a design spec produced by the
-`brainstorming` skill. Apply every rule below to that narrative. Each caller
-adds its own specializations on top; where a caller's own instruction conflicts
-with a rule here, the caller wins.
+Shared rule set for the PR body produced by `create-pull-request`, the Phase 1
+understanding summary produced by `review-changes`, the collected summary
+produced by `improve-workflow`, and the reviewer zone of a design spec produced
+by `brainstorming`. Apply every rule below to that narrative. It does not govern
+inline review comments or thread replies; the caller that owns those
+interactions supplies their shorter, line-anchored contract. Each caller adds
+its own specializations on top; where a caller's own instruction conflicts with
+a rule here, the caller wins.
 
-## North star — make the "why" cheap to understand
+## North star — make the next decision cheap
 
-A reviewer's real bottleneck is not reading speed — it is **understanding why
-the change exists**. The largest study of code review found that *understanding
-the change* is the central challenge of reviewing, ahead of finding defects. So
-the goal of every write-up is cheap understanding of the *why* and the
-*behavioral delta*; the diff already supplies the *what*.
+A reviewer's real bottleneck is not reading speed — it is reaching the next
+decision: what to inspect, approve, question, or defer. The largest study of
+code review found that *understanding the change* is the central challenge of
+reviewing, ahead of finding defects. Choose the smallest sufficient form that
+makes the reader's next decision cheap; the diff already supplies the *what*.
 
 Scannability is the **means**, not the end. Reviewers read many changes a day
 and scan to *find* the material that matters — then they read that material
 carefully. Optimize so the important part is found fast **and** reads clearly.
 
-## Order — bottom line first, riskiest first
+## Order — decision-relevant first, riskiest first
 
-- **Lead with BLUF (bottom line up front).** The first sentence states the
-  outcome — what changes for the user or system — in imperative mood, and
-  stands on its own. Then the why. Then detail. A reader who reads only the
-  first line should know what the change does.
-- **Why before what.** After the bottom line, give the problem, context, and
+- **Lead with the fact that unblocks the reader's next decision.** In a
+  Motivation, that is usually the trigger, affected party, and failure. In an
+  orientation summary, it can be the outcome. In a design, it can be the
+  constraint or trade-off. Do not force one opening shape across those jobs.
+- **Why before what.** After the opening fact, give the problem, context, and
   trigger before the mechanics (inverted pyramid).
 - **Order the body by scrutiny needed, not by chronology or file order.** Put
   the part that needs the most careful review first; trivial or mechanical
@@ -103,14 +105,13 @@ carefully. Optimize so the important part is found fast **and** reads clearly.
   autopilot. Consistency is itself a load-reducer; the exact section list is the
   calling command's choice.
 
-## Visuals — include one by default
+## Visuals — use only when they lower reconstruction work
 
-- **Default to a visual.** Include one unless the change is a **single linear
-  step**, or is pure text/config with **no structural element** at all. This is
-  the reverse of "earn its place" — the burden is on omitting a visual, not on
-  including one.
-- **A visual that replaces a paragraph is a net reduction.** Prefer the visual
-  to the prose it displaces; that is the point of using it.
+- **A visual earns its place only when it reduces more reconstruction work than it adds.** If concise prose lets the reader make the same decision with
+  less effort, omit the visual.
+- **State the question the visual answers.** A flow existing is not enough. Use
+  a visual for a state, participant, dependency, or comparison question the
+  reader would otherwise have to reconstruct from prose or the diff.
 - **Match the type to the change:**
 
   | The change is about | Use |
@@ -133,16 +134,9 @@ carefully. Optimize so the important part is found fast **and** reads clearly.
   dropping one of them.
 - **Prefer diffable text-based diagrams (Mermaid)** so the diagram is itself
   reviewable.
-- **Pair the flow diagrams — prior flow, then resulting flow.** This is the
-  default everywhere. A reader grasps a change by seeing what it replaced; the
-  delta between two small labelled diagrams is far cheaper than one diagram they
-  must mentally diff against code they haven't read. Label them plainly
-  ("Before" / "After") and put the prior flow first.
-- **"The diff shows the prior state" is not a reason to drop the pair.** A diff
-  shows changed lines, not the shape of the flow those lines formed —
-  reconstructing the old flow from a diff is exactly the work the pair saves.
-- **Omit the prior diagram only when there was no prior flow** — a genuinely new
-  path that replaces nothing. Then show the resulting flow alone.
+- **Use a before/after pair only when comparison itself answers the review
+  question.** A single narrow diagram, a table, or no visual is better when it
+  removes less work. Label a useful comparison plainly ("Before" / "After").
 - **The pair counts as one visual** against the budget below, not two.
 - **Before/after screenshots** (with alt text) for any UI or user-visible output
   change — the diff can't show the result.
@@ -176,18 +170,26 @@ available device highlights nothing.
 - Tell the reviewer **where to look** — the most important area first — and flag
   known shortcomings honestly.
 
+## Decision-first example
+
+For a Motivation, do not lead with a generic benefit such as "Give customers a
+fresh decision." Lead with the causal fact a reviewer needs to verify: "After a
+customer corrects an external record, retrying reuses the cached rejected
+result." Add the consequence only when it changes the review decision. A visual
+is optional unless it makes that causal relationship easier to inspect.
+
 ## Trim pass — run before showing anyone
 
 A rule that isn't a step doesn't run. Callers invoke this as an explicit step,
 and fix every failure before the reader sees the draft.
 
-- [ ] Does the first sentence state the outcome, and stand alone?
+- [ ] Does the opening state the fact that unblocks the reader's next decision?
 - [ ] Zero code identifiers in the narrative — no class, event, command, or file
       names?
-- [ ] Is a visual present, or is its absence justified by single-linear-step /
-      no-structure?
-- [ ] If a flow diagram is present, is the prior flow shown beside it — or was
-      there genuinely no prior flow?
+- [ ] If a visual is present, does it reduce more reconstruction work than it
+      adds? If not, cut it.
+- [ ] If a before/after pair is present, does comparison itself answer a review
+      question? If not, narrow it or use one form instead.
 - [ ] Does every sentence aid the *why* or direct attention? Cut the rest.
 - [ ] Is verification evidence out of the narrative, confined to a test-plan
       section where the template has one?
@@ -196,17 +198,18 @@ and fix every failure before the reader sees the draft.
 
 ## Anti-patterns (each raises reader load)
 
-- Burying the bottom line below context or setup.
+- Burying the fact that unblocks the reader's next decision below context or
+  setup.
 - Pasting code that duplicates the diff.
 - Enumerating changed classes/methods instead of describing behavior.
 - Vague summaries ("Fix bug," "Phase 1," "Moving code A→B").
 - Walls of text — or walls of ungrouped bullets.
 - Clever or vague headings.
 - Marketese / self-praise.
-- No visual where states, participants, or ordering are the essence.
+- A visual added because a flow exists rather than because it reduces
+  reconstruction work.
 - An oversized diagram, or both a diagram and a table for one change.
-- A resulting-flow diagram standing alone where a prior flow existed, leaving
-  the reader to reconstruct the old shape from the diff.
+- A before/after pair where the comparison does not answer a review question.
 - A before/after table whose rows are symbol names rather than behaviors.
 - Over-bolding.
 - Inconsistent structure across write-ups, forcing the reader to re-learn the
