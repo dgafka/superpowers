@@ -21,8 +21,8 @@ recognized and deliberately dropped.
 This command is a thin collector. Its only hard job is to gather the review
 signals and correlate each with the fix that followed. Everything from
 categorization onward — deciding which lessons are worth enforcing and designing
-how to apply them — is **led by the brainstorming skill**, which owns the rest of
-the pipeline (`brainstorming → executing-specs`).
+how to apply them — is **led by the brainstorming skill**, which owns the design
+conversation before the user starts `orchestration-research`.
 
 Run it **inside the project the PR belongs to** (superpowers installed as a
 plugin), so the resulting improvements land where they belong: the project's CI
@@ -126,16 +126,17 @@ leads:
   which to pursue.
 - Design *how* to apply each agreed improvement — a **new** rule/skill vs. an
   **update** to an existing one.
-- Its own pipeline (`brainstorming → executing-specs`) applies the agreed
-  improvements in the project.
+- After the design is approved, the user may invoke `orchestration-research`
+  to research and implement the agreed improvements in separate sub-worktrees.
 
-Do **not** invoke `executing-specs`, `recognize-and-learn`, or any other skill
+Do **not** invoke `orchestration-research`, `executing-tasks`,
+`recognize-and-learn`, or any other skill
 directly from this command — brainstorming owns the rest of the pipeline.
 
 ## Notes
 
-- This command never applies fixes itself — `brainstorming → executing-specs`
-  does. It collects, correlates, draft-categorizes, and hands off.
+- This command never applies fixes itself. It collects, correlates,
+  draft-categorizes, and hands off to brainstorming.
 - Bucket 1 (PR-only) feedback is recognized then dropped; it is never carried
   forward.
 - Which linters/static-analysis tools exist is always detected at runtime — PHP

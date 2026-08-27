@@ -76,6 +76,18 @@ dispatch here.
 
 ### 3. Phase 1 — Understanding
 
+Before gathering change context, perform non-interactive skill mapping:
+
+- Scan the available skill names and descriptions against the change's domain,
+  affected artifacts, and likely review risks.
+- Conservatively invoke only skills whose specialized knowledge can improve
+  research, interpretation, or review of this specific change.
+- Use the selected skills while gathering context and evaluating the diff.
+  Their guidance enriches the review; it does not replace this workflow.
+- Exclude skills that would start implementation, create unrelated artifacts,
+  or take over delivery. Do not present a mapping list or ask the user to
+  approve the selection.
+
 Gather in parallel:
 - The diff itself.
 - PR title/description, if reviewing a PR.
@@ -323,7 +335,7 @@ Once every point has a disposition:
   this command carries none of them as fixed values.
 - Argument-order/arity mismatches and ordering-dependent test flakiness are
   left entirely to static-analysis/lint tooling, which already covers them.
-- This command never runs the full test suite — that stays CI's job. The one
+- This command never runs broad repository test suites — that stays CI's job. The one
   exception is Step 5's self-review path: a single just-written test is run to
   prove the finding, and nothing else. The broad `Bash` grant in this command's
   frontmatter exists only so that one test-runner invocation works across

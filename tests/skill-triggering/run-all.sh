@@ -9,7 +9,7 @@ PROMPTS_DIR="$SCRIPT_DIR/prompts"
 
 SKILLS=(
     "test-driven-development"
-    "executing-specs"
+    "executing-tasks"
 )
 
 echo "=== Running Skill Triggering Tests ==="

@@ -21,8 +21,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Superpowers",
-    "shortDescription": "Spec-driven brainstorming, TDD, and delivery workflows for coding agents",
-    "longDescription": "Use Superpowers to guide agent work through brainstorming, spec-driven task decomposition with per-task TDD, verification before completion, and finish-the-branch workflows.",
+    "shortDescription": "Research orchestration, TDD, and delivery workflows for coding agents",
+    "longDescription": "Use Superpowers to guide agent work through conversational design, Orca-coordinated research and implementation tasks, per-task TDD, and verification before completion.",
     "developerName": "Jesse Vincent",
     "category": "Coding",
     "capabilities": [

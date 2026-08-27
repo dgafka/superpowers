@@ -1,6 +1,6 @@
 ---
 name: recognize-and-learn
-description: Use after an implementation cycle finishes (typically after executing-specs returns) to recognize friction — multi-attempt steps, unclear instructions, user corrections, things that weren't obvious — and learn from them by proposing process/skill improvements on a separate branch + PR
+description: Use after an implementation cycle finishes to recognize friction — multi-attempt steps, unclear instructions, user corrections, things that weren't obvious — and learn from them by proposing process/skill improvements on a separate branch + PR
 ---
 
 # Recognize and Learn
@@ -15,7 +15,7 @@ Run this immediately after an implementation cycle so the friction is still fres
 
 ## When to Use
 
-- Immediately after `executing-specs` returns and the user has decided on integration
+- Immediately after an orchestrated implementation cycle finishes and the user has decided on integration
 - After any non-trivial implementation cycle where you (or the user) noticed friction
 - When the user explicitly asks for a retrospective on a recent task
 
@@ -28,7 +28,7 @@ Run this immediately after an implementation cycle so the friction is still fres
 Before asking the user anything, gather what you can on your own:
 
 - Recent commits on the current branch (`git log --oneline -n 30`)
-- The spec file that was implemented (if known — check `docs/superpowers/specs/`)
+- The approved task context and Orca completion reports, when available
 - Any course-corrections, blockers, or escalations visible in conversation history
 - **User-correction signals** — scan the conversation for moments where the user said something was wrong, should be done differently, or pushed back on your approach. Examples to look for verbatim:
   - "no, not like that" / "stop doing X" / "don't do Y"
@@ -64,7 +64,7 @@ Group the findings into clear categories. Pick whichever apply:
 - **Process gaps** — workflow steps that are missing, wrong order, or unclear
 - **Skill gaps** — a skill that should exist but doesn't, or an existing skill that misled
 - **Tool gaps** — missing automation, scripts, or hooks
-- **Spec quality** — patterns in the spec that caused implementation drift
+- **Task quality** — patterns in task context that caused implementation drift
 - **User corrections** — what the user had to fix manually that the process should have caught
 - **Environment** — repo conventions, configuration, dependencies
 
@@ -78,7 +78,7 @@ Iterate until the user signs off.
 
 The proposed changes typically land in the superpowers fork — not in the project where the implementation happened. Before making changes:
 
-1. Check whether the current working directory is the superpowers repo (has `skills/`, `CLAUDE.md` referencing superpowers, `agents/executing-specs.md`, etc.)
+1. Check whether the current working directory is the superpowers repo (has `skills/` and `CLAUDE.md` referencing superpowers)
 2. If yes: proceed in place
 3. If no: ask the user for the absolute path to their superpowers checkout. Do not guess.
 
@@ -86,9 +86,9 @@ The proposed changes typically land in the superpowers fork — not in the proje
 
 In the skills repo:
 
-1. Create a new branch with a descriptive name: `recognize/<topic>-<date>` (e.g., `recognize/spec-skill-mapping-clarity-2026-05-13`).
+1. Create a new branch with a descriptive name: `recognize/<topic>-<date>`.
 2. Make the proposed edits — be surgical. Touch only what the retrospective findings actually require. Resist scope creep.
-3. Commit each logical change separately. Use commit messages that point back to the friction observed (e.g., "executing-specs: clarify subagent dispatch trigger — was unclear when to fire").
+3. Commit each logical change separately. Use commit messages that point back to the friction observed.
 4. If the user has `gh` available and a GitHub remote configured: open a PR. **Follow the project's PR template if one exists** — see "Using the Project PR Template" below.
 5. If no GitHub remote: leave the branch local, push to origin if it exists, and report the branch name + commit SHAs to the user with a note that they can open the PR manually.
 
@@ -115,7 +115,7 @@ Construct the body as a single string with the template's section headers preser
 
 **If no template exists:** use a simple body — friction summary (from Step 3), then bulleted list of commits with their rationale.
 
-PR title format: `Retrospective: <topic>` (e.g., `Retrospective: spec-skill-mapping clarity`).
+PR title format: `Retrospective: <topic>`.
 
 ### Step 6: Report Back
 
@@ -148,7 +148,7 @@ Then stop. Integration of the retrospective changes is the user's call.
 ## Integration
 
 **Typically called by:**
-- **superpowers:executing-specs** — offered as a follow-up after Step 5 (Relay the Result)
+- **superpowers:orchestration-research** — the orchestration run that completed the implementation tasks
 
 **Operates on:**
 - The superpowers skills repo (separate from the project where the implementation happened)

@@ -118,11 +118,13 @@ gemini extensions update superpowers
 
 ## The Basic Workflow
 
-1. **brainstorming** - Activates before writing code. Refines rough ideas through questions, explores alternatives, presents design in sections for validation. Saves design document.
+1. **brainstorming** - Activates before writing code. Refines rough ideas through questions, explores alternatives, and presents a conversational design for validation.
 
-2. **executing-specs** - Activates with approved spec. Hands the spec off to the dedicated `executing-specs` subagent (sonnet, 1M context), which decomposes it into bite-sized tasks, identifies parallel-safe work, and executes with per-task TDD.
+2. **orchestration-research** - Manually starts an Orca-coordinated research and implementation run. It delegates named research tasks, asks approval before each implementation task, and launches separate Codex sub-worktrees.
 
-3. **test-driven-development** - Activates during implementation. Enforces RED-GREEN-REFACTOR: write failing test, watch it fail, write minimal code, watch it pass, commit. Deletes code written before tests.
+3. **executing-tasks** - Runs one approved Orca task directly in its assigned sub-worktree with per-task TDD and final verification.
+
+4. **test-driven-development** - Activates during implementation. Enforces RED-GREEN-REFACTOR: write failing test, watch it fail, write minimal code, watch it pass, commit. Deletes code written before tests.
 
 **The agent checks for relevant skills before any task.** Mandatory workflows, not suggestions.
 
@@ -138,7 +140,8 @@ gemini extensions update superpowers
 
 **Collaboration** 
 - **brainstorming** - Socratic design refinement
-- **executing-specs** - Hands an approved spec to the executing-specs subagent for TDD execution
+- **orchestration-research** - Coordinates research, implementation sub-worktrees, and stacked PRs through Orca (user-triggered only)
+- **executing-tasks** - Implements an approved Orca task directly in its assigned sub-worktree
 - **recognize-and-learn** - Post-implementation retrospective; proposes process/skill changes on a branch + PR
 
 **Delivery** (user-triggered only — the agent never starts these on its own)
@@ -147,7 +150,7 @@ gemini extensions update superpowers
 - **improve-workflow** - Mine a PR's review feedback for repeatable lessons
 - **cleanup-worktree** - Tear down a worktree's Docker stack and remove the worktree
 
-Trigger these with `/review-changes` in Claude Code or `$review-changes` in Codex.
+Trigger manual workflows with their skill name in Claude Code or `$skill-name` in Codex.
 
 **Meta**
 - **writing-skills** - Create new skills following best practices (includes testing methodology)

@@ -2,7 +2,7 @@
 name: reader-friendly-writing
 description: >-
   Shared rule set for any write-up a reviewer reads — a pull request body, a
-  review understanding summary, or the reviewer zone of a design spec. Use when
+  review understanding summary, or a conversational design. Use when
   drafting or trimming reviewer-facing narrative, or when another skill asks you
   to apply the reader-friendly-writing rules.
 user-invocable: false
@@ -12,8 +12,8 @@ user-invocable: false
 
 Shared rule set for any write-up a reviewer reads — the PR body produced by the
 `create-pull-request` skill, the Phase 1 understanding summary produced by the
-`review-changes` skill, and the reviewer zone of a design spec produced by the
-`brainstorming` skill. Apply every rule below to that narrative. Each caller
+`review-changes` skill, and the design presented by the `brainstorming` skill.
+Apply every rule below to that narrative. Each caller
 adds its own specializations on top; where a caller's own instruction conflicts
 with a rule here, the caller wins.
 

@@ -1,0 +1,1 @@
+I am in an Orca implementation sub-worktree with an approved task prompt. Please implement the task directly in this session.

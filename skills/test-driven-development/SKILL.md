@@ -137,7 +137,7 @@ During RED → GREEN → REFACTOR for a single cycle, run **only** the test you 
 
 A spec implementation chains many inner loops — one per spec-defined step. Each loop covers exactly one piece of work, fast, with only its own test.
 
-The full test suite runs **only** as part of `verification-before-completion`, triggered **once** at the end of the implementation when the work is considered ready. Not before each task-level commit. Not anywhere inside the TDD cycle.
+At task completion, run the focused tests and checks relevant to the task's owned behavior and affected surface. Broader repository coverage belongs to CI.
 
 ```bash
 vendor/bin/phpunit --filter testMethodName tests/Path/SomeTest.php
@@ -176,7 +176,7 @@ Before marking work complete:
 - [ ] Each test failed for expected reason (feature missing, not typo)
 - [ ] Wrote minimal code to pass each test
 - [ ] Your new test passes (inner loop)
-- [ ] Full suite triggered only via verification-before-completion (at end of implementation)
+- [ ] Focused task-relevant verification run at the end of implementation
 - [ ] Output pristine (no errors, warnings)
 - [ ] Tests follow Detroit/Chicago School (real collaborators, state-based)
 - [ ] Edge cases and errors covered

@@ -77,10 +77,10 @@ assert_no_hits() {
     fi
 }
 
-# The four workflow skills that must be manual-only on both platforms.
-WORKFLOW_SKILLS=(review-changes create-pull-request improve-workflow cleanup-worktree)
+# Workflow skills that must be manual-only on both platforms.
+WORKFLOW_SKILLS=(review-changes create-pull-request improve-workflow cleanup-worktree orchestration-research)
 
-echo "== the four workflow skills live under skills/"
+echo "== manual-only workflow skills live under skills/"
 if run_test relocated; then
     for s in "${WORKFLOW_SKILLS[@]}"; do
         assert_file_exists "$REPO_ROOT/skills/$s/SKILL.md" "skills/$s/SKILL.md exists"

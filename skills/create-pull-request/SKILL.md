@@ -1,6 +1,6 @@
 ---
 name: create-pull-request
-allowed-tools: Bash(gh pr create:*), Bash(gh pr list:*), Bash(gh pr view:*), Bash(gh pr checks:*), Bash(gh pr comment:*), Bash(gh run view:*), Bash(gh api:*), Bash(git log:*), Bash(git diff:*), Bash(git status:*), Bash(git branch:*), Bash(git rev-parse:*), Bash(git symbolic-ref:*), Bash(git push:*), Bash(git add:*), Bash(git commit:*), Bash(git remote:*)
+allowed-tools: Bash(gh pr create:*), Bash(gh pr list:*), Bash(gh pr view:*), Bash(gh pr checks:*), Bash(gh pr comment:*), Bash(gh run view:*), Bash(gh api:*), Bash(git log:*), Bash(git diff:*), Bash(git status:*), Bash(git branch:*), Bash(git rev-parse:*), Bash(git symbolic-ref:*), Bash(git push:*), Bash(git add:*), Bash(git commit:*), Bash(git remote:*), Bash(orca:*), Bash(orca-dev:*), Bash(orca-ide:*)
 disable-model-invocation: true
 description: >-
   Create a pull request for the current branch, detecting the repo's own
@@ -267,240 +267,59 @@ and re-show the preview.
   wasn't detected from this repo's own conventions or template.
 - Return the PR URL to the user.
 
-### 10. Offer to Observe the PR
+### 10. Choose Observation Mode
 
-After returning the PR URL, ask the user (yes/no) whether to observe the
-PR — watch its CI and reviewer comments and act on them until it merges,
-closes, or goes quiet.
+After returning the PR URL, ask how the user wants to observe it:
 
-- If **no** — the command is done.
-- If **yes** — record the **observation context**, so every later
-  wake-up knows exactly what it's watching:
-  - repository (owner/name from `git remote get-url origin`)
-  - PR number (from the PR just created)
-  - feature branch
-  - `<base>` branch (detected in Step 1)
-  - a **PR brief** — at most ~10 lines: what this PR changes and why,
-    plus anything detected in Steps 1–2 that a fresh executor would
-    otherwise have to rediscover (test/lint commands, review-bot
-    conventions, repo quirks). This is the "summary of context" handed
-    to every pass agent.
-  - a **last-handled marker** for comments — the highest comment ID
-    already processed, initially `0` so the pass agent's `select(.id >
-    <marker>)` filter works unchanged on the first pass.
-  - the **last fingerprint** (initially empty) — the short string from
-    the probe in Step 11, used to detect "nothing moved" without
-    dispatching anything.
-  - the **idle-pass counter** (initially `0`) — consecutive passes that
-    found nothing to do.
-  - the **CI-fix attempt count** (initially `0`) — pushes made to fix CI
-    that haven't yet produced a green run.
-  - the **pass count** and **observation start time**, for the absolute
-    ceiling below.
+| Mode | Behavior |
+|---|---|
+| **Do not observe — manual** | Stop after creating the PR. The user handles CI and comments manually. |
+| **Full observe** | Watch CI and review comments. Route failures and actionable feedback to the implementation worker, which fixes issues and responds to comment threads. |
+| **CI observe** | Watch CI only. Route CI failures to the implementation worker. Never fetch, process, or respond to review comments. |
 
-  This context is the loop's entire memory. Keep it small and carry it
-  forward across wake-ups; everything bulky lives in the pass agents.
+PR approval authorizes creation only. Wait for this separate choice before starting observation.
 
-### 11. Observe the PR
+- For **manual**, stop.
+- For **full** or **CI**, invoke the **orchestration** skill and create one read-only Orca task named `observe-<specific-topic>`.
+- Preserve the selected mode and implementation ownership route in the task context: repository and PR number, feature and base branches, implementation task name, implementation sub-worktree, original worker terminal/Dispatch when available, and a short PR brief.
+- Start the observer in a separate Codex session. It never edits files, commits, pushes, or replies as the implementation author.
 
-Observation runs as a **background, auto-resuming loop**: one pass per
-wake-up, rescheduled with `ScheduleWakeup`, so this session stays free
-between passes. The loop stops when the PR is `MERGED` or `CLOSED`, when
-**three consecutive passes find nothing to do**, or when a retry guard
-below fires. Each wake-up re-reads live PR state rather than trusting
-stale in-context state.
+Once the observer starts, the PR-creating worker does not perform observation passes. It waits for routed findings or other work.
 
-**Every pass runs in a dispatched subagent, not in this session.** CI
-logs, diffs, and fix attempts are bulky and would swamp the main context
-window, so this session only ever holds the small observation context and
-a short report per pass. Dispatch with `Agent`, `subagent_type:
-general-purpose`, `model: sonnet` — sonnet 5 is the executor for
-observation work.
+### 11. Observe and Route Findings
 
-**Per wake-up, this session does exactly four things:**
+Only the observer watches the PR. Both automatic modes inspect PR state and CI. Full mode also inspects inline comments, general comments, and review summaries. CI mode never queries comment or review content. Keep reads bounded: query only state/check summaries and, in full mode, comments newer than the stored marker; inspect only relevant failure-log excerpts.
 
-1. **Probe — cheap, and never skipped.** One reduced-output read that
-   tells you whether anything moved. Reduce *before* the data reaches
-   context, never after:
+Use the colocated `observe-pr-tick.sh` decision helper for idle backoff and stopping guards. Resolve it from this skill's directory. A changed or unavailable fingerprint triggers an observation pass; an unchanged fingerprint advances the idle counter without starting another worker.
 
-   ```
-   gh pr view <n> --repo <repo> --json state,statusCheckRollup \
-     --jq '[.state] + [.statusCheckRollup[]? | "\(.name):\(.conclusion // .status)"] | join("|")'
-   gh api --paginate repos/<repo>/pulls/<n>/comments --jq '.[].id' | awk 'END{print NR":"$0}'
-   gh api --paginate repos/<repo>/issues/<n>/comments  --jq '.[].id' | awk 'END{print NR":"$0}'
-   ```
+The observer classifies new information:
 
-   Concatenate the three lines — that's the fingerprint. Adapt the
-   filters if a repo needs it; the requirement is that the output stays
-   a short string, not that these exact expressions are used.
+| Finding | Route |
+|---|---|
+| CI still pending or PR unchanged | Record status and continue the observation schedule |
+| Concrete CI failure | Send the evidence to the owning implementation worker in full or CI mode |
+| Actionable review request | In full mode, send it to the owning implementation worker; CI mode never reads it |
+| Product, behavior, scope, or architecture decision from review | In full mode, send it to the research orchestrator for a user decision |
+| PR merged or closed | Report the terminal state and stop |
 
-   Feed the fingerprint and the stored counters to
-   `observe-pr-tick.sh` (Step 4) and obey its `action`. In short:
-   a `MERGED`/`CLOSED` PR stops with a final summary; an unchanged
-   fingerprint is an idle pass that **must not cost an agent boot**; a
-   changed or uncomputable fingerprint dispatches, because failing to
-   compute should fail toward doing work rather than toward idling on
-   data you don't have.
+The observer does not fix findings itself. Route actionable evidence through Orca:
 
-2. **Dispatch one pass agent** (background), handing it the PR brief,
-   repo, PR number, feature branch, `<base>`, the last-handled comment
-   marker, the CI-fix attempt count, and the pass instructions below.
-   Never re-derive the brief — pass the stored one verbatim. Do not read
-   CI logs, diffs, or comment bodies yourself.
+- If the original implementation worker has a live Dispatch, send the finding to that Dispatch.
+- If its Dispatch has settled, notify the Run coordinator. The coordinator creates a named follow-up task in the same implementation sub-worktree and reuses the exact worker terminal when available; otherwise it starts a fresh Codex session in that sub-worktree.
+- Keep only one fix task active for a PR at a time.
 
-   - **Never two agents in flight.** If a pass agent from an earlier
-     wake-up is still running, skip this wake-up entirely and reschedule
-     — two agents on one PR means duplicate pushes and duplicate replies.
-   - **Keep the prompt prefix byte-identical** across dispatches: brief
-     and instructions first, worded the same every time, with the
-     varying state (marker, counts) appended last. A stable prefix is a
-     cache hit; a reshuffled one is a full re-read.
+The implementation worker owns every correction. For behavioral changes it follows RED -> GREEN -> REFACTOR, reproducing the issue with a focused failing test before editing production code. It runs the focused tests and checks for the correction; CI supplies broader repository coverage. It commits, pushes, and reports the new commit through Orca. In full mode it also responds to the relevant review thread with what changed, or answers a comment that required no code change. The observer then resumes against the updated PR.
 
-3. **Process the returned report** — apply it to the observation context
-   (advance the marker, update the CI-fix attempt count, increment the
-   pass count), enforce the retry guards below, and relay a one-or-two-
-   line status to the user. The agent's own report is not shown to the
-   user, so surface anything they need — especially decision-required
-   comments, verbatim. The fingerprint is stored from the probe, not from
-   the report: if the agent pushed or replied, the next probe will
-   legitimately differ, and that next pass is not idle.
+Stop observation when:
 
-4. **Reschedule or stop.** The agent's completion notification is the
-   primary wake signal, so do not schedule a short wakeup to poll it;
-   set a long fallback (~1200s) while it runs so a hung pass can't kill
-   the loop. There is no fast CI cadence: a pass agent watches CI to
-   completion itself (see below), so the loop never polls a running
-   pipeline.
+- The PR merges or closes
+- Three consecutive probes find no change
+- Three correction attempts fail to make progress
+- Roughly 20 passes or two hours elapse
+- A decision is waiting on the user
+- The user asks to stop
 
-   Otherwise the next `ScheduleWakeup` delay is **driven by the idle-pass
-   counter** — quiet PRs get checked progressively less often:
-
-   | Idle counter | Next check in |
-   |---|---|
-   | `0` (something moved last pass) | 10 minutes |
-   | `1` | 20 minutes |
-   | `2` | 30 minutes |
-   | `3` | — stop, do not reschedule |
-
-   Any change resets the counter to `0`, and the delay goes back to 10
-   minutes with it — the backoff always restarts from the beginning, it
-   never resumes where it left off. A fully quiet PR is therefore
-   observed for 10 + 20 + 30 = ~60 minutes before the loop stops.
-
-   **Do not compute this by hand — run the decision script.** It owns the
-   idle rule, the backoff, and every guard below, so the constraint holds
-   identically on every wake-up.
-
-   The script `observe-pr-tick.sh` sits in this skill's own directory. Resolve
-   its absolute path before the first call — in Claude Code that is
-   `${CLAUDE_SKILL_DIR}/observe-pr-tick.sh`; on other platforms it is the
-   directory holding this file. Written below as `<SKILL_DIR>/`:
-
-   ```
-   <SKILL_DIR>/observe-pr-tick.sh --state <state> \
-     --fingerprint "<this pass's probe>" --last-fingerprint "<stored probe>" \
-     --idle-count <n> --pass-count <n> --elapsed-minutes <n> [--blocked]
-   ```
-
-   It prints `action` (`stop` | `dispatch` | `wait`), `reason`,
-   `idle_count` to store, and `delay_seconds` to pass to
-   `ScheduleWakeup`. Obey `action` literally: `wait` means reschedule
-   without dispatching an agent, `stop` means do not reschedule at all.
-
-   **Stop rescheduling entirely when the loop is blocked on the user** —
-   a decision-required comment or an escalated guard. Their reply is the
-   resume signal. Waking up to rediscover the same blocked state is pure
-   burn, and overnight it is a lot of it.
-
-**Pass agent instructions** (include these in the dispatch prompt):
-
-1. **CI pass** — `gh pr checks`. If checks are still running, wait them
-   out in-process with `gh pr checks --watch` under a bounded timeout
-   (~10 minutes), rather than returning and making the parent poll. If
-   the budget expires, report the checks as still pending and return.
-
-   If any check is **failing**: read the logs *bounded*, never whole.
-   Grep for failure markers first and expand only around the hits —
-   `gh run view --log-failed | grep -nEi 'error|failed|assert' | head -40`,
-   then pull context around the interesting line numbers. A CI log is
-   routinely tens of thousands of lines; dumping one into context is the
-   single most expensive mistake available to you.
-
-   Diagnose, fix on the feature branch, commit, and push. The push
-   re-triggers CI. Autonomous — do not ask before pushing.
-
-   Verify a fix by running the **specific failing test**, not the full
-   suite. CI confirms the rest; that's what the next pass is for.
-
-2. **Comment pass** — fetch actionable comments with the marker pushed
-   *into the query*, so already-handled comments never materialize in
-   your context at all:
-
-   ```
-   gh api --paginate repos/<repo>/pulls/<n>/comments \
-     --jq '.[] | select(.id > <marker>) | {id, path, line, user: .user.login, body}'
-   ```
-
-   Do the same for `repos/<repo>/issues/<n>/comments` (general PR
-   comments) and `gh pr view <n> --json reviews` (review summaries —
-   request-changes / approve bodies). Include **both humans and bots**
-   (linters, review bots). Exclude your own replies. Never fetch every
-   comment and dedupe afterward — on a long PR that re-reads the entire
-   review history each pass to discover nothing new.
-
-3. **Triage each new comment:**
-
-   | Category | Examples | Action |
-   |---|---|---|
-   | **Auto-fixable** | styling, code improvements, refactoring, questions | Apply the fix (or, for a pure question, compose the answer); push if code changed; **reply on that thread** stating what was done. Autonomous — no confirmation. |
-   | **Decision-required** | flow changes, business-rule changes, critical failures | **Do not act, and do not reply.** Return it verbatim in the report for the parent to escalate. |
-
-4. **Report back in this exact shape, and nothing more** — no logs, no
-   diffs, no transcripts. The parent's context is the thing being
-   protected:
-   - `pr_state`: current state from `gh pr view`.
-   - `checks`: one line per check — `<name>: <conclusion>`.
-   - `new_marker`: highest comment ID handled this pass (or the marker
-     unchanged).
-   - `actions_taken`: one line each, or `none`.
-   - `ci_fix_attempts`: the count you were given, plus any push you made
-     this pass.
-   - `decision_required`: each such comment verbatim with its thread URL,
-     or `none`.
-
-**Idle constraint — hard, enforced by this session on every pass.** It is
-decided by the probe and `observe-pr-tick.sh`, never by a subagent, so
-nothing in a pass report can talk the loop into continuing:
-
-- Fingerprint unchanged → idle pass, counter increments (10 → 20 → 30
-  minute backoff).
-- Fingerprint changed, or unavailable → counter resets to `0`.
-- Counter reaches **3** (idle, idle, idle) → **stop.** Report the final
-  summary plus `PR #<n> unchanged for 3 consecutive checks — stopping
-  observation. Ask me to observe again if you want it resumed.` Do
-  **not** dispatch another pass and do **not** reschedule.
-
-Store the returned counter and the fingerprint before rescheduling. Never
-skip the probe to keep a loop alive, and never reset the counter just
-because the PR is still open — an unchanged PR is exactly the case this
-constraint exists to stop.
-
-**Retry guards (prevent loops):**
-
-- 3 consecutive idle passes → stop observing entirely (above).
-- ≥3 CI-fix attempts without CI going green → stop dispatching CI fixes
-  and escalate to the user. Pass the running count into each dispatch so
-  a fresh agent can't reset it.
-- A fix that reintroduces the same failure it just fixed → escalate
-  immediately.
-- **Absolute ceiling** — stop after ~20 passes or ~2 hours of
-  observation, whichever comes first, and tell the user the loop ended on
-  the ceiling with the PR still open. This backstops the case the idle
-  rule cannot catch: a PR that keeps changing (a chatty bot, a flapping
-  check) so the fingerprint never repeats and no pass is ever idle.
-- Escalating for any reason means **stop rescheduling** and wait for the
-  user, per Step 4.
-- The user can interrupt the observation at any time.
+On stop, report the reason to the implementation worker and research orchestrator. Never merge the PR, delete the sub-worktree, or discard its branch.
 
 ## Guardrails
 
