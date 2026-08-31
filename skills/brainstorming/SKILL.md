@@ -21,7 +21,7 @@ Create a task for each item and complete them in order:
 4. **Propose 2-3 approaches** — explain trade-offs and lead with a recommendation.
 5. **Present the design** — validate sections incrementally, scaled to complexity.
 6. **Summarize the approved design** — keep the complete implementation context in conversation.
-7. **Hand off deliberately** — for implementation-oriented work, tell the user to invoke `orchestration-research` with any optional run-wide guidance.
+7. **Hand off deliberately** — tell the user to invoke `orchestrator-agent` for a clear implementation direction or `orchestration-research` when open questions require research first.
 
 ## Understanding the Idea
 
@@ -66,7 +66,7 @@ Identify units that may proceed concurrently and those whose behavior or branch 
 
 After the user approves all design sections, provide a compact final design summary in conversation. Include the goal, chosen approach, boundaries, dependency shape, risks, and acceptance criteria.
 
-Do not write a design document or dispatch implementation. For work that needs research or implementation, direct the user to invoke the manual-only `orchestration-research` skill. That skill owns research delegation, task approvals, Orca sub-worktrees, implementation coordination, and stacked pull requests.
+Do not write a design document or dispatch implementation. Direct the user to `orchestrator-agent` when the implementation direction is clear. Use the manual-only `orchestration-research` skill when research must establish that direction first; it hands the resulting task DAG to `orchestrator-agent`.
 
 ## Visual Companion
 

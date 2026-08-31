@@ -114,6 +114,19 @@ if run_test shared_rules_invocable; then
         "reader-friendly-writing has no Codex opt-out"
 fi
 
+echo "== orchestrator-agent stays reusable by orchestration-research"
+if run_test orchestrator_agent_invocable; then
+    OA="$REPO_ROOT/skills/orchestrator-agent/SKILL.md"
+    assert_file_exists "$OA" "skills/orchestrator-agent/SKILL.md exists"
+    assert_not_contains "$OA" "disable-model-invocation" \
+        "orchestrator-agent allows skill-to-skill invocation"
+    assert_file_absent "$REPO_ROOT/skills/orchestrator-agent/agents/openai.yaml" \
+        "orchestrator-agent does not opt out of Codex invocation"
+    assert_contains "$REPO_ROOT/skills/orchestration-research/SKILL.md" \
+        "Use orchestrator-agent" \
+        "orchestration-research requires orchestrator-agent"
+fi
+
 echo "== callers invoke the shared rule set instead of including a path"
 if run_test callers_invoke_shared_rules; then
     for s in review-changes create-pull-request improve-workflow brainstorming; do

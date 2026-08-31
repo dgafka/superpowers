@@ -148,7 +148,7 @@ Then stop. Integration of the retrospective changes is the user's call.
 ## Integration
 
 **Typically called by:**
-- **superpowers:orchestration-research** — the orchestration run that completed the implementation tasks
+- **superpowers:orchestrator-agent** — the orchestration run that completed the implementation tasks
 
 **Operates on:**
 - The superpowers skills repo (separate from the project where the implementation happened)

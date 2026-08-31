@@ -299,7 +299,7 @@ The observer classifies new information:
 | CI still pending or PR unchanged | Record status and continue the observation schedule |
 | Concrete CI failure | Send the evidence to the owning implementation worker in full or CI mode |
 | Actionable review request | In full mode, send it to the owning implementation worker; CI mode never reads it |
-| Product, behavior, scope, or architecture decision from review | In full mode, send it to the research orchestrator for a user decision |
+| Product, behavior, scope, or architecture decision from review | In full mode, send it to the coordinating orchestrator for a user decision |
 | PR merged or closed | Report the terminal state and stop |
 
 The observer does not fix findings itself. Route actionable evidence through Orca:
@@ -319,7 +319,7 @@ Stop observation when:
 - A decision is waiting on the user
 - The user asks to stop
 
-On stop, report the reason to the implementation worker and research orchestrator. Never merge the PR, delete the sub-worktree, or discard its branch.
+On stop, report the reason to the implementation worker and coordinating orchestrator. Never merge the PR, delete the sub-worktree, or discard its branch.
 
 ## Guardrails
 

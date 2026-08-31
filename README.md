@@ -120,11 +120,13 @@ gemini extensions update superpowers
 
 1. **brainstorming** - Activates before writing code. Refines rough ideas through questions, explores alternatives, and presents a conversational design for validation.
 
-2. **orchestration-research** - Manually starts an Orca-coordinated research and implementation run. It delegates named research tasks, asks approval before each implementation task, and launches separate Codex sub-worktrees.
+2. **orchestrator-agent** - Manually coordinates a clear implementation objective across approved, named Orca tasks and separate Codex sub-worktrees.
 
-3. **executing-tasks** - Runs one approved Orca task directly in its assigned sub-worktree with per-task TDD and final verification.
+3. **orchestration-research** - Adds concurrent read-only research, then hands the synthesized implementation DAG to `orchestrator-agent`.
 
-4. **test-driven-development** - Activates during implementation. Enforces RED-GREEN-REFACTOR: write failing test, watch it fail, write minimal code, watch it pass, commit. Deletes code written before tests.
+4. **executing-tasks** - Runs one approved Orca task directly in its assigned sub-worktree with per-task TDD and final verification.
+
+5. **test-driven-development** - Activates during implementation. Enforces RED-GREEN-REFACTOR: write failing test, watch it fail, write minimal code, watch it pass, commit. Deletes code written before tests.
 
 **The agent checks for relevant skills before any task.** Mandatory workflows, not suggestions.
 
@@ -140,7 +142,8 @@ gemini extensions update superpowers
 
 **Collaboration** 
 - **brainstorming** - Socratic design refinement
-- **orchestration-research** - Coordinates research, implementation sub-worktrees, and stacked PRs through Orca (user-triggered only)
+- **orchestrator-agent** - Coordinates implementation sub-worktrees and stacked PRs through Orca; directly invokable and reused by orchestration-research
+- **orchestration-research** - Coordinates research and hands implementation to orchestrator-agent (user-triggered only)
 - **executing-tasks** - Implements an approved Orca task directly in its assigned sub-worktree
 - **recognize-and-learn** - Post-implementation retrospective; proposes process/skill changes on a branch + PR
 
