@@ -1,0 +1,59 @@
+tests/manual-only-skills/test-manual-only-skills.sh
+  s_d5ed60eac3afba::t_f5e880dba4e1f6 117-127
+  s_de18e1c6401cf1::t_5eafd1da4742eb 128-129
+skills/improve-workflow/SKILL.md
+  s_d5ed60eac3afba::t_5706a56e334600 25-26,130-132,134
+tests/skill-triggering/run-all.sh
+  s_d5ed60eac3afba::t_87995015bd8984 13
+README.md
+  s_d5ed60eac3afba::t_5706a56e334600 123,125,127-129,146
+  s_d5ed60eac3afba::t_87995015bd8984 145
+tests/skill-triggering/prompts/orchestrator-agent.txt
+  s_d5ed60eac3afba::t_87995015bd8984 1
+skills/recognize-and-learn/SKILL.md
+  s_d5ed60eac3afba::t_72acf9a0392c44 151
+skills/using-superpowers/SKILL.md
+  s_d5ed60eac3afba::t_72acf9a0392c44 101
+CLAUDE.md
+  s_d5ed60eac3afba::t_f5e880dba4e1f6 17
+  s_d5ed60eac3afba::t_84af6d0a729e81 9
+  s_d5ed60eac3afba::t_5706a56e334600 11,26-27
+.codex-plugin/plugin.json
+  s_d5ed60eac3afba::t_5706a56e334600 24-25
+skills/orchestrator-agent/SKILL.md
+  s_d5ed60eac3afba::t_4c83c1b4c43ce9 13-14
+  s_d5ed60eac3afba::t_78fece3075c6d3 1-12,15-68
+skills/executing-tasks/SKILL.md
+  s_d5ed60eac3afba::t_72acf9a0392c44 30,40,56,67
+skills/orchestration-research/SKILL.md
+  s_d5ed60eac3afba::t_f9e146b863c32a 3,12,14,16,18,20,22,24,30-33,35,37,39,41-46,48
+skills/brainstorming/SKILL.md
+  s_d5ed60eac3afba::t_72acf9a0392c44 24
+  s_d5ed60eac3afba::t_84af6d0a729e81 69
+skills/create-pull-request/SKILL.md
+  s_d5ed60eac3afba::t_72acf9a0392c44 302,322
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "f6f23abd6ce160b99a4ace1e059ce4d773d02101",
+  "prompts": {},
+  "sessions": {
+    "s_d5ed60eac3afba": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a04365-7fa5-7123-92e3-3b94108bb09a",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Dariusz Gafka <dariusz.gafka@lendable.co.uk>"
+    },
+    "s_de18e1c6401cf1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cbe13c26-ecc9-4af0-9922-0bfea33dabef",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Dariusz Gafka <dariusz.gafka@lendable.co.uk>"
+    }
+  }
+}
