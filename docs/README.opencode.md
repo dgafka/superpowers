@@ -90,19 +90,7 @@ To pin a specific version, use a branch or tag:
 
 ## How It Works
 
-The plugin does two things:
-
-1. **Injects bootstrap context** via the `experimental.chat.system.transform` hook, adding superpowers awareness to every conversation.
-2. **Registers the skills directory** via the `config` hook, so OpenCode discovers all superpowers skills without symlinks or manual config.
-
-### Tool Mapping
-
-Skills written for Claude Code are automatically adapted for OpenCode:
-
-- `TodoWrite` → `todowrite`
-- `Task` with subagents → OpenCode's `@mention` system
-- `Skill` tool → OpenCode's native `skill` tool
-- File operations → Native OpenCode tools
+The plugin registers the skills directory via the `config` hook, so OpenCode discovers all superpowers skills without symlinks or manual config.
 
 ## Troubleshooting
 

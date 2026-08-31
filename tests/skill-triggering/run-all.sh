@@ -9,7 +9,7 @@ PROMPTS_DIR="$SCRIPT_DIR/prompts"
 
 SKILLS=(
     "test-driven-development"
-    "executing-tasks"
+    "orchestrator-subworktree-task"
     "orchestrator-agent"
 )
 

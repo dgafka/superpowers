@@ -42,12 +42,12 @@ else
     exit 1
 fi
 
-# Test 3: Check using-superpowers skill exists (critical for bootstrap)
-echo "Test 3: Checking using-superpowers skill (required for bootstrap)..."
-if [ -f "$SUPERPOWERS_SKILLS_DIR/using-superpowers/SKILL.md" ]; then
-    echo "  [PASS] using-superpowers skill exists"
+# Test 3: Verify the removed global bootstrap is absent
+echo "Test 3: Checking global bootstrap is absent..."
+if [ ! -e "$SUPERPOWERS_SKILLS_DIR/using-superpowers" ]; then
+    echo "  [PASS] using-superpowers skill is absent"
 else
-    echo "  [FAIL] using-superpowers skill not found (required for bootstrap)"
+    echo "  [FAIL] using-superpowers skill still exists"
     exit 1
 fi
 
@@ -60,13 +60,13 @@ else
     exit 1
 fi
 
-# Test 5: Verify bootstrap text does not reference a hardcoded skills path
-echo "Test 5: Checking bootstrap does not advertise a wrong skills path..."
-if grep -q 'configDir}/skills/superpowers/' "$SUPERPOWERS_PLUGIN_FILE"; then
-    echo "  [FAIL] Plugin still references old configDir skills path"
+# Test 5: Verify plugin only registers skills and does not inject bootstrap text
+echo "Test 5: Checking plugin does not inject bootstrap context..."
+if grep -q 'experimental.chat.messages.transform\|using-superpowers\|EXTREMELY_IMPORTANT' "$SUPERPOWERS_PLUGIN_FILE"; then
+    echo "  [FAIL] Plugin still injects global bootstrap context"
     exit 1
 else
-    echo "  [PASS] Plugin does not advertise a misleading skills path"
+    echo "  [PASS] Plugin only registers native skill discovery"
 fi
 
 # Test 6: Verify personal test skill was created

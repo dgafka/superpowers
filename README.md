@@ -1,18 +1,18 @@
 # Superpowers
 
-Superpowers is a complete software development methodology for your coding agents, built on top of a set of composable skills and some initial instructions that make sure your agent uses them.
+Superpowers is a software development methodology for coding agents, built from composable, task-oriented skills.
 
 ## How it works
 
-It starts from the moment you fire up your coding agent. As soon as it sees that you're building something, it *doesn't* just jump into trying to write code. Instead, it steps back and asks you what you're really trying to do. 
+Start with `brainstorming` to refine what you want to build, then invoke the appropriate orchestration workflow.
 
-Once it's teased a spec out of the conversation, it shows it to you in chunks short enough to actually read and digest. 
+It develops the design in conversation and presents it in sections short enough to read and validate.
 
-After you've signed off on the design, your agent decomposes the spec into bite-sized tasks, identifies which can run in parallel, and executes them with per-task TDD discipline — RED, GREEN, commit. It emphasizes true red/green TDD, YAGNI (You Aren't Gonna Need It), and DRY.
+After you've signed off on the design, the orchestrator decomposes it into bite-sized tasks, identifies which can run in parallel, and dispatches each implementation to its own sub-worktree with RED-GREEN-REFACTOR discipline. It emphasizes true test-first development, YAGNI (You Aren't Gonna Need It), and DRY.
 
-It's not uncommon for Claude to be able to work autonomously for a couple hours at a time without deviating from the spec you signed off on.
+The explicit task DAG and worker boundaries let agents work autonomously without drifting from the design you approved.
 
-There's a bunch more to it, but that's the core of the system. And because the skills trigger automatically, you don't need to do anything special. Your coding agent just has Superpowers.
+There's more to it, but that is the core of the task-oriented workflow.
 
 
 ## Sponsorship
@@ -120,15 +120,15 @@ gemini extensions update superpowers
 
 1. **brainstorming** - Activates before writing code. Refines rough ideas through questions, explores alternatives, and presents a conversational design for validation.
 
-2. **orchestrator-agent** - Manually coordinates a clear implementation objective across approved, named Orca tasks and separate Codex sub-worktrees.
+2. **orchestrator-agent** - Coordinates a clear implementation objective across approved, named Orca tasks and separate Codex sub-worktrees, explicitly requiring isolated TDD for every implementation task.
 
 3. **orchestration-research** - Adds concurrent read-only research, then hands the synthesized implementation DAG to `orchestrator-agent`.
 
-4. **executing-tasks** - Runs one approved Orca task directly in its assigned sub-worktree with per-task TDD and final verification.
+4. **orchestrator-subworktree-task** - Runs one approved Orca task directly in its assigned sub-worktree with per-task TDD and final verification.
 
 5. **test-driven-development** - Activates during implementation. Enforces RED-GREEN-REFACTOR: write failing test, watch it fail, write minimal code, watch it pass, commit. Deletes code written before tests.
 
-**The agent checks for relevant skills before any task.** Mandatory workflows, not suggestions.
+Invoke the workflow that matches the task. Implementation workers receive their required skills directly in the Orca task prompt.
 
 ## What's Inside
 
@@ -144,7 +144,7 @@ gemini extensions update superpowers
 - **brainstorming** - Socratic design refinement
 - **orchestrator-agent** - Coordinates implementation sub-worktrees and stacked PRs through Orca; directly invokable and reused by orchestration-research
 - **orchestration-research** - Coordinates research and hands implementation to orchestrator-agent (user-triggered only)
-- **executing-tasks** - Implements an approved Orca task directly in its assigned sub-worktree
+- **orchestrator-subworktree-task** - Implements an approved Orca task directly in its assigned sub-worktree
 - **recognize-and-learn** - Post-implementation retrospective; proposes process/skill changes on a branch + PR
 
 **Delivery** (user-triggered only — the agent never starts these on its own)
@@ -157,7 +157,6 @@ Trigger manual workflows with their skill name in Claude Code or `$skill-name` i
 
 **Meta**
 - **writing-skills** - Create new skills following best practices (includes testing methodology)
-- **using-superpowers** - Introduction to the skills system
 - **reader-friendly-writing** - Shared rule set for reviewer-facing write-ups, invoked by the Delivery skills and brainstorming
 
 ## Philosophy

@@ -32,6 +32,7 @@ Before starting each implementation sub-worktree, summarize:
 - Approved decisions and owned subsystem or file area
 - Dependencies and Git base
 - Acceptance and focused verification criteria
+- Execution discipline: `orchestrator-subworktree-task` plus standalone TDD
 - Run-wide and task-specific guidance
 - Intended GitHub PR-stack position
 
@@ -39,7 +40,14 @@ Ask the user to confirm the task. One message may present a concurrent wave, but
 
 Create each implementation as a separate Orca child sub-worktree from the main coordinator worktree. Independent tasks use sibling sub-worktrees based on the agreed trunk. A dependent task uses its prerequisite's stable branch as its Git base. When a task depends on multiple sibling branches, ask how to linearize or integrate them before choosing a base.
 
-Invoke `executing-tasks` in each Codex worker. The coordinator remains in the main worktree.
+Every implementation task prompt must include these instructions:
+
+- Invoke `orchestrator-subworktree-task` for the worker workflow.
+- **REQUIRED SUB-SKILL:** Use superpowers:test-driven-development for every behavior change.
+- Follow RED -> GREEN -> REFACTOR for each increment: write one focused test, watch it fail for the expected reason, write the minimum implementation, watch it pass, then refactor while green.
+- Run only the focused inner-loop and task-relevant tests; broader repository coverage belongs to CI.
+
+The coordinator remains in the main worktree.
 
 ## Questions and Decisions
 

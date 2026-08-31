@@ -127,6 +127,18 @@ if run_test orchestrator_agent_invocable; then
         "orchestration-research requires orchestrator-agent"
 fi
 
+echo "== orchestration owns implementation TDD without a global bootstrap"
+if run_test orchestration_tdd_contract; then
+    assert_file_absent "$REPO_ROOT/skills/using-superpowers" \
+        "using-superpowers skill is removed"
+    assert_contains "$REPO_ROOT/skills/orchestrator-agent/SKILL.md" \
+        "Use superpowers:test-driven-development for every behavior change" \
+        "orchestrator-agent requires standalone TDD in every implementation task"
+    assert_contains "$REPO_ROOT/skills/orchestrator-agent/SKILL.md" \
+        "RED -> GREEN -> REFACTOR" \
+        "orchestrator-agent places the TDD cycle in the worker contract"
+fi
+
 echo "== callers invoke the shared rule set instead of including a path"
 if run_test callers_invoke_shared_rules; then
     for s in review-changes create-pull-request improve-workflow brainstorming; do
@@ -137,7 +149,6 @@ fi
 
 echo "== no leftover Claude-Code-only constructs in skills/"
 if run_test no_leftovers; then
-    # hooks/ keeps CLAUDE_PLUGIN_ROOT for the session-start hook — skills/ must not.
     assert_no_hits 'CLAUDE_PLUGIN_ROOT' "no skill resolves paths via CLAUDE_PLUGIN_ROOT" \
         "$REPO_ROOT/skills"
     assert_no_hits '$ARGUMENTS' "no SKILL.md relies on \$ARGUMENTS substitution" \

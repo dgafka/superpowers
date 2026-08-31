@@ -4,11 +4,11 @@ Personal fork of [obra/superpowers](https://github.com/obra/superpowers), slimme
 
 ## What's different from upstream
 
-**Removed skills:** `subagent-driven-development`, `dispatching-parallel-agents`, `writing-plans`, `requesting-code-review`, `receiving-code-review`, `using-git-worktrees`, `systematic-debugging`, `finishing-a-development-branch`. Plus the `code-reviewer` agent and the deprecated `/brainstorm`, `/write-plan`, `/execute-plan` commands.
+**Removed skills:** `using-superpowers`, `subagent-driven-development`, `dispatching-parallel-agents`, `writing-plans`, `requesting-code-review`, `receiving-code-review`, `using-git-worktrees`, `systematic-debugging`, `finishing-a-development-branch`. Plus the global session bootstrap, the `code-reviewer` agent, and the deprecated `/brainstorm`, `/write-plan`, `/execute-plan` commands.
 
-**Workflow:** `brainstorming` develops an approved design in conversation. The reusable `orchestrator-agent` skill coordinates user-approved implementation tasks, separate Codex sub-worktrees, worker questions, and native GitHub stacked PRs. It is directly user-invokable and also callable by `orchestration-research`, which coordinates read-only research before handing over its synthesized task DAG. Each implementation worker invokes `executing-tasks` directly in its assigned sub-worktree. No generated design or task documents mediate the workflow.
+**Workflow:** `brainstorming` develops an approved design in conversation. The reusable `orchestrator-agent` skill coordinates user-approved implementation tasks, separate Codex sub-worktrees, worker questions, and native GitHub stacked PRs. It is directly user-invokable and also callable by `orchestration-research`, which coordinates read-only research before handing over its synthesized task DAG. Each implementation worker invokes `orchestrator-subworktree-task` directly in its assigned sub-worktree. No generated design or task documents mediate the workflow.
 
-**Orchestration:** the main worktree remains the coordination surface. Independent implementation tasks may run concurrently. Every implementation task receives a short `<action>-<topic>` name reused for its Orca task and sub-worktree, and requires user confirmation before dispatch. Dependent tasks use prerequisite branches as their Git bases. `orchestration-research` adds concurrent read-only research before reusing this implementation workflow.
+**Orchestration:** the main worktree remains the coordination surface. Independent implementation tasks may run concurrently. Every implementation task receives a short `<action>-<topic>` name reused for its Orca task and sub-worktree, requires user confirmation before dispatch, and explicitly instructs its worker to invoke the isolated `test-driven-development` skill and follow RED-GREEN-REFACTOR. Dependent tasks use prerequisite branches as their Git bases. `orchestration-research` adds concurrent read-only research before reusing this implementation workflow.
 
 **Review skill mapping:** `review-changes` scans available skills non-interactively during its understanding phase, invokes only relevant research or domain guidance, and uses it to enrich the review. It does not generate proposals or ask the user to approve a skill list.
 
@@ -24,7 +24,7 @@ Personal fork of [obra/superpowers](https://github.com/obra/superpowers), slimme
 
 - Preserve carefully tuned behavior-shaping wording in surviving skills (Red Flags tables, rationalization lists, "your human partner" phrasing).
 - `brainstorming` ends with the approved conversational design and directs the user to `orchestrator-agent` or `orchestration-research`; it does not dispatch implementation.
-- The main coordinator session never implements code. Each approved implementation runs through `executing-tasks` in its own Orca sub-worktree.
+- The main coordinator session never implements code. Each approved implementation runs through `orchestrator-subworktree-task` in its own Orca sub-worktree.
 - The `recognize-and-learn` skill writes to a separate branch in this repo and opens a PR — it never edits skills directly on `main`.
 - Don't restore removed skills without a clear reason — the goal of the fork is fewer moving parts, not feature parity.
 - Don't reintroduce `commands/`. New user-triggered workflows go in `skills/` with both manual-only declarations.

@@ -67,7 +67,6 @@ EXCLUDES=(
 
   # Directories not shipped by canonical Codex plugins
   "/docs/"
-  "/hooks/"
   "/lib/"
   "/scripts/"
   "/tests/"

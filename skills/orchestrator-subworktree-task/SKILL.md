@@ -1,9 +1,9 @@
 ---
-name: executing-tasks
+name: orchestrator-subworktree-task
 description: Use when implementing one approved Orca task inside its dedicated implementation sub-worktree
 ---
 
-# Executing Tasks
+# Orchestrator Subworktree Task
 
 ## Overview
 
