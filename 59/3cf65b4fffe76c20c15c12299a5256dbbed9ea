@@ -1,0 +1,54 @@
+tests/skill-triggering/run-test.sh
+  s_d5ed60eac3afba::t_09a45c9b2a3d0d 16
+gemini-extension.json
+  s_d5ed60eac3afba::t_a558f9b529afda 4
+docs/README.codex.md
+  s_d5ed60eac3afba::t_a558f9b529afda 52
+.opencode/plugins/superpowers.js
+  s_d5ed60eac3afba::t_bc7e6ed45a5762 12
+tests/opencode/test-plugin-loading.sh
+  s_d5ed60eac3afba::t_b8cef797e93a66 45-48,50,63-66,69
+skills/orchestrator-subworktree-task/SKILL.md
+  s_d5ed60eac3afba::t_09a45c9b2a3d0d 2,6
+skills/orchestrator-agent/SKILL.md
+  s_d5ed60eac3afba::t_09a45c9b2a3d0d 35,45
+  s_d5ed60eac3afba::t_a558f9b529afda 43-44,46-50
+skills/writing-skills/SKILL.md
+  s_d5ed60eac3afba::t_831024cf8e0392 598
+tests/manual-only-skills/test-manual-only-skills.sh
+  s_d5ed60eac3afba::t_b8cef797e93a66 130-141
+.cursor-plugin/plugin.json
+  s_d5ed60eac3afba::t_a558f9b529afda 20
+README.md
+  s_d5ed60eac3afba::t_a558f9b529afda 3,7,15,123,131
+  s_d5ed60eac3afba::t_b782c600994985 13
+  s_d5ed60eac3afba::t_831024cf8e0392 9,11
+  s_d5ed60eac3afba::t_09a45c9b2a3d0d 127,147
+docs/README.opencode.md
+  s_d5ed60eac3afba::t_a558f9b529afda 93
+tests/skill-triggering/run-all.sh
+  s_d5ed60eac3afba::t_09a45c9b2a3d0d 12
+skills/improve-workflow/SKILL.md
+  s_d5ed60eac3afba::t_09a45c9b2a3d0d 134
+CLAUDE.md
+  s_d5ed60eac3afba::t_09a45c9b2a3d0d 9,27
+  s_d5ed60eac3afba::t_a558f9b529afda 7,11
+tests/opencode/test-tools.sh
+  s_d5ed60eac3afba::t_a558f9b529afda 39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "593cf65b4fffe76c20c15c12299a5256dbbed9ea",
+  "prompts": {},
+  "sessions": {
+    "s_d5ed60eac3afba": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a04365-7fa5-7123-92e3-3b94108bb09a",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Dariusz Gafka <dariusz.gafka@lendable.co.uk>"
+    }
+  }
+}
