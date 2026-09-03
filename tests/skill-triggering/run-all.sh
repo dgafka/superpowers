@@ -11,6 +11,7 @@ SKILLS=(
     "test-driven-development"
     "orchestrator-subworktree-task"
     "orchestrator-agent"
+    "review-changes"
 )
 
 echo "=== Running Skill Triggering Tests ==="

@@ -1,7 +1,6 @@
 ---
 name: review-changes
 allowed-tools: Bash(gh pr view:*), Bash(gh pr diff:*), Bash(gh api:*), Bash(git diff:*), Bash(git log:*), Bash(git status:*), Bash(git branch:*), Bash(git rev-parse:*), Bash(git symbolic-ref:*), Bash(git remote:*), Edit, Bash
-disable-model-invocation: true
 argument-hint: "[pr-url or owner/repo#123]  (defaults to the current branch)"
 description: >-
   Review a set of code changes — a GitHub pull request or the current
@@ -25,6 +24,13 @@ template, ticket format, Jira instance) is always detected or asked at
 runtime — this command carries none of a project's own conventions as fixed
 values.
 
+When an approved Orca `review-<topic>` task invokes this skill, the
+Orchestrated Review Mode below overrides the interactive mode selection and
+action loop. Manual invocations keep the existing workflow unchanged.
+
+**REQUIRED SUB-SKILL:** Use orchestration for task questions, findings delivery,
+and worker lifecycle when running inside an Orca review task.
+
 ## Reader-Friendly Output
 
 Before writing the Phase 1 summary, invoke the **reader-friendly-writing** skill
@@ -34,6 +40,31 @@ behavior-level, scannable, and free of code the reader can already see in the
 diff. This shapes Phase 1 only — including the shared rule set's highlighting
 budget and its trim pass; Phase 2 findings keep their code citations and their
 failing test cases (see below).
+
+## Orchestrated Review Mode
+
+Use this mode only when the task prompt identifies an explicitly requested
+`review-<topic>` Orca task and its matching completed `implement-<topic>` task.
+The task prompt must provide the review target, base branch or PR reference,
+approved implementation context, focus, and whether inline PR comments are
+authorized.
+
+- Run in a separate Codex session against the implementation task's existing
+  sub-worktree. Do not create another worktree.
+- Use peer-review semantics for both local and PR targets. Skip Step 2's mode
+  and focus questions and the Phase 1 peer-review pause because the task prompt
+  already supplies those decisions.
+- Never edit files, write tests, apply fixes, commit, or push. Proposed failing
+  tests remain evidence in the findings only.
+- For a local target or report-only PR target, return the complete severity-
+  ranked findings through Orca without posting externally.
+- For a PR target with explicit comment authorization in the task prompt, post
+  findings as inline comments. Never infer authorization and never submit an
+  overall approve, request-changes, or comment verdict.
+- Report the reviewed commit SHA, target, findings, and remaining uncertainty to
+  the orchestrator. The original implementation worker owns every fix.
+- Send `worker_done` exactly once through the active Orca Dispatch, then end the
+  turn. The orchestrator may reuse this exact reviewer session after fixes.
 
 ## Process
 
@@ -71,8 +102,9 @@ no arguments to resolve an open PR for the current branch. If none exists,
 tell the user inline posting won't be available this run — the review still
 runs, ending in a chat-only list (see Step 5).
 
-This command always runs in the current session — there is no subagent
-dispatch here.
+Manual invocation always runs in the current session. In orchestrated mode,
+`orchestrator-agent` owns the separate reviewer session; this skill never
+dispatches another agent itself.
 
 ### 3. Phase 1 — Understanding
 
@@ -153,7 +185,7 @@ Then:
   failing item first (invoke the skill now if it isn't already loaded). The checklist's
   verification-evidence item does not apply here (there is no test-plan
   section); every other item does.
-- **Peer-review:** pause — ask "Any questions before we move to the review,
+- **Peer-review (manual mode only):** pause — ask "Any questions before we move to the review,
   or should we proceed to Phase 2?" Answer follow-ups, re-summarize if
   useful, proceed once the user says go.
 - **Self-review:** present the summary and move straight into Phase 2 — no
@@ -162,7 +194,7 @@ Then:
 - **Context-review:** present the summary, answer any follow-up questions,
   then stop. Phase 2 never runs in this mode.
 
-### 4. Phase 2 — Review (self-review and peer-review only)
+### 4. Phase 2 — Review (self-review, peer-review, and orchestrated review)
 
 Work through these, in order, weighted by the Phase 1 classification:
 
@@ -284,7 +316,13 @@ is real:
 - Present the output as a numbered list in chat: severity, file:line,
   description, then the failing test case where the finding has one.
 
-### 5. Action Loop (self-review and peer-review only)
+### 5. Action Loop (manual self-review and peer-review only)
+
+Orchestrated review does not enter this action loop. Follow Orchestrated Review
+Mode: deliver findings through Orca, post inline comments only when the task
+prompt explicitly authorizes them, and leave all fixes to the original
+implementation worker. After `worker_done`, stop; the remaining instructions in
+this section apply only to manual review.
 
 Present the full numbered list at once, then ask for a **single consolidated
 response** dispositioning every point by number — e.g. "1, 3 approve; 2

@@ -78,7 +78,7 @@ assert_no_hits() {
 }
 
 # Workflow skills that must be manual-only on both platforms.
-WORKFLOW_SKILLS=(review-changes create-pull-request improve-workflow cleanup-worktree orchestration-research)
+WORKFLOW_SKILLS=(create-pull-request improve-workflow cleanup-worktree orchestration-research)
 
 echo "== manual-only workflow skills live under skills/"
 if run_test relocated; then
@@ -125,6 +125,27 @@ if run_test orchestrator_agent_invocable; then
     assert_contains "$REPO_ROOT/skills/orchestration-research/SKILL.md" \
         "Use orchestrator-agent" \
         "orchestration-research requires orchestrator-agent"
+fi
+
+echo "== explicitly requested reviews reuse review-changes through Orca"
+if run_test orchestrated_reviews; then
+    REVIEW="$REPO_ROOT/skills/review-changes/SKILL.md"
+    assert_not_contains "$REVIEW" "disable-model-invocation" \
+        "review-changes allows orchestrated invocation"
+    assert_file_absent "$REPO_ROOT/skills/review-changes/agents/openai.yaml" \
+        "review-changes does not opt out of Codex invocation"
+    assert_contains "$REPO_ROOT/skills/orchestrator-agent/SKILL.md" \
+        "review-<topic>" \
+        "orchestrator-agent defines review task names"
+    assert_contains "$REPO_ROOT/skills/orchestrator-agent/SKILL.md" \
+        "only when the user explicitly requests" \
+        "orchestrator-agent gates review task creation"
+    assert_contains "$REVIEW" "## Orchestrated Review Mode" \
+        "review-changes defines its Orca worker mode"
+    assert_contains "$REVIEW" "Never edit files, write tests, apply fixes" \
+        "orchestrated reviewers remain read-only"
+    assert_contains "$REVIEW" 'Send `worker_done` exactly once' \
+        "orchestrated reviewers report completion through Orca"
 fi
 
 echo "== orchestration owns implementation TDD without a global bootstrap"

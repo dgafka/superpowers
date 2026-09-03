@@ -126,7 +126,9 @@ gemini extensions update superpowers
 
 4. **orchestrator-subworktree-task** - Runs one approved Orca task directly in its assigned sub-worktree with per-task TDD and final verification.
 
-5. **test-driven-development** - Activates during implementation. Enforces RED-GREEN-REFACTOR: write failing test, watch it fail, write minimal code, watch it pass, commit. Deletes code written before tests.
+5. **review-changes** - On explicit request, runs `review-<topic>` in a separate Codex session against local implementation work or a pull request.
+
+6. **test-driven-development** - Activates during implementation. Enforces RED-GREEN-REFACTOR: write failing test, watch it fail, write minimal code, watch it pass, commit. Deletes code written before tests.
 
 Invoke the workflow that matches the task. Implementation workers receive their required skills directly in the Orca task prompt.
 
@@ -142,13 +144,13 @@ Invoke the workflow that matches the task. Implementation workers receive their 
 
 **Collaboration** 
 - **brainstorming** - Socratic design refinement
-- **orchestrator-agent** - Coordinates implementation sub-worktrees and stacked PRs through Orca; directly invokable and reused by orchestration-research
+- **orchestrator-agent** - Coordinates implementation sub-worktrees, explicitly requested review sessions, and stacked PRs through Orca; directly invokable and reused by orchestration-research
 - **orchestration-research** - Coordinates research and hands implementation to orchestrator-agent (user-triggered only)
 - **orchestrator-subworktree-task** - Implements an approved Orca task directly in its assigned sub-worktree
 - **recognize-and-learn** - Post-implementation retrospective; proposes process/skill changes on a branch + PR
 
 **Delivery** (user-triggered only — the agent never starts these on its own)
-- **review-changes** - Build understanding of a change, then run a severity-tiered review
+- **review-changes** - Review local changes or a PR directly, or serve an explicitly requested `review-<topic>` Orca task
 - **create-pull-request** - Open a PR using the repo's own conventions and template
 - **improve-workflow** - Mine a PR's review feedback for repeatable lessons
 - **cleanup-worktree** - Tear down a worktree's Docker stack and remove the worktree

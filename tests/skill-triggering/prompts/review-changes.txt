@@ -1,0 +1,1 @@
+I am the separate Codex session for an explicitly requested review-payment-flow Orca task. Review the completed implementation in this existing sub-worktree and report findings without applying fixes.
