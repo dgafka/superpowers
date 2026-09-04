@@ -1,0 +1,32 @@
+docs/plans/2025-11-28-skills-improvements-from-user-feedback.md
+  s_c9dba755a7b762::t_6bad241d30498b 186,244,306,341,370,453,479,518,523,530,535,540,547,552
+  s_c9dba755a7b762::t_99964eeff70cbe 37
+skills/writing-skills/SKILL.md
+  s_c9dba755a7b762::t_99964eeff70cbe 284,401
+.codex-plugin/plugin.json
+  s_c9dba755a7b762::t_99964eeff70cbe 25
+docs/superpowers/specs/2026-05-25-skill-mapping-proposals-walkthrough-design.md
+  s_c9dba755a7b762::t_99964eeff70cbe 27-28,66,122,125,142,144,180,184,189,220,240,268,270,290
+docs/superpowers/specs/2026-05-15-skill-driven-spec-design.md
+  s_c9dba755a7b762::t_99964eeff70cbe 118,124,222
+docs/superpowers/specs/2026-05-13-tdd-fast-inner-loop-design.md
+  s_c9dba755a7b762::t_99964eeff70cbe 22,26,31,64,74,175
+skills/orchestrator-agent/SKILL.md
+  s_c9dba755a7b762::t_99964eeff70cbe 97
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "e2e8e32d66eb4f15c8553590b7fa97cca3def698",
+  "prompts": {},
+  "sessions": {
+    "s_c9dba755a7b762": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "01a06cd7-d199-7130-bf78-286613b67f93",
+        "model": "unknown"
+      },
+      "human_author": "Dariusz Gafka <dariusz.gafka@lendable.co.uk>"
+    }
+  }
+}
