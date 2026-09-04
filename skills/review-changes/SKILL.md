@@ -9,7 +9,7 @@ description: >-
   structured, severity-tiered review. Use when the user asks to review
   a PR, review the current branch's changes, review changes before
   opening a PR, get context/understanding on a set of changes without
-  reviewing them, or invokes /review-changes.
+  reviewing them, requests a review sub-session in an existing worktree, or invokes /review-changes.
 ---
 
 Review a set of code changes end-to-end: first build and confirm understanding
@@ -24,7 +24,7 @@ template, ticket format, Jira instance) is always detected or asked at
 runtime — this command carries none of a project's own conventions as fixed
 values.
 
-When an approved Orca `review-<topic>` task invokes this skill, the
+When an approved `review-<topic>` sub-session, tracked as an Orca task, invokes this skill, the
 Orchestrated Review Mode below overrides the interactive mode selection and
 action loop. Manual invocations keep the existing workflow unchanged.
 
@@ -49,8 +49,14 @@ The task prompt must provide the review target, base branch or PR reference,
 approved implementation context, focus, and whether inline PR comments are
 authorized.
 
-- Run in a separate Codex session against the implementation task's existing
-  sub-worktree. Do not create another worktree.
+- Run as a sub-session: a separate Codex terminal within the implementation
+  sub-worktree. Do not create another worktree. The launching coordinator must
+  first show `../orchestrator-agent/launch-confirmation.md` (resolved from this
+  skill directory), filled for this sub-session, and obtain confirmation. Do not
+  repeat that approval inside the already-approved reviewer.
+- Review the supplied stable commit while implementation edits are paused. If
+  the checkout changes, report it and re-establish the target with the coordinator
+  before continuing.
 - Use peer-review semantics for both local and PR targets. Skip Step 2's mode
   and focus questions and the Phase 1 peer-review pause because the task prompt
   already supplies those decisions.
@@ -64,7 +70,7 @@ authorized.
 - Report the reviewed commit SHA, target, findings, and remaining uncertainty to
   the orchestrator. The original implementation worker owns every fix.
 - Send `worker_done` exactly once through the active Orca Dispatch, then end the
-  turn. The orchestrator may reuse this exact reviewer session after fixes.
+  turn. The orchestrator may reuse this exact reviewer sub-session after fixes.
 
 ## Process
 

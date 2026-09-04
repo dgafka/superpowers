@@ -131,7 +131,7 @@ leads:
   direct implementation, or `orchestration-research` when evidence is still
   needed before implementation.
 
-Do **not** invoke `orchestrator-agent`, `orchestration-research`, `orchestrator-subworktree-task`,
+Do **not** invoke `orchestrator-agent`, `orchestration-research`, `orchestrator-subworktree`,
 `recognize-and-learn`, or any other skill
 directly from this command — brainstorming owns the rest of the pipeline.
 

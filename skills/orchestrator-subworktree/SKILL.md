@@ -1,13 +1,13 @@
 ---
-name: orchestrator-subworktree-task
-description: Use when implementing one approved Orca task inside its dedicated implementation sub-worktree
+name: orchestrator-subworktree
+description: Use when implementing approved work directly inside its dedicated Orca sub-worktree
 ---
 
-# Orchestrator Subworktree Task
+# Orchestrator Sub-worktree
 
 ## Overview
 
-Implement the active Orca task directly in the current Codex session. The task prompt is the plan: it carries the goal, boundaries, dependencies, guidance, acceptance criteria, and environment commands.
+Implement the approved work directly in the current sub-worktree and Codex session. Orca represents this assignment as a task; use sub-worktree in user-facing updates. The task prompt is the plan: it carries the goal, boundaries, dependencies, guidance, acceptance criteria, and environment commands.
 
 There is one execution path. Do not ask how to execute and do not dispatch another implementation agent.
 
@@ -17,11 +17,11 @@ There is one execution path. Do not ask how to execute and do not dispatch anoth
 
 **REQUIRED SUB-SKILL:** Use orchestration for Orca task questions and lifecycle reporting.
 
-## 1. Anchor to the Task
+## 1. Anchor to the Sub-worktree
 
 Read the injected Orca task prompt end-to-end. Identify:
 
-- Task name, goal, and observable outcome
+- Sub-worktree name, goal, and observable outcome
 - Global guidance and task-specific additions
 - Owned scope and explicit exclusions
 - Dependency branch and expected stack position
@@ -47,7 +47,7 @@ Run only the focused tests and checks relevant to the task's owned behavior and 
 
 Report completion through the active Orca Dispatch with:
 
-- Task name and outcome
+- Sub-worktree name and outcome
 - Branch and final commit SHA
 - Verification commands and results
 - Files modified
@@ -59,7 +59,7 @@ Send `worker_done` exactly once using the IDs injected by Orca, then end the dis
 
 Stop and ask through Orca when:
 
-- The checkout is not the approved task sub-worktree
+- The checkout is not the approved implementation sub-worktree
 - The task requires an unapproved behavioral or architectural decision
 - A dependency is missing or unstable
 - Required verification cannot be run or repeatedly fails for an unexplained reason

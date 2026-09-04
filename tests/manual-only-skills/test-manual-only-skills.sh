@@ -160,6 +160,17 @@ if run_test orchestration_tdd_contract; then
         "orchestrator-agent places the TDD cycle in the worker contract"
 fi
 
+echo "== implementation skill uses the sub-worktree name"
+if run_test subworktree_name; then
+    assert_file_exists "$REPO_ROOT/skills/orchestrator-subworktree/SKILL.md" \
+        "renamed implementation skill is discoverable"
+    assert_file_absent "$REPO_ROOT/skills/orchestrator-subworktree-task" \
+        "old implementation skill directory is removed"
+    assert_no_hits 'orchestrator-subworktree-task' "active references use the renamed skill" \
+        "$REPO_ROOT/skills" "$REPO_ROOT/tests/skill-triggering" \
+        "$REPO_ROOT/README.md" "$REPO_ROOT/CLAUDE.md"
+fi
+
 echo "== callers invoke the shared rule set instead of including a path"
 if run_test callers_invoke_shared_rules; then
     for s in review-changes create-pull-request improve-workflow brainstorming; do

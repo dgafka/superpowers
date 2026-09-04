@@ -8,9 +8,9 @@ Start with `brainstorming` to refine what you want to build, then invoke the app
 
 It develops the design in conversation and presents it in sections short enough to read and validate.
 
-After you've signed off on the design, the orchestrator decomposes it into bite-sized tasks, identifies which can run in parallel, and dispatches each implementation to its own sub-worktree with RED-GREEN-REFACTOR discipline. It emphasizes true test-first development, YAGNI (You Aren't Gonna Need It), and DRY.
+After you've signed off on the design, the orchestrator proposes named implementation sub-worktrees, identifies which can run in parallel, and presents a confirmation table before launching each with RED-GREEN-REFACTOR discipline. It emphasizes true test-first development, YAGNI (You Aren't Gonna Need It), and DRY.
 
-The explicit task DAG and worker boundaries let agents work autonomously without drifting from the design you approved.
+The explicit dependencies and worker boundaries let agents work autonomously without drifting from the design you approved.
 
 There's more to it, but that is the core of the task-oriented workflow.
 
@@ -120,17 +120,19 @@ gemini extensions update superpowers
 
 1. **brainstorming** - Activates before writing code. Refines rough ideas through questions, explores alternatives, and presents a conversational design for validation.
 
-2. **orchestrator-agent** - Coordinates a clear implementation objective across approved, named Orca tasks and separate Codex sub-worktrees, explicitly requiring isolated TDD for every implementation task.
+2. **orchestrator-agent** - Coordinates a clear implementation objective across approved, named implementation sub-worktrees, requiring a launch confirmation table and isolated TDD for each.
 
-3. **orchestration-research** - Adds concurrent read-only research, then hands the synthesized implementation DAG to `orchestrator-agent`.
+3. **orchestration-research** - Adds confirmed, concurrent read-only research sub-sessions, then hands the synthesized implementation DAG to `orchestrator-agent`.
 
-4. **orchestrator-subworktree-task** - Runs one approved Orca task directly in its assigned sub-worktree with per-task TDD and final verification.
+4. **orchestrator-subworktree** - Implements approved work directly in its assigned sub-worktree with TDD and final verification.
 
-5. **review-changes** - On explicit request, runs `review-<topic>` in a separate Codex session against local implementation work or a pull request.
+5. **review-changes** - On explicit request, runs `review-<topic>` as a confirmed sub-session within the existing implementation worktree, against local changes or a pull request.
 
 6. **test-driven-development** - Activates during implementation. Enforces RED-GREEN-REFACTOR: write failing test, watch it fail, write minimal code, watch it pass, commit. Deletes code written before tests.
 
-Invoke the workflow that matches the task. Implementation workers receive their required skills directly in the Orca task prompt.
+A **sub-session** is a separate Codex terminal within an existing worktree. Use it for review, read-only research, CI/PR observation, and explicitly requested independent verification. Each new sub-worktree or sub-session gets a confirmation table without Owns or Base rows. Routine tests and fixes stay with the original implementation worker. Orca tasks remain the underlying scheduling objects.
+
+Invoke the workflow that matches the work. Implementation workers receive their required skills directly in the Orca task prompt.
 
 ## What's Inside
 
@@ -144,13 +146,13 @@ Invoke the workflow that matches the task. Implementation workers receive their 
 
 **Collaboration** 
 - **brainstorming** - Socratic design refinement
-- **orchestrator-agent** - Coordinates implementation sub-worktrees, explicitly requested review sessions, and stacked PRs through Orca; directly invokable and reused by orchestration-research
+- **orchestrator-agent** - Coordinates implementation sub-worktrees, explicitly requested review sub-sessions, and stacked PRs through Orca; directly invokable and reused by orchestration-research
 - **orchestration-research** - Coordinates research and hands implementation to orchestrator-agent (user-triggered only)
-- **orchestrator-subworktree-task** - Implements an approved Orca task directly in its assigned sub-worktree
+- **orchestrator-subworktree** - Implements approved work directly in its assigned sub-worktree
 - **recognize-and-learn** - Post-implementation retrospective; proposes process/skill changes on a branch + PR
 
 **Delivery** (user-triggered only — the agent never starts these on its own)
-- **review-changes** - Review local changes or a PR directly, or serve an explicitly requested `review-<topic>` Orca task
+- **review-changes** - Review local changes or a PR directly, or serve an explicitly requested `review-<topic>` sub-session
 - **create-pull-request** - Open a PR using the repo's own conventions and template
 - **improve-workflow** - Mine a PR's review feedback for repeatable lessons
 - **cleanup-worktree** - Tear down a worktree's Docker stack and remove the worktree

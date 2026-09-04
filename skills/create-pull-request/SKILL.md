@@ -280,9 +280,9 @@ After returning the PR URL, ask how the user wants to observe it:
 PR approval authorizes creation only. Wait for this separate choice before starting observation.
 
 - For **manual**, stop.
-- For **full** or **CI**, invoke the **orchestration** skill and create one read-only Orca task named `observe-<specific-topic>`.
+- For **full** or **CI**, propose one read-only `observe-<specific-topic>` sub-session in the existing implementation worktree, tracked as an Orca task. Before launch, fill and show `../orchestrator-agent/launch-confirmation.md`, resolved from this skill directory, and obtain explicit confirmation. Include the selected mode and findings route; omit Owns and Base rows. The mode choice can also confirm the launch if the concrete table was already shown. Invoke the **orchestration** skill for dispatch.
 - Preserve the selected mode and implementation ownership route in the task context: repository and PR number, feature and base branches, implementation task name, implementation sub-worktree, original worker terminal/Dispatch when available, and a short PR brief.
-- Start the observer in a separate Codex session. It never edits files, commits, pushes, or replies as the implementation author.
+- Start the observer as a sub-session: a separate Codex terminal within that existing worktree. Do not create an observation worktree. It never edits files, commits, pushes, or replies as the implementation author.
 
 Once the observer starts, the PR-creating worker does not perform observation passes. It waits for routed findings or other work.
 
@@ -305,7 +305,7 @@ The observer classifies new information:
 The observer does not fix findings itself. Route actionable evidence through Orca:
 
 - If the original implementation worker has a live Dispatch, send the finding to that Dispatch.
-- If its Dispatch has settled, notify the Run coordinator. The coordinator creates a named follow-up task in the same implementation sub-worktree and reuses the exact worker terminal when available; otherwise it starts a fresh Codex session in that sub-worktree.
+- If its Dispatch has settled, notify the Run coordinator. The coordinator creates a named follow-up task in the same implementation sub-worktree and reuses the exact worker terminal when available; otherwise it proposes a fresh sub-session in that sub-worktree using the shared confirmation table before launch.
 - Keep only one fix task active for a PR at a time.
 
 The implementation worker owns every correction. For behavioral changes it follows RED -> GREEN -> REFACTOR, reproducing the issue with a focused failing test before editing production code. It runs the focused tests and checks for the correction; CI supplies broader repository coverage. It commits, pushes, and reports the new commit through Orca. In full mode it also responds to the relevant review thread with what changed, or answers a comment that required no code change. The observer then resumes against the updated PR.
