@@ -1,0 +1,30 @@
+skills/orchestrator-agent/SKILL.md
+  s_92871ebe34c701::t_98ff415d6e753c 31
+skills/orchestrator-agent/launch-confirmation.md
+  s_92871ebe34c701::t_98ff415d6e753c 11,23-29
+  s_fc8574b78ccbf1::t_1e764cd8f0915d 30
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "e35709f661c65bc1ccac3b3904ef226e6b263090",
+  "prompts": {},
+  "sessions": {
+    "s_92871ebe34c701": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a06d04-3166-7093-8600-428e4b6aa209",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "Dariusz Gafka <dariusz.gafka@lendable.co.uk>"
+    },
+    "s_fc8574b78ccbf1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "01a06cc0-3937-7161-86f8-a3375a9cdb93",
+        "model": "unknown"
+      },
+      "human_author": "Dariusz Gafka <dariusz.gafka@lendable.co.uk>"
+    }
+  }
+}
