@@ -152,7 +152,7 @@ Invoke the workflow that matches the work. Implementation workers receive their 
 - **review-changes** - Review local changes or a PR directly, or serve an explicitly requested `review-<topic>` sub-session
 - **create-pull-request** - Open a PR using the repo's own conventions and template
 - **improve-workflow** - Mine a PR's review feedback for repeatable lessons
-- **cleanup-worktree** - Tear down a worktree's Docker stack and remove the worktree
+- **cleanup-worktree** - Plan and verify cleanup of a worktree's Docker environment
 
 Trigger manual workflows with their skill name in Claude Code or `$skill-name` in Codex.
 

@@ -194,28 +194,26 @@ test_container_discovery() {
 run_test test_container_discovery
 
 # ---------------------------------------------------------------------------
-# Task 4a: worktree removal (no docker)
+# Docker-only execution preserves files and Git registration.
 # ---------------------------------------------------------------------------
-test_worktree_removal() {
-    # shellcheck source=/dev/null
+test_worktree_preserved() {
     source "$SCRIPT_UNDER_TEST"
-    local roots main wt
+    local roots main wt out rc before
     roots="$(make_repo_with_worktree)"
     main="${roots%% *}"; wt="${roots##* }"
-    local wt_abs; wt_abs="$(cw_abspath "$wt")"
-
-    cw_remove_worktree "$main" "$wt"
-    assert_true $? "remove_worktree exits zero"
-    [ ! -d "$wt" ]; assert_true $? "worktree directory is gone"
-    if git -C "$main" worktree list --porcelain | grep -Fq "worktree $wt_abs"; then
-        fail "worktree no longer registered in git"
-    else
-        pass "worktree no longer registered in git"
-    fi
+    echo scratch > "$wt/untracked.txt"
+    before="$(git -C "$main" worktree list --porcelain)"
+    docker() { return 0; }
+    export -f docker
+    out="$(bash "$SCRIPT_UNDER_TEST" execute "$wt" --yes --compose 2>&1)"; rc=$?
+    unset -f docker
+    assert_equals "$rc" "0" "empty Docker environment cleans up successfully"
+    assert_contains "$out" "Docker cleanup complete" "success describes Docker cleanup"
+    assert_equals "$(cat "$wt/untracked.txt" 2>/dev/null)" "scratch" "untracked file preserved"
+    assert_equals "$(git -C "$main" worktree list --porcelain)" "$before" "Git registration preserved"
     rm -rf "$(dirname "$main")"
 }
-
-run_test test_worktree_removal
+run_test test_worktree_preserved
 
 # ---------------------------------------------------------------------------
 # Task 4b: compose teardown + backstop (needs docker daemon)
@@ -269,26 +267,6 @@ test_cli_refuses_main() {
 run_test test_cli_refuses_main
 
 # ---------------------------------------------------------------------------
-# Task 5c: plan reports uncommitted changes (removal uses --force)
-# ---------------------------------------------------------------------------
-test_plan_reports_dirty_worktree() {
-    local roots main wt out
-    roots="$(make_repo_with_worktree)"
-    main="${roots%% *}"; wt="${roots##* }"
-
-    out="$(bash "$SCRIPT_UNDER_TEST" plan "$wt" 2>&1)"
-    assert_contains "$out" "DIRTY=no" "clean worktree reports DIRTY=no"
-
-    echo "scratch" > "$wt/untracked.txt"
-    out="$(bash "$SCRIPT_UNDER_TEST" plan "$wt" 2>&1)"
-    assert_contains "$out" "DIRTY=yes" "worktree with untracked file reports DIRTY=yes"
-
-    rm -rf "$(dirname "$main")"
-}
-
-run_test test_plan_reports_dirty_worktree
-
-# ---------------------------------------------------------------------------
 # Task 5b: CLI plan + execute end-to-end (needs docker daemon)
 # ---------------------------------------------------------------------------
 test_cli_plan_and_execute() {
@@ -308,8 +286,8 @@ test_cli_plan_and_execute() {
 
     out="$(bash "$SCRIPT_UNDER_TEST" execute "$wt" --yes 2>&1)"; rc=$?
     assert_equals "$rc" "0" "execute exits 0"
-    assert_contains "$out" "removed" "execute confirms worktree removal"
-    [ ! -d "$wt" ]; assert_true $? "worktree directory removed after execute"
+    assert_contains "$out" "Docker cleanup complete" "execute confirms Docker cleanup"
+    [ -d "$wt" ]; assert_true $? "worktree directory preserved after execute"
     assert_equals "$(docker ps -aq --filter "id=$cid" | grep -c .)" "0" "stack container removed after execute"
 
     # Safety net in case execute failed partway.
@@ -318,6 +296,107 @@ test_cli_plan_and_execute() {
 }
 
 run_test test_cli_plan_and_execute
+
+# Docker failures must never turn into an empty, successful plan.
+test_docker_access_failure() {
+    local roots main wt out rc
+    roots="$(make_repo_with_worktree)"
+    main="${roots%% *}"; wt="${roots##* }"
+    docker() { echo "permission denied: docker socket" >&2; return 1; }
+    export -f docker
+    out="$(bash "$SCRIPT_UNDER_TEST" plan "$wt" 2>&1)"; rc=$?
+    assert_false "$rc" "plan fails when Docker cannot be queried"
+    assert_contains "$out" "permission denied: docker socket" "plan preserves Docker error"
+    out="$(bash "$SCRIPT_UNDER_TEST" execute "$wt" --yes --compose 2>&1)"; rc=$?
+    assert_false "$rc" "execute fails when Docker cannot be queried"
+    [ -d "$wt" ]; assert_true $? "Docker failure preserves worktree"
+    unset -f docker
+    rm -rf "$(dirname "$main")"
+}
+run_test test_docker_access_failure
+
+# Exercise the CLI against a failing Docker boundary, using real temporary Git state.
+test_teardown_failure_is_reported() {
+    local roots main wt out rc mode
+    roots="$(make_repo_with_worktree)"
+    main="${roots%% *}"; wt="${roots##* }"
+    for mode in make compose remove survivor inspect; do
+        out="$(
+            exec 2>&1
+            source "$SCRIPT_UNDER_TEST"
+            docker() {
+                case "$1" in
+                    (ps) echo container1 ;;
+                    (inspect)
+                        if [ "$mode" = inspect ]; then echo 'inspect failed' >&2; return 1; fi
+                        case "$3" in
+                            (*working_dir*) echo "$wt" ;;
+                            (*config_files*) echo "$wt/compose.yml" ;;
+                            (*project*) echo cleanup_test ;;
+                            (*) echo /container1 ;;
+                        esac ;;
+                    (compose)
+                        if [ "$mode" = compose ]; then echo 'compose failed' >&2; return 1; fi ;;
+                    (rm)
+                        if [ "$mode" = remove ]; then echo 'remove failed' >&2; return 1; fi ;;
+                esac
+            }
+            if [ "$mode" = make ]; then
+                cw_run_make_teardown() { echo 'make failed' >&2; return 1; }
+                cw_cmd_execute "$wt" --yes --make-dir "$wt" --make-target down
+            else
+                cw_cmd_execute "$wt" --yes --compose
+            fi
+        )"; rc=$?
+        assert_false "$rc" "$mode failure cannot report success"
+        if [ "$mode" = survivor ]; then
+            assert_contains "$out" "container1" "surviving container identified"
+        else
+            assert_contains "$out" "$mode failed" "$mode error preserved"
+        fi
+        [ -d "$wt" ]; assert_true $? "$mode failure preserves worktree"
+    done
+    rm -rf "$(dirname "$main")"
+}
+run_test test_teardown_failure_is_reported
+
+test_plan_ambiguous_volume_policy() {
+    local roots main wt out rc
+    roots="$(make_repo_with_worktree)"
+    main="${roots%% *}"; wt="${roots##* }"
+    mkdir "$wt/a" "$wt/b"
+    printf 'down:\n\tdocker compose down -v\n' > "$wt/a/Makefile"
+    printf 'down:\n\tdocker compose down\n' > "$wt/b/Makefile"
+    docker() { return 0; }
+    export -f docker
+    out="$(bash "$SCRIPT_UNDER_TEST" plan "$wt" 2>&1)"; rc=$?
+    unset -f docker
+    assert_equals "$rc" "0" "ambiguous plan is readable"
+    assert_contains "$out" "MECHANISM=make-ambiguous" "multiple teardown targets require a choice"
+    assert_contains "$out" "VOLUMES=undetermined" "volume policy awaits target selection"
+    rm -rf "$(dirname "$main")"
+}
+run_test test_plan_ambiguous_volume_policy
+
+test_plan_name_inspection_failure() {
+    local roots main wt out rc
+    roots="$(make_repo_with_worktree)"
+    main="${roots%% *}"; wt="${roots##* }"
+    out="$(
+        exec 2>&1
+        source "$SCRIPT_UNDER_TEST"
+        docker() {
+            if [ "$1" = ps ]; then echo container1; return; fi
+            if [ "$3" = '{{.Name}}' ]; then echo 'name inspection failed' >&2; return 1; fi
+            if [[ "$3" = *working_dir* ]]; then echo "$wt"; fi
+        }
+        cw_cmd_plan "$wt"
+    )"; rc=$?
+    assert_false "$rc" "plan fails when container names cannot be inspected"
+    assert_contains "$out" "name inspection failed" "name inspection error preserved"
+    rm -rf "$(dirname "$main")"
+}
+run_test test_plan_name_inspection_failure
 
 echo
 if [[ "$FAILURES" -eq 0 ]]; then

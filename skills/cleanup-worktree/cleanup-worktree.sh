@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# cleanup-worktree.sh — agnostic worktree + Docker teardown.
+# cleanup-worktree.sh — Docker teardown for a git worktree.
 #
 # Sourceable: when sourced, only defines cw_* functions (for tests).
 # Executable: `cleanup-worktree.sh plan|execute [DIR] [opts]`.
@@ -87,7 +87,7 @@ CW_CFG_LABEL='com.docker.compose.project.config_files'
 
 # Read one label ($2) off a container ($1).
 cw_container_label() {
-    docker inspect -f "{{index .Config.Labels \"$2\"}}" "$1" 2>/dev/null
+    docker inspect -f "{{index .Config.Labels \"$2\"}}" "$1"
 }
 
 # Return 0 if candidate path $1 is ROOT ($2) or under it. Robust to a
@@ -104,32 +104,34 @@ cw_path_under() {
     return 1
 }
 
-# Echo container IDs (running or stopped) whose compose working_dir label is
-# ROOT or under it. Empty output (rc 0) when docker is unavailable.
+# Echo matching IDs; discovery errors are not an empty Docker environment.
 cw_list_worktree_containers() {
-    local root id wd
-    root="${1:-.}"
-    docker ps -aq 2>/dev/null | while read -r id; do
+    local root="${1:-.}" id wd ids
+    ids="$(docker ps -aq)" || return 1
+    while read -r id; do
         [ -n "$id" ] || continue
-        wd="$(cw_container_label "$id" "$CW_WD_LABEL")"
+        wd="$(cw_container_label "$id" "$CW_WD_LABEL")" || return 1
         [ -n "$wd" ] || continue
-        cw_path_under "$wd" "$root" && echo "$id"
-    done
+        if cw_path_under "$wd" "$root"; then echo "$id"; fi
+    done <<< "$ids"
+    return 0
 }
 
-# Echo unique "<project>\t<config_files>" for compose stacks whose containers
-# live under ROOT.
+# Echo unique project/config pairs, propagating discovery and inspect errors.
 cw_discover_compose_projects() {
-    local root="${1:-.}" id proj cfg
-    cw_list_worktree_containers "$root" | while read -r id; do
+    local root="${1:-.}" id proj cfg ids lines=""
+    ids="$(cw_list_worktree_containers "$root")" || return 1
+    while read -r id; do
         [ -n "$id" ] || continue
-        proj="$(cw_container_label "$id" "$CW_PROJ_LABEL")"
-        cfg="$(cw_container_label "$id" "$CW_CFG_LABEL")"
-        [ -n "$proj" ] && printf '%s\t%s\n' "$proj" "$cfg"
-    done | sort -u
+        proj="$(cw_container_label "$id" "$CW_PROJ_LABEL")" || return 1
+        cfg="$(cw_container_label "$id" "$CW_CFG_LABEL")" || return 1
+        [ -n "$proj" ] && [ "$proj" != '<no value>' ] || continue
+        lines+="$proj"$'\t'"$cfg"$'\n'
+    done <<< "$ids"
+    printf '%s' "$lines" | sort -u
 }
 
-# --- teardown + removal -----------------------------------------------------
+# --- Docker teardown -----------------------------------------------------
 
 # Run a Makefile teardown target from its directory.
 cw_run_make_teardown() {
@@ -150,18 +152,13 @@ cw_compose_down() {
 
 # Force-remove any straggler container whose working_dir is under ROOT.
 cw_backstop_remove() {
-    local root="$1" id
-    cw_list_worktree_containers "$root" | while read -r id; do
-        [ -n "$id" ] && docker rm -f "$id" >/dev/null 2>&1
-    done
-}
-
-# Remove the git worktree at WT (from the safe MAIN cwd) and prune.
-cw_remove_worktree() {
-    local main="$1" wt="$2"
-    git -C "$main" worktree remove --force "$wt" || return 1
-    [ -d "$wt" ] && rm -rf "$wt"
-    git -C "$main" worktree prune
+    local root="$1" id ids
+    ids="$(cw_list_worktree_containers "$root")" || return 1
+    while read -r id; do
+        [ -n "$id" ] || continue
+        docker rm -f "$id" || return 1
+    done <<< "$ids"
+    return 0
 }
 
 # --- CLI dispatch -----------------------------------------------------------
@@ -181,7 +178,7 @@ cw_cmd_plan() {
     root="$(cw_resolve_root "$dir")" || { echo "Error: '$dir' is not inside a git repository." >&2; return 3; }
     if cw_is_main_checkout "$root"; then
         echo "Refusing: '$root' is the main checkout — the shared stack lives here." >&2
-        echo "Run this from inside the worktree you want to remove." >&2
+        echo "Run this from the worktree whose Docker environment you want to clean up." >&2
         return 2
     fi
     main="$(cw_main_root "$root")"
@@ -189,14 +186,15 @@ cw_cmd_plan() {
     local make_cands make_count proj_lines have_compose containers mech vols
     make_cands="$(cw_find_make_teardown "$root")" || make_cands=""
     make_count="$(printf '%s' "$make_cands" | grep -c . )"
-    proj_lines="$(cw_discover_compose_projects "$root")"
+    proj_lines="$(cw_discover_compose_projects "$root")" || return 1
     [ -n "$proj_lines" ] && have_compose=1 || have_compose=0
-    containers="$(cw_list_worktree_containers "$root")"
+    containers="$(cw_list_worktree_containers "$root")" || return 1
     mech="$(cw_decide_mechanism "$make_count" "$have_compose")"
 
     case "$mech" in
         make)  vols="$(printf '%s' "$make_cands" | head -1 | cut -f3)" ;;
         compose) vols="volumes" ;;
+        make-ambiguous) vols="undetermined" ;;
         *) vols="novolumes" ;;
     esac
 
@@ -213,18 +211,20 @@ cw_cmd_plan() {
     fi
     echo "CONTAINERS:"
     if [ -n "$containers" ]; then
-        printf '%s\n' "$containers" | while read -r id; do
-            [ -n "$id" ] && echo "  $id $(docker inspect -f '{{.Name}}' "$id" 2>/dev/null | sed 's#^/##')"
-        done
+        local id name
+        while read -r id; do
+            [ -n "$id" ] || continue
+            name="$(docker inspect -f '{{.Name}}' "$id")" || return 1
+            echo "  $id ${name#/}"
+        done <<< "$containers"
     else
         echo "  (none)"
     fi
-    [ "$vols" = volumes ] && echo "VOLUMES=yes" || echo "VOLUMES=no"
-    if [ -n "$(git -C "$root" status --porcelain 2>/dev/null)" ]; then
-        echo "DIRTY=yes"
-    else
-        echo "DIRTY=no"
-    fi
+    case "$vols" in
+        volumes) echo "VOLUMES=yes" ;;
+        undetermined) echo "VOLUMES=undetermined" ;;
+        *) echo "VOLUMES=no" ;;
+    esac
     return 0
 }
 
@@ -244,18 +244,18 @@ cw_cmd_execute() {
     done
     [ "$yes" -eq 1 ] || { echo "Refusing: destructive 'execute' requires --yes (run 'plan' first)." >&2; return 1; }
 
-    local root main
+    local root
     root="$(cw_resolve_root "$dir")" || { echo "Error: '$dir' is not inside a git repository." >&2; return 3; }
     if cw_is_main_checkout "$root"; then
         echo "Refusing: '$root' is the main checkout — the shared stack lives here." >&2
         return 2
     fi
-    main="$(cw_main_root "$root")"
+    cw_list_worktree_containers "$root" >/dev/null || return 1
 
     # 1. Teardown.
     if [ -n "$make_target" ] && [ -n "$make_dir" ]; then
         echo "Tearing down via: make -C $make_dir $make_target"
-        cw_run_make_teardown "$make_dir" "$make_target" || echo "Warning: make teardown returned non-zero; continuing." >&2
+        cw_run_make_teardown "$make_dir" "$make_target" || return 1
     else
         local mech make_cands make_count proj_lines have_compose
         if [ "$force_compose" -eq 1 ]; then
@@ -263,7 +263,7 @@ cw_cmd_execute() {
         else
             make_cands="$(cw_find_make_teardown "$root")" || make_cands=""
             make_count="$(printf '%s' "$make_cands" | grep -c . )"
-            proj_lines="$(cw_discover_compose_projects "$root")"
+            proj_lines="$(cw_discover_compose_projects "$root")" || return 1
             [ -n "$proj_lines" ] && have_compose=1 || have_compose=0
             mech="$(cw_decide_mechanism "$make_count" "$have_compose")"
             if [ "$mech" = make ]; then
@@ -278,24 +278,31 @@ cw_cmd_execute() {
         case "$mech" in
             make)
                 echo "Tearing down via: make -C $make_dir $make_target"
-                cw_run_make_teardown "$make_dir" "$make_target" || echo "Warning: make teardown returned non-zero; continuing." >&2 ;;
+                cw_run_make_teardown "$make_dir" "$make_target" || return 1 ;;
             compose)
-                cw_discover_compose_projects "$root" | while IFS=$'\t' read -r proj cfg; do
+                proj_lines="$(cw_discover_compose_projects "$root")" || return 1
+                while IFS=$'\t' read -r proj cfg; do
                     [ -n "$proj" ] || continue
                     echo "Tearing down compose project: $proj"
-                    cw_compose_down "$proj" "$cfg" "${vols:-volumes}"
-                done ;;
+                    cw_compose_down "$proj" "$cfg" "${vols:-volumes}" || return 1
+                done <<< "$proj_lines" ;;
             none)
-                echo "No Docker teardown mechanism detected — nothing to bring down." ;;
+                echo "No Makefile or Compose teardown detected; checking for labelled containers." ;;
         esac
     fi
 
     # 2. Backstop.
-    cw_backstop_remove "$root"
+    cw_backstop_remove "$root" || return 1
 
-    # 3. Remove worktree.
-    cw_remove_worktree "$main" "$root" || { echo "Error: failed to remove worktree '$root'." >&2; return 1; }
-    echo "Worktree $root removed."
+    local remaining
+    remaining="$(cw_list_worktree_containers "$root")" || return 1
+    if [ -n "$remaining" ]; then
+        echo "Error: containers remain after Docker cleanup:" >&2
+        printf '%s\n' "$remaining" >&2
+        return 1
+    fi
+
+    echo "Docker cleanup complete for $root."
     return 0
 }
 
@@ -305,7 +312,7 @@ Usage: cleanup-worktree.sh <command> [DIR] [options]
 
 Commands:
   plan [DIR]       Read-only. Show the teardown plan for DIR's worktree.
-  execute [DIR]    Destructive. Tear down and remove the worktree. Requires --yes.
+  execute [DIR]    Destructive. Tear down the Docker environment. Requires --yes.
 
 execute options:
   --yes                   Confirm the destructive run (required).

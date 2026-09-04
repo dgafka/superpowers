@@ -1,23 +1,20 @@
 ---
 name: cleanup-worktree
-description: Tear down the current git worktree's Docker stack, then remove the worktree. Agnostic — discovers the teardown mechanism (Makefile target or compose from container labels). Refuses on the main checkout.
+description: Use when explicitly asked to clean up the Docker environment belonging to a git worktree.
 argument-hint: "[worktree-dir]  (defaults to the current directory)"
 disable-model-invocation: true
 ---
 
 # Cleanup Worktree
 
-Tear down the Docker environment belonging to a git worktree and then remove the
-worktree itself. Works across projects: it discovers how the stack was brought up
-rather than assuming any layout. **This is destructive** — it removes containers,
-named volumes, and the worktree (with `--force`) — so always show the plan and get
-the user's confirmation before executing.
+Tear down the Docker environment belonging to a git worktree. Discover the
+teardown mechanism from Makefile targets or Compose container labels.
+Container and named-volume cleanup is destructive: show the concrete plan and
+get the user's confirmation before executing.
 
-The logic lives in `cleanup-worktree.sh`, which sits in this skill's own
-directory. Resolve its absolute path before the first call — in Claude Code that
-is `${CLAUDE_SKILL_DIR}/cleanup-worktree.sh`; on other platforms it is the
-directory holding this file. The command lines below write it as
-`<SKILL_DIR>/cleanup-worktree.sh` — substitute the resolved path.
+The helper `cleanup-worktree.sh` sits beside this skill. Resolve its absolute
+path from the directory containing this file; substitute that directory for
+`<SKILL_DIR>` below.
 
 Use it via its two subcommands: `plan` (read-only) and `execute` (destructive,
 needs `--yes`).
@@ -37,21 +34,28 @@ bash "<SKILL_DIR>/cleanup-worktree.sh" plan <DIR>
 - **Exit code 2** means it refused because `<DIR>` is the **main checkout** (the
   shared stack lives there). Stop and tell the user — do not force it.
 - **Exit code 3** means `<DIR>` is not inside a git repository. Stop.
+- **Other nonzero exits** mean planning failed. Report the actual error and stop.
+  Docker permission errors or an unavailable daemon never mean “no containers.”
+  Obtain Docker access through the platform permission flow, then rerun the plan.
 - **Exit code 0** prints a plan. Relay it to the user in readable form, covering:
   - `WORKTREE_ROOT` and `MAIN_ROOT`
   - `MECHANISM`: `make` (a validated Makefile target), `compose` (label-driven
     fallback), `make-ambiguous` (several Makefile targets — you must pick one),
-    or `none` (nothing to tear down; only the worktree will be removed)
+    or `none` (no Makefile or Compose teardown found; listed containers still
+    receive direct cleanup)
   - the containers that will be removed (`CONTAINERS:`)
-  - whether named volumes will be removed (`VOLUMES=yes|no`)
-  - whether the worktree has uncommitted/untracked changes (`DIRTY=yes|no`)
+  - Compose projects and their recorded configuration files (`COMPOSE_PROJECTS:`)
+  - named-volume policy (`VOLUMES=yes|no|undetermined`); `undetermined` means
+    a Makefile target must be selected first
 
 ## Step 2 — Confirm
 
 Ask the user to confirm before anything destructive runs. If `MECHANISM` is
 `make-ambiguous`, present the candidate `MAKE_CANDIDATES` lines and ask which
-`<dir>`/`<target>` to use. If `DIRTY=yes`, warn the user that removal uses
-`--force` and will discard those uncommitted/untracked changes.
+`<dir>`/`<target>` to use, or offer the Compose fallback when projects were
+discovered. State the selected mechanism and its volume policy before execution.
+For Makefile targets, the candidate’s `volumes`/`novolumes` field supplies that
+policy; Compose removes named volumes by default.
 
 Do not proceed to Step 3 until the user confirms.
 
@@ -75,14 +79,18 @@ Run execute with `--yes`. Pick the invocation matching the confirmed mechanism:
 - Add `--no-volumes` to keep named volumes (compose fallback only; volumes are
   removed by default).
 
-Execute tears down the stack, force-removes any straggler container whose
-`working_dir` label is under the worktree, then removes and prunes the worktree.
-On success it prints `Worktree <root> removed.` — relay that to the user.
+Execute tears down the stack, removes remaining containers whose Compose
+`working_dir` label is under the target, and queries Docker again. Success requires
+zero related containers, including stopped containers.
+
+On success, relay `Docker cleanup complete for <root>.` On any nonzero exit,
+report the actual error and any surviving container IDs. Partial cleanup can
+already have occurred; resolve the error and rerun the plan before retrying.
+Never report success after a failed teardown or Docker query.
 
 ## Notes
 
-- The main-checkout guard is layout-agnostic: it compares `git rev-parse
-  --git-dir` against `--git-common-dir`, so it protects the shared stack without
-  assuming any `.claude/worktrees/` convention.
-- If the Docker daemon is down, teardown is a no-op and only the worktree is
-  removed; mention this to the user if it happens.
+- The main-checkout guard compares Git's per-worktree and shared metadata paths
+  to protect the shared stack without assuming a directory convention.
+- Container ownership comes from Compose working-directory labels, not name
+  substrings. Unlabelled containers are outside automatic discovery.
