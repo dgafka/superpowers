@@ -28,7 +28,7 @@ Build the implementation DAG in Orca. Make ownership, dependencies, acceptance c
 
 ## Approval and Dispatch
 
-Before creating or dispatching each implementation sub-worktree, present the confirmation table in `launch-confirmation.md`, beside this skill. Fill it with the concrete name, goal, execution location, dependencies, discipline, verification, guidance, and intended PR publication/stack position. Do not include Owns or Base rows. Keep ownership boundaries and the verified Git base in the worker context.
+Before creating or dispatching each implementation sub-worktree, present the confirmation table in `launch-confirmation.md`, beside this skill. Fill it with the concrete name, goal, execution location, agent and model, dependencies, discipline, verification, guidance, and intended PR publication/stack position. Follow its model defaults for launch and execution summaries, and pass the displayed model explicitly at dispatch. Do not include Owns or Base rows. Keep ownership boundaries and the verified Git base in the worker context.
 
 Include `superpowers:create-pull-request` in the Discipline / Skill row and ready-for-review publication in the PR row. Also present a separate table for the named `observe-<topic>` Codex sub-session in that implementation worktree, using `superpowers:create-pull-request` in observation-only mode `ci`, with findings routed to the original implementation worker. Approval covers publication after verification and retention of that worker terminal for CI fixes. Preserve an explicit user choice of manual/full observation.
 
