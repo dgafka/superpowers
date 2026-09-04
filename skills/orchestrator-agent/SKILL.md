@@ -1,6 +1,6 @@
 ---
 name: orchestrator-agent
-description: Use when the user explicitly requests Orca-coordinated implementation across one or more Codex implementation sub-worktrees without a research phase
+description: Use when the user explicitly requests Orca-coordinated implementation across one or more Codex implementation sub-worktrees, or orchestration-research or recognize-and-learn hands over an approved implementation direction
 argument-hint: "[objective, sub-worktree dependencies, and optional run-wide guidance]"
 ---
 
@@ -8,7 +8,7 @@ argument-hint: "[objective, sub-worktree dependencies, and optional run-wide gui
 
 ## Overview
 
-Coordinate an implementation objective from the main worktree without editing implementation code there. Accept a clear objective, approved design, or existing task DAG. When needed, decompose a clear request into implementation sub-worktrees in session state; do not start a research phase or create planning documents.
+Coordinate an implementation objective from the main worktree. Implementation workers own code changes in their assigned sub-worktrees. Accept a clear objective, approved design, or existing task DAG. When needed, decompose a clear request into implementation sub-worktrees in session state.
 
 If missing knowledge requires investigation before tasks can be defined safely, ask the user to invoke `orchestration-research`. Keep this skill focused on implementation orchestration.
 
@@ -20,7 +20,7 @@ If missing knowledge requires investigation before tasks can be defined safely, 
 
 Use **sub-worktree** for an implementation checkout and **sub-session** for a separate Codex terminal session within an existing worktree. Reserve **task** for Orca scheduling objects and their API fields.
 
-Treat guidance supplied with the invocation as run-wide context. Preserve it across every task. Add task-specific guidance only where it narrows one assignment; it never silently overrides run-wide guidance or an approved user decision.
+Treat guidance supplied with the invocation as run-wide context. Preserve it across every task. Add task-specific guidance that narrows one assignment while preserving run-wide guidance and approved user decisions.
 
 Give every implementation unit a short stable `implement-<topic>` name, such as `implement-payment-reschedule`. Reuse the exact name for the Orca task and its implementation sub-worktree. Use it in status and waiting messages; keep it out of PR titles.
 
@@ -28,11 +28,11 @@ Build the implementation DAG in Orca. Make ownership, dependencies, acceptance c
 
 ## Approval and Dispatch
 
-Before creating or dispatching each implementation sub-worktree, present the confirmation table in `launch-confirmation.md`, beside this skill. Fill it with the concrete name, goal, execution location, agent and model, dependencies, discipline, verification, guidance, and intended PR publication/stack position. Follow its model defaults for launch and execution summaries, and pass the displayed model explicitly at dispatch. Do not include Owns or Base rows. Keep ownership boundaries and the verified Git base in the worker context.
+Before creating or dispatching each implementation sub-worktree, present the confirmation table in `launch-confirmation.md`, beside this skill. Fill it with the concrete name, goal, execution location, agent and model, dependencies, discipline, verification, guidance, and intended PR publication/stack position. Follow its model defaults for launch and execution summaries, and pass the displayed model explicitly at dispatch. Use the table's defined rows. Keep ownership boundaries and the verified Git base in the worker context.
 
 Include `superpowers:create-pull-request` in the Discipline / Skill row and ready-for-review publication in the PR row. Also present a separate table for the named `observe-<topic>` Codex sub-session in that implementation worktree, using `superpowers:create-pull-request` in observation-only mode `ci`, with findings routed to the original implementation worker. Approval covers publication after verification and retention of that worker terminal for CI fixes. Preserve an explicit user choice of manual/full observation.
 
-Ask the user to confirm the presented sub-worktree and observer launch. One message may present a concurrent wave, with one table per launch; every launch must be individually identifiable and explicitly approved. Dispatch only approved launches. Approval of an unchanged table is sufficient; do not ask again at dispatch.
+Ask the user to confirm the presented sub-worktree and observer launch. One message may present a concurrent wave, with one table per launch; every launch must be individually identifiable and explicitly approved. Dispatch only approved launches. Reuse approval of an unchanged table at dispatch.
 
 Create each implementation as a separate Orca child sub-worktree from the main coordinator worktree. Independent tasks use sibling sub-worktrees based on the agreed trunk. A dependent task uses its prerequisite's stable branch as its Git base. When a task depends on multiple sibling branches, ask how to linearize or integrate them before choosing a base.
 
@@ -62,7 +62,7 @@ using Sub-session as the name row and identifying the existing worktree, review
 commit, review focus, and external-comment permission. Obtain confirmation.
 
 Run the review sub-session in a separate Codex terminal within the implementation
-sub-worktree against a stable commit. Do not create a review worktree. Pause
+sub-worktree against a stable commit. Pause
 implementation edits during review; if the checkout changes, report that and
 re-establish the reviewed commit before continuing. Its Orca task prompt must invoke `review-changes` in Orchestrated Review Mode and include:
 
@@ -74,7 +74,7 @@ re-establish the reviewed commit before continuing. Its Orca task prompt must in
 
 Local reviews and report-only PR reviews return findings through Orca without
 external comments. A PR review may post inline comments only when the user's
-request explicitly authorized them. The reviewer never fixes findings.
+request explicitly authorized them. The original implementation worker owns fixes.
 
 Present the findings to the user and route approved fixes to the exact
 `implement-<topic>` worker in its existing sub-worktree. After fixes, reuse the
@@ -86,25 +86,25 @@ unrelated dependency-ready tasks moving while review or fixes are in progress.
 
 Orca dependencies are the execution source of truth. GitHub stacks express review and merge order.
 
-Implementation workers own PR creation through `superpowers:create-pull-request`. The coordinator receives each PR URL and observer launch receipt; it must not create duplicate PRs or replace them with draft PRs.
+Implementation workers own PR creation through `superpowers:create-pull-request`. The coordinator receives each PR URL and observer launch receipt, and reuses those ready-for-review PRs.
 
 For each completed dependency chain:
 
 1. Verify every branch is pushed to the approved repository and the history is linear.
 2. Verify each existing PR targets its approved base: the agreed trunk for independent work, or the prerequisite branch for dependent work.
-3. Link the existing ready-for-review PRs with GitHub's native stack workflow when supported. Inspect current `gh stack` help or official documentation first; do not use a command that creates draft replacements.
+3. Link the existing ready-for-review PRs with GitHub's native stack workflow when supported. Inspect current `gh stack` help or official documentation first, and select an operation that links the existing ready-for-review PRs.
 4. Confirm the approved CI observer is running in each implementation worktree. If the worker cannot dispatch it, launch that exact approved sub-session in the same Run and return its receipt. Preserve explicit manual/full overrides.
 5. Treat independent dependency chains as separate stacks.
 
-A PR URL is publication evidence, not proof that CI passed. Include pending CI or observation blockers in status reports. Keep the original worker available for the approved correction cycle: record retention with Orca `worker-retain` after its Dispatch settles, then create a fresh fix task in the same worktree and reuse that exact terminal when findings arrive. Keep only one fix active per PR. A replacement terminal requires a new confirmation table. Release the retained worker after observation stops and outstanding fixes settle.
+Report PR publication and CI results separately, including pending CI or observation blockers. Keep the original worker available for the approved correction cycle: record retention with Orca `worker-retain` after its Dispatch settles, then create a fresh fix task in the same worktree and reuse that exact terminal when findings arrive. Keep only one fix active per PR. A replacement terminal requires a new confirmation table. Release the retained worker after observation stops and outstanding fixes settle.
 
 ## Other Sub-sessions
 
-Use sub-sessions in an existing worktree for read-only research, CI/PR observation, and explicitly requested independent verification. Show the shared confirmation table and obtain approval before launching each. Research uses `orchestration-research`; observation follows `create-pull-request`; verification receives explicit task-relevant checks and reports evidence without fixes. Do not create worktrees for these activities.
+Use sub-sessions in an existing worktree for read-only research, CI/PR observation, and explicitly requested independent verification. Show the shared confirmation table and obtain approval before launching each. Research uses `orchestration-research`; observation follows `create-pull-request`; verification receives explicit task-relevant checks and returns evidence to the implementation worker.
 
 Keep routine tests and follow-up fixes with the original implementation worker. Sub-sessions share files and services: coordinate tests that write generated files or use shared services, and serialize conflicting activity. A new independent implementation still requires a sub-worktree.
 
-Reusing a sub-session for the approved scope, such as re-review after fixes or another observation pass, does not require another launch approval. A new terminal or changed scope requires a new table and confirmation.
+Reuse the existing approval when continuing a sub-session within its approved scope, such as re-review after fixes or another observation pass. A new terminal or changed scope requires a new table and confirmation.
 
 ## Coordination Discipline
 
@@ -113,4 +113,4 @@ Reusing a sub-session for the approved scope, such as re-review after fixes or a
 - Treat timeouts as checkpoints while workers remain live.
 - After accepted completion, reuse the exact worker for an immediate follow-up, retain it through the approved observation cycle, or release it through Orca once observation and outstanding fixes have ended.
 - Reuse the exact reviewer for re-review after approved fixes.
-- Never merge stacks, delete worktrees, or discard branches without user authorization.
+- Obtain user authorization for stack merges, worktree deletion, and branch removal before performing those actions.

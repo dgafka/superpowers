@@ -12,9 +12,9 @@ Tests must verify real behavior, not mock behavior. Mocks are a means to isolate
 
 ## The Iron Laws
 
-1. **Never test mock behavior.**
-2. **Never add test-only methods to production classes.**
-3. **Never mock without understanding what the real dependency does.**
+1. **Assert observable behavior of the real implementation.**
+2. **Place test cleanup and scaffolding in test helpers.**
+3. **Understand the real dependency before choosing a test double.**
 
 ## Anti-Pattern 1: Testing Mock Behavior
 
@@ -27,7 +27,7 @@ Tests must verify real behavior, not mock behavior. Mocks are a means to isolate
 
 **your human partner's correction:** "Are we testing the behavior of a mock?"
 
-**The fix:** test the real component (don't mock the sidebar) and assert on something a user can observe — for example, that an element with `role="navigation"` is in the document. If the sidebar genuinely must be mocked for isolation, assert on the page's behavior with the sidebar present, never on the mock itself.
+**The fix:** test the real component with its real sidebar and assert on something a user can observe — for example, that an element with `role="navigation"` is in the document. If the sidebar genuinely must be mocked for isolation, assert on the page's behavior with the sidebar present.
 
 ### Gate Function
 
@@ -51,7 +51,7 @@ BEFORE asserting on any mock element:
 - Violates YAGNI and separation of concerns
 - Confuses object lifecycle with entity lifecycle
 
-**The fix:** keep cleanup logic out of the production class entirely. Put it in a test helper (e.g. `cleanupSession(session)` in a `test-utils/` module) that reaches into the underlying resources directly. Tests call the helper; production code never sees it.
+**The fix:** keep cleanup logic out of the production class entirely. Put it in a test helper (e.g. `cleanupSession(session)` in a `test-utils/` module) that reaches into the underlying resources directly. Tests call the helper from the test-support module.
 
 ### Gate Function
 
@@ -60,7 +60,7 @@ BEFORE adding any method to production class:
   Ask: "Is this only used by tests?"
 
   IF yes:
-    STOP - Don't add it
+    Place it in a test helper
     Put it in test utilities instead
 
   Ask: "Does this class own this resource's lifecycle?"
@@ -84,7 +84,7 @@ BEFORE adding any method to production class:
 
 ```
 BEFORE mocking any method:
-  STOP - Don't mock yet
+  Investigate the dependency before choosing a test double
 
   1. Ask: "What side effects does the real method have?"
   2. Ask: "Does this test depend on any of those side effects?"

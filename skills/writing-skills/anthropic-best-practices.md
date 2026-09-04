@@ -1,3 +1,7 @@
+> Vendor reference snapshot. Apply the repository conventions in `SKILL.md`
+> when selecting terminology, workflow placement, and instruction wording.
+> Consult the linked official documentation for current vendor guidance.
+
 # Skill authoring best practices
 
 > Learn how to write effective Skills that Claude can discover and use successfully.

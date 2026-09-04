@@ -17,19 +17,18 @@ Apply every rule below to that narrative. Each caller
 adds its own specializations on top; where a caller's own instruction conflicts
 with a rule here, the caller wins.
 
-## North star — make the "why" cheap to understand
+## Purpose
 
-A reviewer's real bottleneck is not reading speed — it is **understanding why
-the change exists**. The largest study of code review found that *understanding
+A reviewer needs to **understand why the change exists**. The largest study of code review found that *understanding
 the change* is the central challenge of reviewing, ahead of finding defects. So
 the goal of every write-up is cheap understanding of the *why* and the
 *behavioral delta*; the diff already supplies the *what*.
 
-Scannability is the **means**, not the end. Reviewers read many changes a day
+Use scannability to support that understanding. Reviewers read many changes a day
 and scan to *find* the material that matters — then they read that material
 carefully. Optimize so the important part is found fast **and** reads clearly.
 
-## Order — bottom line first, riskiest first
+## Order — outcome first, riskiest first
 
 - **Lead with BLUF (bottom line up front).** The first sentence states the
   outcome — what changes for the user or system — in imperative mood, and
@@ -37,37 +36,34 @@ carefully. Optimize so the important part is found fast **and** reads clearly.
   first line should know what the change does.
 - **Why before what.** After the bottom line, give the problem, context, and
   trigger before the mechanics (inverted pyramid).
-- **Order the body by scrutiny needed, not by chronology or file order.** Put
+- **Order the body by scrutiny needed.** Put
   the part that needs the most careful review first; trivial or mechanical
   changes last. Reviewer attention decays over a session — spend the freshest
   attention on the riskiest part.
 
-## Content — behavior, not code
+## Content — behavior and evidence
 
-- **Describe behavior and flows, not classes and methods.** Say what the system
+- **Describe behavior and flows.** Say what the system
   now does differently (inputs, outputs, user-visible behavior, edge cases).
-- **Don't enumerate classes/methods — but naming the *one* entry point is fine.**
+- **Name one entry point when it helps navigation.**
   Pointing the reader at the single file or function to start reading is
-  navigation, not diff-restatement. Listing every changed symbol is noise.
-- **Domain vocabulary, not code identifiers.** Use the project's own terms
-  precisely ("payout settlement", "funding source") — but never a class, event,
-  command, or file name in the narrative. If a term exists only in code, it is
-  not a domain term.
-- **Never restate the diff.** Line-by-line narration of changed code is noise —
-  the reviewer will read the diff.
-- **No code in the narrative**, with one exception: a **minimal usage example**
-  for a userland-visible / API change, showing how a reader *uses* the new
-  behavior — never changed source.
-- **Objective facts, no marketese.** Drop "cleanly refactored," "nicely
+  navigation.
+- **Use precise domain vocabulary.** Describe behavior using the project's terms
+  ("payout settlement", "funding source"). Include a code identifier when naming
+  the single navigation entry point or showing the public interface in a usage example.
+- **Explain the behavior change and its reason.** Let the diff supply changed lines.
+- **Use prose for the explanation.** For a userland-visible / API change, add a
+  minimal usage example showing how a reader uses the public interface.
+- **State objective facts.** Drop "cleanly refactored," "nicely
   handles," and similar self-praise. State plain facts.
-- **Link out instead of inlining background.** Reference the ticket, design doc,
+- **Link to supporting background.** Reference the ticket, design doc,
   or benchmark rather than pasting it. Keep enough inline that the write-up
   stands on its own if a link rots.
-- **Reference sibling changes as links, not prose.** `#1234` and
+- **Reference sibling changes as links.** `#1234` and
   `owner/repo#1234` auto-expand to the title and current state, so a
   deferred-work list stays accurate as those changes land. A paragraph
   describing three follow-ups becomes three lines.
-- **Point at code, don't paste it.** A commit permalink with a line range
+- **Link to relevant code.** A commit permalink with a line range
   (`.../blob/<sha>/path/to/file#L10-L24`) renders as an embedded snippet, stays
   anchored to a commit, and costs no body length.
 
@@ -77,15 +73,14 @@ carefully. Optimize so the important part is found fast **and** reads clearly.
   first ~2 words of a bullet or heading. Put the meaning there.
 - **Keep sentences short.** Aim for ≤20 words on average; split anything past
   ~40. One idea per sentence.
-- **One idea per paragraph, ≤3–4 lines.** No walls of text.
+- **One idea per paragraph, ≤3–4 lines.**
 - **Bullets for enumerable items — but chunk them.** Group related bullets under
   a labelled heading and keep any one ungrouped list to ~5–7 items. Working
   memory holds only a handful of chunks; a long flat list is as fatiguing as
   prose.
 - **Literal headings.** Descriptive signposts ("Migration steps," "Risk /
-  rollback"), never clever or vague ones.
-- **Bold sparingly.** Highlight only the few load-bearing terms a reviewer must
-  not miss (a breaking change, a flag, an affected service). Over-bolding erases
+  rollback"), chosen for the content they identify.
+- **Bold sparingly.** Highlight only the few load-bearing terms that need a reviewer's attention (a breaking change, a flag, an affected service). Over-bolding erases
   the signal.
 - **Run a "so what?" pass.** Cut any sentence that neither aids understanding of
   *why* nor directs the reviewer's attention. Noise sentences add fatigue for
@@ -101,14 +96,12 @@ carefully. Optimize so the important part is found fast **and** reads clearly.
 
 - Use the same section order on every write-up so a daily reader can navigate on
   autopilot. Consistency is itself a load-reducer; the exact section list is the
-  calling command's choice.
+  calling skill's choice.
 
 ## Visuals — include one by default
 
 - **Default to a visual.** Include one unless the change is a **single linear
-  step**, or is pure text/config with **no structural element** at all. This is
-  the reverse of "earn its place" — the burden is on omitting a visual, not on
-  including one.
+  step**, or is pure text/config with **no structural element** at all.
 - **A visual that replaces a paragraph is a net reduction.** Prefer the visual
   to the prose it displaces; that is the point of using it.
 - **Match the type to the change:**
@@ -121,8 +114,8 @@ carefully. Optimize so the important part is found fast **and** reads clearly.
   | An ordered pipeline or flow | `graph TD` |
   | A behavior swap with no ordering | before/after table |
 
-- **Diagram or table, never both.** They carry the same delta; two visuals of
-  one change is duplication, and the budget below allows one visual.
+- **Choose one visual format for the behavior change:** a diagram, table, or screenshot pair.
+  A before/after diagram pair counts as one visual.
 - **Before/after tables: at most ~4 rows, and every row states a behavior.** A
   table whose rows are symbol renames is an inventory in a nicer wrapper — the
   exact failure this replaced.
@@ -138,19 +131,19 @@ carefully. Optimize so the important part is found fast **and** reads clearly.
   delta between two small labelled diagrams is far cheaper than one diagram they
   must mentally diff against code they haven't read. Label them plainly
   ("Before" / "After") and put the prior flow first.
-- **"The diff shows the prior state" is not a reason to drop the pair.** A diff
-  shows changed lines, not the shape of the flow those lines formed —
-  reconstructing the old flow from a diff is exactly the work the pair saves.
+- **Show the prior flow to make comparison direct.** The pair supplies the
+  context a reviewer would otherwise reconstruct from the diff.
 - **Omit the prior diagram only when there was no prior flow** — a genuinely new
   path that replaces nothing. Then show the resulting flow alone.
-- **The pair counts as one visual** against the budget below, not two.
-- **Before/after screenshots** (with alt text) for any UI or user-visible output
-  change — the diff can't show the result.
+- **The pair counts as one visual** against the budget below.
+- **Use before/after screenshots** with alt text when the change concerns
+  appearance. Count the screenshot pair as the chosen visual. For behavioral
+  output changes, choose the diagram or table that explains the change.
 
 ## Highlighting — one shared attention budget
 
 GitHub renders five alert types as coloured callouts. Use one for the single
-fact a reviewer must not miss — a flag gate, a breaking change, a required
+fact needing the most attention — a flag gate, a breaking change, a required
 deploy ordering:
 
 ````
@@ -165,10 +158,10 @@ available.
 budget.** Per write-up, at most:
 
 - **1 alert** — a second one halves the first one's signal
-- **1 visual** — diagram *or* table, not both
+- **1 visual** — a diagram, table, or screenshot pair
 - **3 bolded terms**
 
-Over budget? **Cut the weakest device, don't reflow it.** A write-up using every
+Over budget? **Cut the weakest device.** A write-up using every
 available device highlights nothing.
 
 ## Point the reader
@@ -182,15 +175,15 @@ A rule that isn't a step doesn't run. Callers invoke this as an explicit step,
 and fix every failure before the reader sees the draft.
 
 - [ ] Does the first sentence state the outcome, and stand alone?
-- [ ] Zero code identifiers in the narrative — no class, event, command, or file
-      names?
+- [ ] Identifiers serve the single navigation entry point or a public-interface
+      usage example; the explanation uses domain vocabulary?
 - [ ] Is a visual present, or is its absence justified by single-linear-step /
       no-structure?
 - [ ] If a flow diagram is present, is the prior flow shown beside it — or was
       there genuinely no prior flow?
 - [ ] Does every sentence aid the *why* or direct attention? Cut the rest.
-- [ ] Is verification evidence out of the narrative, confined to a test-plan
-      section where the template has one?
+- [ ] Is verification evidence in the template's test-plan section, or in a
+      concise verification paragraph when the template provides no such section?
 - [ ] Within the highlighting budget — ≤1 alert, ≤1 visual, ≤3 bolded terms?
 - [ ] Is long detail behind `<details>` rather than inline?
 

@@ -1,6 +1,6 @@
 ---
 name: brainstorming
-description: "You MUST use this before any creative work - creating features, building components, adding functionality, or modifying behavior. Explores user intent, requirements and design before implementation."
+description: "Develop an approved conversational design. Use before creating features, building components, adding functionality, or modifying behavior."
 ---
 
 # Brainstorming Ideas Into Designs
@@ -8,12 +8,12 @@ description: "You MUST use this before any creative work - creating features, bu
 Turn ideas into approved conversational designs through collaborative dialogue.
 
 <HARD-GATE>
-Do NOT invoke an implementation skill, write code, scaffold a project, or take any implementation action until you have presented a design and the user has approved it. This applies to every project regardless of perceived simplicity.
+Present a design and obtain user approval before implementation. Apply this sequence to projects of every size. Brainstorming owns the design conversation; the subsequent approved implementation workflow owns code changes.
 </HARD-GATE>
 
 ## Checklist
 
-Create a task for each item and complete them in order:
+Track each checklist item in session state and complete them in order:
 
 1. **Explore project context** — inspect relevant files, docs, recent commits, and environment/test conventions.
 2. **Offer visual companion** — only when upcoming decisions are materially visual.
@@ -34,7 +34,7 @@ Create a task for each item and complete them in order:
 
 ## Exploring Approaches
 
-Propose 2-3 genuinely different approaches with their trade-offs. Recommend one and explain why. Apply YAGNI: remove features and abstractions that do not serve the stated goal.
+Propose 2-3 genuinely different approaches with their trade-offs. Recommend one and explain why. Apply YAGNI: keep the design focused on the stated goal.
 
 ## Presenting the Design
 
@@ -60,13 +60,13 @@ Break work into units with one clear purpose, explicit dependencies, and observa
 - What does it depend on?
 - How can another worker use or verify it without reading its internals?
 
-Identify units that may proceed concurrently and those whose behavior or branch base depends on earlier work. Avoid unrelated refactoring.
+Identify units that may proceed concurrently and those whose behavior or branch base depends on earlier work. Keep refactoring within the approved scope.
 
 ## Completion
 
 After the user approves all design sections, provide a compact final design summary in conversation. Include the goal, chosen approach, boundaries, dependency shape, risks, and acceptance criteria.
 
-Do not write a design document or dispatch implementation. Direct the user to `orchestrator-agent` when the implementation direction is clear. Use the manual-only `orchestration-research` skill when research must establish that direction first; it hands the resulting task DAG to `orchestrator-agent`.
+Keep the approved design in conversation. End with a direction to invoke `orchestrator-agent` when implementation is clear, or the manual-only `orchestration-research` skill when research must establish that direction first.
 
 ## Visual Companion
 
@@ -74,13 +74,13 @@ When upcoming questions involve layouts, diagrams, or visual comparisons, offer 
 
 > Some of what we're working on might be easier to explain if I can show it to you in a web browser. I can put together mockups, diagrams, comparisons, and other visuals as we go. This feature is still new and can be token-intensive. Want to try it? (Requires opening a local URL)
 
-If accepted, read `skills/brainstorming/visual-companion.md`. Use the browser only when seeing the choice is easier than reading it; keep conceptual and scope questions in the terminal.
+If accepted, read [visual-companion.md](visual-companion.md), resolved from this skill directory. Use the browser only when seeing the choice is easier than reading it; keep conceptual and scope questions in the terminal.
 
 ## Key Principles
 
 - **One question at a time** — each answer shapes the next.
 - **Glance-and-pick over prose** — make decisions easy to scan.
 - **YAGNI ruthlessly** — remove unrequested work.
-- **Explore alternatives** — do not lock onto the first plausible design.
+- **Explore alternatives** — compare the proposed approaches before choosing one.
 - **Incremental validation** — get approval section by section.
 - **Conversation is the design record** — preserve the approved context for orchestration.

@@ -150,7 +150,7 @@ if run_test orchestrated_reviews; then
         "orchestrator-agent gates review task creation"
     assert_contains "$REVIEW" "## Orchestrated Review Mode" \
         "review-changes defines its Orca worker mode"
-    assert_contains "$REVIEW" "Never edit files, write tests, apply fixes" \
+    assert_contains "$REVIEW" "Keep the review read-only." \
         "orchestrated reviewers remain read-only"
     assert_contains "$REVIEW" 'Send `worker_done` exactly once' \
         "orchestrated reviewers report completion through Orca"
@@ -197,6 +197,15 @@ if run_test no_leftovers; then
         "$REPO_ROOT/skills" "$REPO_ROOT/tests" \
         "$REPO_ROOT/skills/cleanup-worktree/cleanup-worktree.sh" \
         "$REPO_ROOT/skills/create-pull-request/observe-pr-tick.sh"
+fi
+
+echo "== portable skill metadata, references, and terminology"
+if run_test skill_instructions; then
+    if python3 "$REPO_ROOT/tests/skill-instructions/test-instructions.py"; then
+        pass "skill instruction checks"
+    else
+        fail "skill instruction checks"
+    fi
 fi
 
 echo "== helper scripts moved beside the skills that call them"

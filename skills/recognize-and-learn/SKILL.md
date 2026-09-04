@@ -7,7 +7,7 @@ description: Use after an implementation cycle finishes to recognize friction �
 
 ## Overview
 
-A post-implementation retrospective skill. The point isn't to celebrate or critique the feature — it's to **recognize** what made the implementation process itself harder than it should have been, and then **learn** from it by proposing concrete changes.
+A post-implementation retrospective skill. Identify what made the implementation process harder and propose concrete improvements.
 
 Run this immediately after an implementation cycle so the friction is still fresh. Output is a proposed set of changes to skills / process docs, landed on a separate branch with its own PR.
 
@@ -37,9 +37,9 @@ Before asking the user anything, gather what you can on your own:
   - Repeated rewording of the same request (signals you misread it the first time)
   - Any place where the user supplied a fact, command, or path that you should have known or discovered yourself
 
-Treat every correction as a **first-class learning signal**. They are the most reliable evidence of process gaps: the user already saw the friction, named it, and paid the cost of correcting it. Do not collapse them into a single "user gave feedback" bucket — list each one with its specific context.
+Treat every correction as a **first-class learning signal**. They are the most reliable evidence of process gaps: the user already saw the friction, named it, and paid the cost of correcting it. List each correction with its specific context.
 
-You will use this context to ask sharper questions and to draft specific proposals. Do not skip it — generic retrospectives produce generic suggestions.
+You will use this context to ask sharper questions and to draft specific proposals. Ground proposals in that evidence.
 
 ### Step 2: Ask the User for Friction Points
 
@@ -55,7 +55,7 @@ Ask **one open question** that invites a free-form answer, but seed it with conc
 > I also noticed these moments where you redirected me — let me know which (if any) point to something worth fixing:
 > [list each user-correction signal from Step 1, verbatim or near-verbatim, with one-line context]"
 
-Wait for the answer. If the user replies tersely, ask **one** follow-up to drill into the most load-bearing pain point. Do not interrogate.
+Wait for the answer. If the user replies tersely, ask **one** follow-up to drill into the most load-bearing pain point.
 
 ### Step 3: Summarize Findings for Review
 
@@ -79,43 +79,45 @@ Iterate until the user signs off.
 The proposed changes typically land in the superpowers fork — not in the project where the implementation happened. Before making changes:
 
 1. Check whether the current working directory is the superpowers repo (has `skills/` and `CLAUDE.md` referencing superpowers)
-2. If yes: proceed in place
-3. If no: ask the user for the absolute path to their superpowers checkout. Do not guess.
+2. If yes: use this checkout as the coordination surface
+3. If no: ask the user for the absolute path to their superpowers checkout. Use the supplied path.
 
-### Step 5: Propose Changes on a Separate Branch + PR
+### Step 5: Route Approved Changes to Implementation
 
-In the skills repo:
+Invoke `orchestrator-agent` with the approved findings, skills-repository path,
+proposed edits, and verification criteria. It owns launch approval and assigns
+the changes to a dedicated implementation sub-worktree. Keep the retrospective
+changes in a separate PR from the implementation that prompted them.
 
-1. Create a new branch with a descriptive name: `recognize/<topic>-<date>`.
-2. Make the proposed edits — be surgical. Touch only what the retrospective findings actually require. Resist scope creep.
-3. Commit each logical change separately. Use commit messages that point back to the friction observed.
-4. If the user has `gh` available and a GitHub remote configured: open a PR. **Follow the project's PR template if one exists** — see "Using the Project PR Template" below.
-5. If no GitHub remote: leave the branch local, push to origin if it exists, and report the branch name + commit SHAs to the user with a note that they can open the PR manually.
-
-**Do not merge the PR.** This skill ends with the PR (or branch) handed back to the user for review and integration.
+The implementation worker applies the approved edits, verifies them, and uses
+`superpowers:create-pull-request` to publish against the approved fork and base.
+Pass the template guidance below as context. If publication is unavailable,
+report the verified branch, commits, and blocker. The user owns integration.
 
 ### Using the Project PR Template
 
 Before opening the PR, check for a template:
 
 ```bash
-ls .github/PULL_REQUEST_TEMPLATE.md .github/pull_request_template.md PULL_REQUEST_TEMPLATE.md 2>/dev/null | head -1
+ls.github/PULL_REQUEST_TEMPLATE.md.github/pull_request_template.md PULL_REQUEST_TEMPLATE.md 2>/dev/null | head -1
 ```
 
-**If a template exists:** read it end-to-end. Then fill out **every section** with content from the retrospective. Do not leave sections blank or as placeholder comments. Map content like this:
+**If a template exists:** read it end-to-end. Then fill out **every section** with content from the retrospective. Fill each section with a concrete answer or a brief explanation of applicability. Map content like this:
 
 - **Problem / motivation sections** → the friction summary from Step 3 (what broke, why it mattered, with concrete examples from the session)
-- **Change sections** → 1-3 sentences summarizing the edits made in Step 5
+- **Change sections** → 1-3 sentences summarizing the edits assigned in Step 5
 - **Alternatives sections** → other process changes you considered and rejected, with one-line reasoning
-- **Evaluation sections** → honest about what you did. If the retrospective is based on a single session, say so. Do not fabricate eval data.
+- **Evaluation sections** → honest about what you did. If the retrospective is based on a single session, say so. Report the evidence actually collected.
 - **Checklist sections** → only tick boxes that are genuinely satisfied. Leave unchecked boxes with a one-line note explaining why.
 - **Environment / tool tables** → fill from the actual session: harness (Claude Code, Codex, etc.), model, model ID
 
-Construct the body as a single string with the template's section headers preserved. Replace template comment markers (`<!-- ... -->`) with your answers. Pass the body to `gh pr create --body` via a HEREDOC so newlines and quotes survive.
+Preserve the template headings, replace its placeholders, and prepare the body
+as a file for `superpowers:create-pull-request` to publish with `--body-file`.
 
-**If no template exists:** use a simple body — friction summary (from Step 3), then bulleted list of commits with their rationale.
+**If no template exists:** use the default structure from `superpowers:create-pull-request`,
+with the approved friction summary as motivation.
 
-PR title format: `Retrospective: <topic>`.
+Use a title identifying the retrospective topic, following the detected repository convention.
 
 ### Step 6: Report Back
 
@@ -132,7 +134,7 @@ Then stop. Integration of the retrospective changes is the user's call.
 
 - The user's friction description is genuinely ambiguous and you can't draft a concrete proposal — ask one clarifying question
 - The proposed change would conflict with existing skills the user might not want touched — flag it and let the user choose
-- You cannot locate the superpowers repo — ask for the path; do not invent one
+- You cannot locate the superpowers repo — ask for the path; use the supplied location
 - The PR template has sections you cannot honestly fill (e.g., asks for adversarial test results you didn't run) — surface this to the user instead of fabricating content
 
 ## Remember
@@ -140,10 +142,10 @@ Then stop. Integration of the retrospective changes is the user's call.
 - Gather implementation context **before** asking the user — sharper questions, better proposals
 - **User corrections are first-class learning signals** — scan the conversation for them and surface each one in Step 2
 - One open question with concrete prompts beats five narrow questions
-- The output goes to a separate branch + PR in the skills repo, never inline edits to skills on the main branch
+- The implementation worker owns the separate sub-worktree and PR in the skills repo
 - Be surgical: touch only what the friction findings require
 - Follow the project's PR template if one exists; fill every section honestly
-- Never merge the resulting PR — hand it back to the user
+- Hand the resulting PR back to the user for integration
 
 ## Integration
 
@@ -153,7 +155,4 @@ Then stop. Integration of the retrospective changes is the user's call.
 **Operates on:**
 - The superpowers skills repo (separate from the project where the implementation happened)
 
-**Does not:**
-- Edit project code outside the skills repo
-- Merge its own PR
-- Re-run the implementation
+**Completion:** Return the skills PR and its verification evidence to the user.

@@ -96,8 +96,8 @@ Use `--url-host` to control what hostname is printed in the returned URL JSON.
 1. **Check server is alive**, then **write HTML** to a new file in `screen_dir`:
    - Before each write, check that `$STATE_DIR/server-info` exists. If it doesn't (or `$STATE_DIR/server-stopped` exists), the server has shut down — restart it with `start-server.sh` before continuing. The server auto-exits after 30 minutes of inactivity.
    - Use semantic filenames: `platform.html`, `visual-style.html`, `layout.html`
-   - **Never reuse filenames** — each screen gets a fresh file
-   - Use Write tool — **never use cat/heredoc** (dumps noise into terminal)
+   - **Use a fresh filename for each screen**
+   - Use the platform's file-editing tool to write the content directly
    - Server automatically serves the newest file
 
 2. **Tell user what to expect and end your turn:**
@@ -269,7 +269,7 @@ If `$STATE_DIR/events` doesn't exist, the user didn't interact with the browser 
 ## File Naming
 
 - Use semantic names: `platform.html`, `visual-style.html`, `layout.html`
-- Never reuse filenames — each screen must be a new file
+- Use a fresh filename for each screen
 - For iterations: append version suffix like `layout-v2.html`, `layout-v3.html`
 - Server serves newest file by modification time
 

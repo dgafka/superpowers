@@ -32,10 +32,10 @@ bash "<SKILL_DIR>/cleanup-worktree.sh" plan <DIR>
 ```
 
 - **Exit code 2** means it refused because `<DIR>` is the **main checkout** (the
-  shared stack lives there). Stop and tell the user — do not force it.
+  shared stack lives there). Report the refusal and end the cleanup attempt.
 - **Exit code 3** means `<DIR>` is not inside a git repository. Stop.
 - **Other nonzero exits** mean planning failed. Report the actual error and stop.
-  Docker permission errors or an unavailable daemon never mean “no containers.”
+  Treat Docker permission errors and an unavailable daemon as unresolved discovery.
   Obtain Docker access through the platform permission flow, then rerun the plan.
 - **Exit code 0** prints a plan. Relay it to the user in readable form, covering:
   - `WORKTREE_ROOT` and `MAIN_ROOT`
@@ -57,7 +57,7 @@ discovered. State the selected mechanism and its volume policy before execution.
 For Makefile targets, the candidate’s `volumes`/`novolumes` field supplies that
 policy; Compose removes named volumes by default.
 
-Do not proceed to Step 3 until the user confirms.
+Proceed to Step 3 after the user confirms the displayed plan.
 
 ## Step 3 — Execute (after confirmation)
 
@@ -86,11 +86,11 @@ zero related containers, including stopped containers.
 On success, relay `Docker cleanup complete for <root>.` On any nonzero exit,
 report the actual error and any surviving container IDs. Partial cleanup can
 already have occurred; resolve the error and rerun the plan before retrying.
-Never report success after a failed teardown or Docker query.
+Report success after teardown and the final Docker query both succeed.
 
 ## Notes
 
 - The main-checkout guard compares Git's per-worktree and shared metadata paths
   to protect the shared stack without assuming a directory convention.
-- Container ownership comes from Compose working-directory labels, not name
-  substrings. Unlabelled containers are outside automatic discovery.
+- Discover container ownership from Compose working-directory labels. Automatic
+  discovery covers containers carrying those labels.

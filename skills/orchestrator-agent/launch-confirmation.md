@@ -15,26 +15,23 @@ is a separate Codex terminal session within the named existing worktree.
 | Guidance | Relevant user instructions, or none |
 | PR | When applicable: target, stack position, publication or comment permission, observation mode |
 
-Do not add Owns or Base rows. Preserve scope ownership and the verified Git
+Use the defined table rows. Preserve scope ownership and the verified Git
 base in the internal worker context. Use short cells with readable labels.
 Omit the PR row when it does not apply. For reviews, state explicitly whether
-external comments are authorized; a review request alone does not authorize them.
+external comments are authorized, based on the user's explicit permission.
 
 Always show the model beside the agent in launch confirmation and execution
 summary tables. Default to `codex / gpt-5.6-sol` or `claude code / sonnet 5`
 unless the user specifies another model. Apply this to every sub-worktree and
 sub-session, including research, review, observation, and verification.
-Pass the displayed model explicitly when launching; do not silently use the
-runtime default or substitute another model. If the runtime cannot resolve the
+Pass the displayed model explicitly when launching. If the runtime cannot resolve the
 selected model, report the blocker and ask the user to choose a replacement.
 
 For a concurrent wave, show one table per launch and identify every launch
-covered by the user's confirmation. Do not treat a general objective, research
-request, or observation-mode choice made before the table as launch approval.
+covered by the user's confirmation. Obtain approval of the concrete table after presenting it.
 An existing explicit approval of the unchanged table remains valid.
 
-For an existing sub-session, ordinary continuation within approved scope needs
-no new confirmation. A new terminal or changed scope requires a new table.
+Reuse the existing approval for ordinary continuation within the approved scope. A new terminal or changed scope requires a new table.
 
 For implementation launches, the Discipline / Skill row must include
 `superpowers:create-pull-request` alongside the implementation and TDD skills.
@@ -43,5 +40,5 @@ Present the named CI observer in its own table in the same approval message:
 `superpowers:create-pull-request`, observation-only mode `ci`, a separate Codex
 terminal in that implementation worktree, and findings to the original worker.
 This approval also covers keeping that worker terminal available for CI fixes.
-Reuse both unchanged approvals at completion; do not ask again for publication,
-observation mode, or the already approved observer launch.
+Reuse both unchanged approvals at completion for publication, observation mode,
+and the approved observer launch.

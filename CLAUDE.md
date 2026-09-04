@@ -24,10 +24,12 @@ Personal fork of [obra/superpowers](https://github.com/obra/superpowers), slimme
 
 ## Notes for working in this repo
 
-- Preserve carefully tuned behavior-shaping wording in surviving skills (Red Flags tables, rationalization lists, "your human partner" phrasing).
+- State instructions as concrete actions. Replace prohibitions with the required behavior and remove lines that add no actionable direction. Preserve workflow responsibilities, approval conditions, useful Red Flags/recovery tables, and "your human partner" phrasing.
+- Call reusable workflows skills, including user-invokable skills. Reserve command for CLI operations, checklist item for session tracking, and Orca task for scheduling objects. Use run-wide guidance consistently.
+- Validate skill metadata, relative references, and terminology with `python3 tests/skill-instructions/test-instructions.py`; verify behavior separately with representative agent scenarios when the execution scope permits.
 - `brainstorming` ends with the approved conversational design and directs the user to `orchestrator-agent` or `orchestration-research`; it does not dispatch implementation.
 - The main coordinator session never implements code. Each approved implementation runs through `orchestrator-subworktree` in its own Orca sub-worktree.
-- The `recognize-and-learn` skill writes to a separate branch in this repo and opens a PR — it never edits skills directly on `main`.
+- The `recognize-and-learn` skill routes approved changes through `orchestrator-agent` to a dedicated implementation sub-worktree and separate PR in this repo.
 - Don't restore removed skills without a clear reason — the goal of the fork is fewer moving parts, not feature parity.
 - Don't reintroduce `commands/`. New user-triggered workflows go in `skills/` with both manual-only declarations.
-- Keep skill bodies platform-neutral. `@path` includes, `$ARGUMENTS`, and `${CLAUDE_PLUGIN_ROOT}` are Claude-Code-only and silently do nothing elsewhere. Prefer skill names, prose describing user-supplied guidance, and paths resolved from the skill's own directory. `tests/manual-only-skills/test-manual-only-skills.sh` enforces this.
+- Keep skill bodies platform-neutral. `@path` includes, `$ARGUMENTS`, and `${CLAUDE_PLUGIN_ROOT}` are Claude-Code-only and silently do nothing elsewhere. Prefer skill names, prose describing user-supplied guidance, and paths resolved from the skill's own directory. `tests/manual-only-skills/test-manual-only-skills.sh` and `tests/skill-instructions/test-instructions.py` check these conventions.

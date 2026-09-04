@@ -11,17 +11,15 @@ description: >-
 
 Create a pull request for the current branch. Every repo-specific detail —
 title style, ticket references, template sections — comes from **detection,
-the repo's own PR template, or asking the user**. Never hardcode a
-project's conventions (ticket prefixes, service tags, labels, mandatory
-decorations, a specific language).
+the repo's own PR template, or asking the user**. Resolve conventions for the repository being changed.
 
 ## Orchestrated Implementation and Observation Entry Points
 
-When invoked by `orchestrator-subworktree`, use the approved launch context: repository, feature and target branches, publication permission, observer name/mode/location, coordinator Run, and original implementation task, terminal, and Dispatch. Explicit approval to publish on completion authorizes creation after the title/body passes the checks below; show the result without requiring a second approval. If publication was not approved, route the completed preview to the coordinator for a user decision. Ordinary direct invocation still uses Step 8.
+When invoked by `orchestrator-subworktree`, use the approved launch context: repository, feature and target branches, publication permission, observer name/mode/location, coordinator Run, and original implementation task, terminal, and Dispatch. Explicit approval to publish on completion authorizes creation after the title/body passes the checks below; show the result and use that approval. If publication was not approved, route the completed preview to the coordinator for a user decision. Ordinary direct invocation still uses Step 8.
 
-The implementation default is `ci`. The initial confirmation must identify the concrete observer launch as well as PR publication. Reuse that approval in Step 10; do not ask again for the mode or unchanged launch. Preserve explicit manual/full choices when the user overrides this default.
+The implementation default is `ci`. The initial confirmation must identify the concrete observer launch as well as PR publication. Reuse that approval in Step 10 for the mode and unchanged launch. Preserve explicit manual/full choices when the user overrides this default.
 
-An observer invokes `superpowers:create-pull-request` in **observation-only mode**, with mode `ci` or `full`, and starts at Step 11. It never runs PR preparation, creation, or observer launch steps. Its prompt must include the PR URL/number, repository, feature/base branches, implementation task and sub-worktree, original worker terminal/Dispatch, coordinator Run, and findings route. Missing routing context must be resolved before watching.
+An observer invokes `superpowers:create-pull-request` in **observation-only mode**, with mode `ci` or `full`, and starts at Step 11. Its workflow consists of observation and findings delivery. Its prompt must include the PR URL/number, repository, feature/base branches, implementation task and sub-worktree, original worker terminal/Dispatch, coordinator Run, and findings route. Missing routing context must be resolved before watching.
 
 ## Reader-Friendly Output
 
@@ -40,13 +38,13 @@ Read branch/status, default branch, and repository identity in parallel. Resolve
 - `git status` — uncommitted changes
 - Detect the default branch: `git symbolic-ref refs/remotes/origin/HEAD`
   (strip to the branch name, e.g. `origin/main` → `main`). If that fails,
-  probe for `main`, then `master`. **Never assume `main`.** Retain this
+  probe for `main`, then `master`. Retain this
   as the detected default branch.
 - For orchestrated work, use the approved target branch as `<base>` (the prerequisite branch for a dependent PR); otherwise use the detected default branch. Keep the default branch separately for the branch guard.
 - `git log <base>..HEAD --oneline` — commits on this branch
 - `git diff <base>...HEAD --stat` — changed-files summary
 - `git diff <base>...HEAD` — full diff, used to **verify** the motivation
-  drawn from session context, not as the source to narrate from
+  drawn from session context
 - `git remote get-url origin` — repository identity
 
 **Guards:**
@@ -68,13 +66,11 @@ Read branch/status, default branch, and repository identity in parallel. Resolve
   descriptive titles.
 - Detect a **ticket reference** from the branch name generically (a
   pattern like `[A-Z]+-\d+`).
-- **Ask the user only when detection is ambiguous** — don't guess a
-  convention from a single data point.
+- **Ask the user only when detection is ambiguous** — use multiple examples to establish a convention.
 - **Ticket-prompt rule:** if recent merged PR titles show ticket-labelled
   titles are the norm for this repo, and no ticket reference can be found
   in the branch name or session context, **ask the user for the ticket
-  number** (accepting "none" to proceed without one). If ticket-labelled
-  titles are clearly not the norm, don't ask.
+  number** (accepting "none" to proceed without one). For repositories using other title conventions, proceed with the detected style.
 
 ### 3. Classify the Change
 
@@ -90,8 +86,7 @@ Pick the single best-fitting category:
 - Config / docs / tooling
 
 This classification drives which explanatory aids are used in Step 5 —
-don't skip it, and don't let it be an afterthought bolted on after the
-body is drafted.
+complete classification before drafting the body.
 
 ### 4. Extract Motivation
 
@@ -106,35 +101,25 @@ body is drafted.
   > What problem does this PR solve, and why is this change needed now?
 - Optionally add an attribution line listing skills invoked this session
   (e.g. `_Drafted with /skill-a, /skill-b._`) — include it only when at
-  least one skill was actually invoked. Omit it otherwise; don't pad it.
+  least one skill was actually invoked. Otherwise omit the attribution.
 
 Apply this motivation discipline when writing the why:
 
-- **WHY, not WHAT.** The diff already shows what changed — don't restate
-  it in the motivation.
-- **Role-first.** State the problem as a plain declarative sentence where
-  the subject IS the thing playing the wrong role and the predicate IS
-  the mismatch. If your first sentence needs a setup clause before it
-  makes sense, it isn't role-first yet.
-- **One idea per sentence.** Don't compress a problem, its scope, and its
-  consequence into one sentence — split them, and drop the ones that
-  aren't motivation (see below).
-- **Exact domain terms, not code identifiers.** Use the project's own
-  vocabulary precisely ("payout settlement", "funding source") — but never
-  a class, event, or command name. A near-synonym signals shaky
-  understanding; a code identifier signals you're narrating the diff. If a
-  term only exists in code, it is not a domain term.
-- **Scope and counts are evidence, not motivation.** "7 of 9 places have
-  this problem" belongs in a comment or dev note, not the motivation.
-- **Mechanism belongs in inline review comments**, not the PR body. If
-  you're explaining how something evaluates internally, stop — that's
-  implementation detail.
-- **No code snippets in the motivation.** The reviewer can read the diff.
+- **Explain why the behavior needs to change.** Use the diff to verify that explanation.
+- **Outcome first, then problem.** Open with the resulting behavior. Follow
+  with a plain sentence identifying the prior problem and its consequence.
+- **One idea per sentence.** Separate the problem, scope, and consequence
+  where each contributes to understanding.
+- **Use exact domain terms.** Follow reader-friendly-writing's navigation
+  and public-interface exceptions when an identifier helps the reader.
+- **Place scope counts with supporting evidence.** For example, report
+  "7 of 9 places" beside the check that established it.
+- **Link to implementation detail** when it helps the reviewer assess a tradeoff.
 - **Front-load every sentence and bullet.** Put the most important word first
-  — readers scan line-starts, not line-ends.
-- **Objective facts, no marketese.** Drop "cleanly refactored," "nicely
+  — readers scan line-starts.
+- **State objective facts.** Drop "cleanly refactored," "nicely
   handles," and similar self-praise; state plain facts.
-- **Keep it short.** 2–5 sentences or bullet points. No novels.
+- **Keep it short.** 2–5 sentences or bullet points.
 
 ### 5. Select Explanatory Aids From the Classification
 
@@ -152,8 +137,7 @@ example is warranted.
 | Config / docs / tooling | skip if no structural element | no | why the change is needed |
 
 - **Diagrams are paired — prior flow, then resulting flow** (per the shared
-  rule set). Don't drop the prior flow on the grounds that the diff conveys
-  it: a diff shows changed lines, not the shape of the flow they formed.
+  rule set). Show the prior flow so the reviewer can compare the behavior directly.
   Omit the prior diagram only when the change replaces nothing. Keep both
   small — the pair must stay within the one-visual budget, so if pairing
   pushes past ~10–15 nodes total, narrow the diagrams to the part that
@@ -179,7 +163,7 @@ example is warranted.
   ````
 
 - **One alert, only for a must-not-miss fact.** When the change carries a
-  single constraint a reviewer must not miss — a feature-flag gate, a
+  single constraint needing special attention — a feature-flag gate, a
   breaking change, a required deploy ordering — lead the body with one
   GitHub alert (`> [!IMPORTANT]`, `> [!WARNING]`, `> [!CAUTION]`). It goes
   first because the riskiest item deserves the freshest attention. At most
@@ -188,19 +172,17 @@ example is warranted.
 
 - **A minimal usage example** — copy-pasteable, in the repository's own
   language — shows how a user *interacts* with a userland-visible / API
-  change, so a reader gets a feel for it without reading the diff. Show
-  usage only; never paste changed source. Name the public interface a user
-  calls, but don't enumerate internal classes or methods. Include it only
+  change, so a reader gets a feel for it without reading the diff. Show the public interface a user calls. Include it only
   for userland-visible / API changes.
 
 ### 6. Compose the PR
 
 **Title:**
 
-- Goal-oriented — state what the PR achieves, not what code it changes.
+- Goal-oriented — state the outcome the PR achieves.
   Test: if the title would still make sense with a different
   implementation underneath, it's goal-oriented; if not, rewrite it.
-- Imperative mood ("Add", "Fix", "Update" — not "Added", "Fixes").
+- Imperative mood ("Add", "Fix", "Update").
 - Follow the convention detected in Step 2 (conventional-commit prefix,
   ticket prefix, or plain), including a ticket reference where the
   ticket-prompt rule applies.
@@ -208,9 +190,8 @@ example is warranted.
 **Body:**
 
 - **If a PR template was found in Step 2** — fill every section it
-  defines, honoring its inline comments and checkboxes. **Keep its
-  top-level sections exactly as defined** — never add, remove, or rename
-  a `##` heading, and never leave one blank. Inside the template's
+  defines, honoring its inline comments and checkboxes. **Preserve its top-level sections** and fill each with a concrete answer
+  or an explanation of applicability. Inside the template's
   primary prose section (whatever it calls the why — "Motivation",
   "Description", "Summary"), use the same ordered shape as the default
   structure below: `### Why`, then the visual (`### Resulting flow` or
@@ -226,7 +207,7 @@ example is warranted.
   ```
   ## Why
 
-  <one GitHub alert, only when a single fact must not be missed —
+  <one GitHub alert, only when a single fact needs special attention —
   omit otherwise>
 
   <opening sentence states the outcome and stands alone, then 2-4
@@ -238,7 +219,7 @@ example is warranted.
   justified>
 
   ### Out of scope
-  <deferred work as links — `#1234` per sibling change, not prose>
+  <deferred work as links — `#1234` per sibling change>
 
   ### Example
   <minimal usage example, only if selected in Step 5>
@@ -246,17 +227,16 @@ example is warranted.
   <attribution line, only if any skills were invoked>
   ```
 
-**There is deliberately no "What changed" section.** An uncapped
-what-section fills with code identifiers, which is the failure this
-structure removes. The behavior delta belongs in Why's opening sentence,
-stated as an outcome; the visual carries the rest.
+State the behavior change in Why's opening sentence. Use the visual for
+flow details and preserve any additional sections required by the repository template.
+Include verification evidence in its test-plan section, or add a concise
+verification paragraph when using the default structure.
 
 ### 7. Trim
 
 Run the trim-pass checklist from the **reader-friendly-writing** skill against
 the drafted body (invoke the skill now if it isn't already loaded).
-Fix every failing item **before** showing the user anything — this step is
-not optional and not a judgment call about whether the body "seems fine".
+Complete the checklist before presenting the draft.
 
 ### 8. Preview & Confirm
 
@@ -264,16 +244,14 @@ For orchestrated publication already authorized in the launch context, show the 
 
 > Does this PR look good? You can request changes or approve.
 
-Without prior publication authorization, do not create anything until the user approves. Apply requested changes
+Create the PR after publication authorization is established. Apply requested changes
 and re-show the preview.
 
 ### 9. Push and Create
 
 - Push all verified commits: `git push -u origin <branch>`, including updates to a previously pushed branch.
-- Check for an existing open PR for this exact repository and head branch; reuse it when its target and ready-for-review state match the approved context. Report mismatches through the coordinator (or to the user for direct invocation) before proceeding. Otherwise create the PR with the explicit repository and base: `gh pr create --repo <owner/repo> --base <base> --head <branch> --title "..." --body-file <prepared-body-file>`. Always create
-  it ready-for-review — do not offer or use draft mode.
-- Do not add labels, GIFs, or any other project-specific decoration that
-  wasn't detected from this repo's own conventions or template.
+- Check for an existing open PR for this exact repository and head branch; reuse it when its target and ready-for-review state match the approved context. Report mismatches through the coordinator (or to the user for direct invocation) before proceeding. Otherwise create the PR with the explicit repository and base: `gh pr create --repo <owner/repo> --base <base> --head <branch> --title "..." --body-file <prepared-body-file>`. Create it ready-for-review.
+- Apply project-specific decoration when the detected conventions or template require it.
 - Return the PR URL to the user. In orchestrated implementation mode, also send it immediately to the main coordinator through Orca, with the branch and commit SHA.
 
 ### 10. Choose Observation Mode
@@ -282,26 +260,26 @@ After returning the PR URL, use the approved observation mode and concrete launc
 
 | Mode | Behavior |
 |---|---|
-| **Do not observe — manual** | Stop after creating the PR. The user handles CI and comments manually. |
+| **Manual** | Stop after creating the PR. The user handles CI and comments manually. |
 | **Full observe** | Watch CI and review comments. Route failures and actionable feedback to the implementation worker, which fixes issues and responds to comment threads. |
-| **CI observe** | Watch CI only. Route CI failures to the implementation worker. Never fetch, process, or respond to review comments. |
+| **CI observe** | Watch CI only. Route CI failures to the implementation worker. Limit inputs to PR state and CI checks. |
 
 PR approval alone authorizes creation only. Start observation when both the mode and concrete launch are approved; the initial implementation confirmation may supply both.
 
 - For **manual**, stop.
-- For **full** or **CI**, propose one read-only `observe-<specific-topic>` sub-session in the existing implementation worktree, tracked as an Orca task. Unless that exact launch was already approved, fill and show `../orchestrator-agent/launch-confirmation.md`, resolved from this skill directory, and obtain explicit confirmation. Include the selected mode and findings route; omit Owns and Base rows. The mode choice can also confirm the launch if the concrete table was already shown. Invoke the **orchestration** skill for dispatch.
+- For **full** or **CI**, propose one read-only `observe-<specific-topic>` sub-session in the existing implementation worktree, tracked as an Orca task. Unless that exact launch was already approved, fill and show `../orchestrator-agent/launch-confirmation.md`, resolved from this skill directory, and obtain explicit confirmation. Include the selected mode and findings route; use the table's defined rows. The mode choice can also confirm the launch if the concrete table was already shown. Invoke the **orchestration** skill for dispatch.
 - Preserve the selected mode and implementation ownership route in the task context: repository and PR number, feature and base branches, implementation task name, implementation sub-worktree, original worker terminal/Dispatch when available, and a short PR brief.
-- Start the observer as a sub-session: a separate Codex terminal within that existing worktree. Do not create an observation worktree. It never edits files, commits, pushes, or replies as the implementation author.
+- Start the observer as a sub-session: a separate Codex terminal within that existing worktree. The observer reads PR state and routes findings; the implementation worker owns edits, commits, pushes, and author replies.
 
-Confirm the observer Dispatch exists before reporting it as started. If launching is unavailable from the worker, route the approved launch to the coordinator in the same Run and await its receipt. Reuse an existing observer instead of launching a duplicate.
+Confirm the observer Dispatch exists before reporting it as started. If launching is unavailable from the worker, route the approved launch to the coordinator in the same Run and await its receipt. Reuse an existing observer.
 
-Once the observer starts, the PR-creating worker does not perform observation passes. In orchestrated mode, it reports completion and ends its dispatched turn. The coordinator retains its terminal for the approved correction cycle and resumes it with a fresh Dispatch when needed. A direct caller without an active Dispatch waits for routed findings without sending `worker_done`.
+Once the observer starts, it owns observation passes. In orchestrated mode, it reports completion and ends its dispatched turn. The coordinator retains its terminal for the approved correction cycle and resumes it with a fresh Dispatch when needed. A direct caller outside a Dispatch waits for routed findings and reports them in its current session.
 
 ### 11. Observe and Route Findings
 
-Only the observer watches the PR. Both automatic modes inspect PR state and CI. Full mode also inspects inline comments, general comments, and review summaries. CI mode never queries comment or review content. Keep reads bounded: query only state/check summaries and, in full mode, comments newer than the stored marker; inspect only relevant failure-log excerpts.
+Only the observer watches the PR. Both automatic modes inspect PR state and CI. Full mode also inspects inline comments, general comments, and review summaries. CI mode reads PR state and checks. Keep reads bounded: query only state/check summaries and, in full mode, comments newer than the stored marker; inspect only relevant failure-log excerpts.
 
-Use the colocated `observe-pr-tick.sh` decision helper for idle backoff and stopping guards. Resolve it from this skill's directory. A changed or unavailable fingerprint triggers an observation pass; an unchanged fingerprint advances the idle counter without starting another worker.
+Use the colocated `observe-pr-tick.sh` decision helper for idle backoff and stopping guards. Resolve it from this skill's directory. A changed or unavailable fingerprint triggers an observation pass; an unchanged fingerprint advances the idle counter while retaining the existing worker route.
 
 The observer classifies new information:
 
@@ -309,17 +287,17 @@ The observer classifies new information:
 |---|---|
 | CI still pending or PR unchanged | Record status and continue the observation schedule |
 | Concrete CI failure | Send the evidence to the owning implementation worker in full or CI mode |
-| Actionable review request | In full mode, send it to the owning implementation worker; CI mode never reads it |
+| Actionable review request | In full mode, send it to the owning implementation worker |
 | Product, behavior, scope, or architecture decision from review | In full mode, send it to the coordinating orchestrator for a user decision |
 | PR merged or closed | Report the terminal state and stop |
 
-The observer does not fix findings itself. Route actionable evidence through Orca:
+Route actionable evidence through Orca to the implementation worker:
 
-- If the original implementation worker has a live Dispatch, send the finding to that Dispatch. Include the PR URL, checked head SHA, failing check/run URL, relevant log excerpt, and actionable failure summary; do not re-route the same finding while its fix is active.
+- If the original implementation worker has a live Dispatch, send the finding to that Dispatch. Include the PR URL, checked head SHA, failing check/run URL, relevant log excerpt, and actionable failure summary; record the active fix and route that finding once.
 - If its Dispatch has settled, notify the Run coordinator. The coordinator creates a named follow-up task in the same implementation sub-worktree and reuses the exact worker terminal when available; otherwise it proposes a fresh sub-session in that sub-worktree using the shared confirmation table before launch.
 - Keep only one fix task active for a PR at a time.
 
-The implementation worker owns every correction. For behavioral changes it follows RED -> GREEN -> REFACTOR, reproducing the issue with a focused failing test before editing production code. It runs the focused tests and checks for the correction; CI supplies broader repository coverage. It commits, pushes, and reports the new commit through Orca. In full mode it also responds to the relevant review thread with what changed, or answers a comment that required no code change. The observer then resumes against the updated PR head SHA; a failure from an older head is not evidence that the correction failed.
+The implementation worker owns every correction. For behavioral changes it follows RED -> GREEN -> REFACTOR, reproducing the issue with a focused failing test before editing production code. It runs the focused tests and checks for the correction; CI supplies broader repository coverage. It commits, pushes, and reports the new commit through Orca. In full mode it also responds to the relevant review thread with what changed, or answers a comment that required no code change. The observer then resumes against the updated PR head SHA; assess the correction using results for the updated head.
 
 Stop observation when:
 
@@ -330,13 +308,12 @@ Stop observation when:
 - A decision is waiting on the user
 - The user asks to stop
 
-On stop, report the reason to the implementation worker and coordinating orchestrator. Never merge the PR, delete the sub-worktree, or discard its branch.
+On stop, report the reason to the implementation worker and coordinating orchestrator. Leave the PR, sub-worktree, and branch available for the user's integration decision.
 
 ## Guardrails
 
-- Never hardcode a ticket prefix, service tag, label, mandatory
-  decoration, or programming language — these vary per repo and must be
-  detected, deferred to the template, or asked.
-- Never assume the default branch is `main` — detect it.
+- Resolve ticket prefixes, service tags, labels, decorations, and language
+  through repository detection, its template, or a user decision.
+- Detect the default branch.
 - Everything specific to this repository comes from Step 1 and Step 2's
   detection, the PR template, or a direct question to the user.

@@ -1,3 +1,7 @@
+> Historical research notes and examples. The current authoring policy is in
+> `SKILL.md`: express conditions and required actions positively, and validate
+> them with observed behavior. Treat the quotations below as research examples.
+
 # Persuasion Principles for Skill Design
 
 ## Overview

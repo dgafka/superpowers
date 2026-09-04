@@ -9,7 +9,7 @@ description: Use when implementing any feature or bugfix, before writing impleme
 
 Write the test first. Watch it fail. Write minimal code to pass.
 
-**Core principle:** If you didn't watch the test fail, you don't know if it tests the right thing.
+**Core principle:** Observe the expected failure to establish that the test detects the behavior you intend to change.
 
 **Violating the letter of the rules is violating the spirit of the rules.**
 
@@ -28,11 +28,11 @@ Write the test first. Watch it fail. Write minimal code to pass.
 
 ## The Iron Law
 
-**No production code without a failing test first.**
+**Observe the focused test fail for the expected reason before writing production code.**
 
 Write code before the test? Delete it. Start over.
 
-Implement fresh from tests — drive new code from the failing test, not from what was deleted.
+Drive the fresh implementation from the failing test.
 
 ## Red-Green-Refactor
 
@@ -60,11 +60,11 @@ digraph tdd_cycle {
 
 ### RED - Write Failing Test
 
-Default to **Detroit/Chicago School TDD**: real collaborators, assertions on observable state — not on interactions.
+Default to **Detroit/Chicago School TDD**: real collaborators and assertions on observable state.
 
 Write one minimal test showing what should happen.
 
-**Good test:** the name describes a specific, observable behavior (e.g. "retries failed operations 3 times"); the body drives the real implementation through real collaborators (Detroit/Chicago School); and the assertions check what the code returned or the observable state, not what intermediate steps were called.
+**Good test:** the name describes a specific, observable behavior (e.g. "retries failed operations 3 times"); the body drives the real implementation through real collaborators (Detroit/Chicago School); and the assertions check what the code returned or the observable state.
 
 **Bad test:** vague name (e.g. "retry works"); heavy test-double setup that pre-arranges the answer; assertions on interactions between collaborators rather than the result. You're testing your test scaffold, not the code.
 
@@ -75,18 +75,18 @@ Write one minimal test showing what should happen.
 
 ### Verify RED - Watch It Fail
 
-**MANDATORY. Never skip.**
+**MANDATORY.**
 
-Run only the test you just wrote. Not the file, not the suite — just this test method.
+Run the single test method you just wrote.
 
 ```bash
 vendor/bin/phpunit --filter testMethodName tests/Path/SomeTest.php
 ```
 
 Confirm:
-- Test fails (not errors)
+- The assertion fails for the expected behavioral reason
 - Failure message is expected
-- Fails because feature missing (not typos)
+- The failure demonstrates the missing behavior
 
 **Test passes?** You're testing existing behavior. Fix test.
 
@@ -96,17 +96,17 @@ Confirm:
 
 Write simplest code to pass the test.
 
-**Good implementation:** just enough to make the test pass — no optional parameters, no configuration knobs, no premature abstraction. If the test asks for "retry 3 times", hardcode 3.
+**Good implementation:** just enough to make the test pass. If the test asks for "retry 3 times", hardcode 3.
 
 **Bad implementation:** anticipates needs the test didn't ask for — optional retry counts, exponential backoff modes, callback hooks for each attempt. That's YAGNI in spirit, even before any of it gets implemented.
 
-Don't add features, refactor other code, or "improve" beyond the test.
+Keep this increment scoped to the behavior exercised by the test.
 
 ### Verify GREEN - Watch It Pass
 
 **MANDATORY.**
 
-Run only the test you just wrote. Not the file, not the suite.
+Run the single test method you just wrote.
 
 ```bash
 vendor/bin/phpunit --filter testMethodName tests/Path/SomeTest.php
@@ -116,7 +116,7 @@ Confirm:
 - Test passes
 - Output pristine (no errors, warnings)
 
-**Test fails?** Fix code, not test.
+**Test fails?** Correct the implementation to satisfy the expected behavior.
 
 ### REFACTOR - Clean Up
 
@@ -125,7 +125,7 @@ After green only:
 - Improve names
 - Extract helpers
 
-Keep tests green. Don't add behavior.
+Preserve behavior and keep the focused test green during refactoring.
 
 ### Repeat
 
@@ -133,9 +133,9 @@ Next failing test for next feature.
 
 ## Inner Loop Scope
 
-During RED → GREEN → REFACTOR for a single cycle, run **only** the test you are driving. No other tests. No suite.
+During RED → GREEN → REFACTOR for a single cycle, run the single test you are driving.
 
-A spec implementation chains many inner loops — one per spec-defined step. Each loop covers exactly one piece of work, fast, with only its own test.
+Implement the approved behavior through small increments, each with its own focused test.
 
 At task completion, run the focused tests and checks relevant to the task's owned behavior and affected surface. Broader repository coverage belongs to CI.
 
@@ -159,9 +159,9 @@ The same single-test pattern applies to other runners: `pytest -k`, `jest -t`, `
 
 **RED** — write a test that submits the registration with an empty email and asserts the response carries a validation error like "Email required".
 
-**Verify RED** — run `vendor/bin/phpunit` for that test. It should fail because the form returns no error (or returns one with a different message). Confirm the failure mode is "feature missing", not a typo or class-not-found.
+**Verify RED** — run `vendor/bin/phpunit` for that test. It should fail because the form returns no error (or returns one with a different message). Confirm the assertion fails because the expected validation is missing.
 
-**GREEN** — add the minimal validation: if the email is empty or whitespace-only, return a validation error with message "Email required". Nothing else.
+**GREEN** — add the minimal validation: if the email is empty or whitespace-only, return a validation error with message "Email required".
 
 **Verify GREEN** — run the test again. Confirm it passes.
 
@@ -171,9 +171,9 @@ The same single-test pattern applies to other runners: `pytest -k`, `jest -t`, `
 
 Before marking work complete:
 
-- [ ] Every new function/method has a test
+- [ ] Every new or changed behavior has test coverage
 - [ ] Watched each test fail before implementing
-- [ ] Each test failed for expected reason (feature missing, not typo)
+- [ ] Each test failed for the expected behavioral reason
 - [ ] Wrote minimal code to pass each test
 - [ ] Your new test passes (inner loop)
 - [ ] Focused task-relevant verification run at the end of implementation
@@ -181,7 +181,7 @@ Before marking work complete:
 - [ ] Tests follow Detroit/Chicago School (real collaborators, state-based)
 - [ ] Edge cases and errors covered
 
-Can't check all boxes? You skipped TDD. Start over.
+Complete each outstanding applicable check before reporting verification complete.
 
 ## When Stuck
 
@@ -196,17 +196,16 @@ Can't check all boxes? You skipped TDD. Start over.
 
 Bug found? Write failing test reproducing it. Follow TDD cycle. Test proves fix and prevents regression.
 
-Never fix bugs without a test.
 
 ## Testing Anti-Patterns
 
-If you must reach for test doubles (rare under Detroit/Chicago School), read @testing-anti-patterns.md to avoid common pitfalls:
+If you must reach for test doubles (rare under Detroit/Chicago School), read [testing-anti-patterns.md](testing-anti-patterns.md) to avoid common pitfalls:
 - Testing test-double behavior instead of real behavior
 - Adding test-only methods to production classes
 - Substituting collaborators without understanding what they do
 
 ## Final Rule
 
-**Production code → test exists and failed first. Otherwise → not TDD.**
+**Each production change follows an observed failing test for its intended behavior.**
 
-No exceptions without your human partner's permission.
+Agree exceptions with your human partner before proceeding.

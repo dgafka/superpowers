@@ -18,7 +18,7 @@ build next time, or an **agent skill/rule** that steers generation next time.
 Feedback that is purely one-off (specific to this feature's business logic) is
 recognized and deliberately dropped.
 
-This command is a thin collector. Its only hard job is to gather the review
+This skill is a thin collector. Its only hard job is to gather the review
 signals and correlate each with the fix that followed. Everything from
 categorization onward — deciding which lessons are worth enforcing and designing
 how to apply them — is **led by the brainstorming skill**, which owns the design
@@ -27,9 +27,7 @@ questions remain, `orchestration-research`.
 
 Run it **inside the project the PR belongs to** (superpowers installed as a
 plugin), so the resulting improvements land where they belong: the project's CI
-config and its `.claude/` / `CLAUDE.md`. Everything repo-specific (which linters
-exist, ticket format) is detected at runtime — this command carries none of a
-project's own conventions as fixed values.
+config and its platform-appropriate agent instructions or skill directory. Detect repo-specific details, such as available linters and ticket format, at runtime.
 
 ## Reader-Friendly Output
 
@@ -47,7 +45,7 @@ diff.
   `owner/repo#123`. Resolve it to `{owner}`, `{repo}`, and `{number}`.
 - Confirm access and get the basics: `gh pr view <ref> --json
   title,body,number,url,headRefName,baseRefName,state`.
-- If no reference was supplied, try `gh pr view --json ...` with no ref to resolve an
+- If no reference was supplied, try `gh pr view --json...` with no ref to resolve an
   open PR for the current branch. If none exists, stop and ask the user for a PR
   reference.
 
@@ -131,17 +129,15 @@ leads:
   direct implementation, or `orchestration-research` when evidence is still
   needed before implementation.
 
-Do **not** invoke `orchestrator-agent`, `orchestration-research`, `orchestrator-subworktree`,
-`recognize-and-learn`, or any other skill
-directly from this command — brainstorming owns the rest of the pipeline.
+End this skill after invoking `brainstorming` with the collected findings. Brainstorming owns the design conversation and directs the user to the subsequent implementation workflow.
 
 ## Notes
 
-- This command never applies fixes itself. It collects, correlates,
+- This skill collects, correlates,
   draft-categorizes, and hands off to brainstorming.
-- Bucket 1 (PR-only) feedback is recognized then dropped; it is never carried
-  forward.
+- Record bucket 1 briefly in the summary, then carry buckets 2 and 3 into
+  the improvement design.
 - Which linters/static-analysis tools exist is always detected at runtime — PHP
   is the assumed vocabulary, not a fixed requirement.
-- This is not `recognize-and-learn`: that learns from the live conversation;
-  this learns from a PR's review feedback and shares none of its machinery.
+- Use `recognize-and-learn` for live-conversation retrospectives. This skill
+  learns from a PR's review feedback.
