@@ -1,0 +1,41 @@
+tests/cleanup-worktree/test-cleanup-worktree.sh
+  s_a015189e2d194d::t_77bff45643e088 381-400
+  s_052506508083ed::t_5b407d7bf8bd75 197,199,201,204-213,216,289-290
+  s_a015189e2d194d::t_0aa21379d504d6 300-317
+  s_a015189e2d194d::t_8c0fadc4e7023f 318-362
+  s_a015189e2d194d::t_bd42a4ab7bdfdb 363-380
+skills/cleanup-worktree/SKILL.md
+  s_a015189e2d194d::t_1a7aefacfe2b8c 3,10-13,15-17,37-39,44-45,47-49,55-58,82-89,93-96
+skills/cleanup-worktree/cleanup-worktree.sh
+  s_a015189e2d194d::t_a8d6423007de25 2,134,181,305,315
+  s_a015189e2d194d::t_85a4be2a24f0bd 155-161,258,281,283-284,287-288,295-303
+  s_a015189e2d194d::t_12e57a37b25550 197,223-227
+  s_a015189e2d194d::t_2dbccdca5871ca 214-219,247,253,290
+  s_a015189e2d194d::t_e03aef145e2707 90,107,109-111,113,115-117,120,122-124,126-131,189,191,266
+README.md
+  s_a015189e2d194d::t_1a7aefacfe2b8c 155
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "6db47c2983a2344319326084278de536d5a115a2",
+  "prompts": {},
+  "sessions": {
+    "s_052506508083ed": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a06ccb-3987-7a71-af64-6c85e30b99ce",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "Dariusz Gafka <dariusz.gafka@lendable.co.uk>"
+    },
+    "s_a015189e2d194d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "01a06ccb-3987-7a71-af64-6c85e30b99ce",
+        "model": "unknown"
+      },
+      "human_author": "Dariusz Gafka <dariusz.gafka@lendable.co.uk>"
+    }
+  }
+}
