@@ -30,7 +30,9 @@ Build the implementation DAG in Orca. Make ownership, dependencies, acceptance c
 
 Before creating or dispatching each implementation sub-worktree, present the confirmation table in `launch-confirmation.md`, beside this skill. Fill it with the concrete name, goal, execution location, dependencies, discipline, verification, guidance, and intended PR publication/stack position. Do not include Owns or Base rows. Keep ownership boundaries and the verified Git base in the worker context.
 
-Ask the user to confirm the presented sub-worktree. One message may present a concurrent wave, with one table per launch; every launch must be individually identifiable and explicitly approved. Dispatch only approved launches. Approval of an unchanged table is sufficient; do not ask again at dispatch.
+Include `superpowers:create-pull-request` in the Discipline / Skill row and ready-for-review publication in the PR row. Also present a separate table for the named `observe-<topic>` Codex sub-session in that implementation worktree, using `superpowers:create-pull-request` in observation-only mode `ci`, with findings routed to the original implementation worker. Approval covers publication after verification and retention of that worker terminal for CI fixes. Preserve an explicit user choice of manual/full observation.
+
+Ask the user to confirm the presented sub-worktree and observer launch. One message may present a concurrent wave, with one table per launch; every launch must be individually identifiable and explicitly approved. Dispatch only approved launches. Approval of an unchanged table is sufficient; do not ask again at dispatch.
 
 Create each implementation as a separate Orca child sub-worktree from the main coordinator worktree. Independent tasks use sibling sub-worktrees based on the agreed trunk. A dependent task uses its prerequisite's stable branch as its Git base. When a task depends on multiple sibling branches, ask how to linearize or integrate them before choosing a base.
 
@@ -39,6 +41,8 @@ Every implementation task prompt must include these instructions:
 - Invoke `orchestrator-subworktree` for the worker workflow.
 - **REQUIRED SUB-SKILL:** Use superpowers:test-driven-development for every behavior change.
 - Follow RED -> GREEN -> REFACTOR for each increment: write one focused test, watch it fail for the expected reason, write the minimum implementation, watch it pass, then refactor while green.
+- **REQUIRED SUB-SKILL:** Use superpowers:create-pull-request after verification; create or reuse the ready-for-review PR against the approved target branch, report its URL to the main coordinator, and trigger the approved CI observer in the same worktree.
+- Include the publication authorization, concrete observer approval, and original worker/Dispatch route in the prompt.
 - Run only the focused inner-loop and task-relevant tests; broader repository coverage belongs to CI.
 
 The coordinator remains in the main worktree.
@@ -82,15 +86,17 @@ unrelated dependency-ready tasks moving while review or fixes are in progress.
 
 Orca dependencies are the execution source of truth. GitHub stacks express review and merge order.
 
+Implementation workers own PR creation through `superpowers:create-pull-request`. The coordinator receives each PR URL and observer launch receipt; it must not create duplicate PRs or replace them with draft PRs.
+
 For each completed dependency chain:
 
-1. Verify every branch is pushed to the same repository and the history is linear.
-2. Order branches bottom-to-top and use GitHub's native `gh stack link` workflow to create or reuse draft PRs with correct bases.
-3. Keep PR titles human-readable and internal task names out of them.
-4. Ask for an observation mode: manual, full, or CI-only. For either automatic mode, propose one read-only `observe-<specific-topic>` sub-session per PR in the existing implementation worktree, tracked as an Orca task. Show the shared confirmation table with the selected mode and routing before launch. The mode choice may also confirm the launch when the concrete table was already shown. Full mode routes CI and comment findings to the implementation worker; CI-only mode routes CI failures and never processes comments.
+1. Verify every branch is pushed to the approved repository and the history is linear.
+2. Verify each existing PR targets its approved base: the agreed trunk for independent work, or the prerequisite branch for dependent work.
+3. Link the existing ready-for-review PRs with GitHub's native stack workflow when supported. Inspect current `gh stack` help or official documentation first; do not use a command that creates draft replacements.
+4. Confirm the approved CI observer is running in each implementation worktree. If the worker cannot dispatch it, launch that exact approved sub-session in the same Run and return its receipt. Preserve explicit manual/full overrides.
 5. Treat independent dependency chains as separate stacks.
 
-Include remote publication in the sub-worktree confirmation table. If it was not approved there, ask before creating remote PR state. Inspect current `gh stack` help or official documentation when the installed public-preview surface differs.
+A PR URL is publication evidence, not proof that CI passed. Include pending CI or observation blockers in status reports. Keep the original worker available for the approved correction cycle: record retention with Orca `worker-retain` after its Dispatch settles, then create a fresh fix task in the same worktree and reuse that exact terminal when findings arrive. Keep only one fix active per PR. A replacement terminal requires a new confirmation table. Release the retained worker after observation stops and outstanding fixes settle.
 
 ## Other Sub-sessions
 
@@ -105,6 +111,6 @@ Reusing a sub-session for the approved scope, such as re-review after fixes or a
 - Use Orca dependencies and `task-list --ready` rather than mental scheduling.
 - Report exact sub-worktree or sub-session names and whether each is running, ready, blocked, or awaited.
 - Treat timeouts as checkpoints while workers remain live.
-- After accepted completion, reuse the exact worker for an immediate follow-up or release it through Orca.
+- After accepted completion, reuse the exact worker for an immediate follow-up, retain it through the approved observation cycle, or release it through Orca once observation and outstanding fixes have ended.
 - Reuse the exact reviewer for re-review after approved fixes.
 - Never merge stacks, delete worktrees, or discard branches without user authorization.

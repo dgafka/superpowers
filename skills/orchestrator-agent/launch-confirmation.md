@@ -27,3 +27,13 @@ An existing explicit approval of the unchanged table remains valid.
 
 For an existing sub-session, ordinary continuation within approved scope needs
 no new confirmation. A new terminal or changed scope requires a new table.
+
+For implementation launches, the Discipline / Skill row must include
+`superpowers:create-pull-request` alongside the implementation and TDD skills.
+The PR row states publication on completion and the approved target/stack position.
+Present the named CI observer in its own table in the same approval message:
+`superpowers:create-pull-request`, observation-only mode `ci`, a separate Codex
+terminal in that implementation worktree, and findings to the original worker.
+This approval also covers keeping that worker terminal available for CI fixes.
+Reuse both unchanged approvals at completion; do not ask again for publication,
+observation mode, or the already approved observer launch.

@@ -13,6 +13,8 @@ There is one execution path. Do not ask how to execute and do not dispatch anoth
 
 **REQUIRED SUB-SKILL:** Use superpowers:test-driven-development for every behavior change.
 
+**REQUIRED SUB-SKILL:** Use superpowers:create-pull-request after verification to publish the implementation PR and start its approved CI observation sub-session.
+
 **REQUIRED SUB-SKILL:** Use orchestration for Orca task questions and lifecycle reporting.
 
 ## 1. Anchor to the Sub-worktree
@@ -39,19 +41,24 @@ If required task context is absent, use Orca's blocking `ask/reply` flow. Do not
 
 The orchestrator may answer when accumulated research already determines the result. A material plan change goes back to the user through the orchestrator.
 
-## 3. Verify and Report
+## 3. Verify, Publish, and Report
 
 Run only the focused tests and checks relevant to the task's owned behavior and affected surface. Leave broader repository coverage to CI. Confirm the intended work is committed and the worktree contains no accidental changes.
+
+Invoke `superpowers:create-pull-request` in its orchestrated implementation mode. Pass the approved repository, PR base (the prerequisite branch for dependent work), publication authorization, named CI observer launch, and original worker/Dispatch route. Create or reuse a ready-for-review PR, then send its URL to the main coordinator through Orca immediately.
+
+For automatic observation, trigger the approved `observe-<topic>` sub-session in this implementation worktree using the observation entry point in `superpowers:create-pull-request`. Use mode `ci` by default, or `full` when explicitly approved. An explicit manual override skips observation and its launch receipt. Ask the coordinator to dispatch it in the same Run when worker-side dispatch is unavailable; wait for the launch receipt before reporting successful completion. Do not create a second observer if one already exists. Missing launch approval or a failed launch in an automatic mode is a blocker to report, not successful observation.
 
 Report completion through the active Orca Dispatch with:
 
 - Sub-worktree name and outcome
-- Branch and final commit SHA
+- PR URL, target branch, and final commit SHA
+- Observer name, selected mode, launch receipt, and findings route (or the explicit manual override)
 - Verification commands and results
 - Files modified
 - Deviations, blockers, or follow-up dependencies
 
-Send `worker_done` exactly once using the IDs injected by Orca, then end the dispatched turn. The orchestrator owns dependency release, stacked-PR linkage, integration choices, and worker cleanup.
+Send `worker_done` exactly once using the IDs injected by Orca, then end the dispatched turn. The orchestrator owns dependency release, stacked-PR linkage, integration choices, and worker cleanup. It retains the original worker terminal for CI fixes during the approved observation cycle; after settlement, a fix arrives as a fresh Dispatch in that exact terminal. Never reuse settled lifecycle IDs.
 
 ## Stop Conditions
 

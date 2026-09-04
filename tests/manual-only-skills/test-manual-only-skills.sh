@@ -78,7 +78,7 @@ assert_no_hits() {
 }
 
 # Workflow skills that must be manual-only on both platforms.
-WORKFLOW_SKILLS=(create-pull-request improve-workflow cleanup-worktree orchestration-research)
+WORKFLOW_SKILLS=(improve-workflow cleanup-worktree orchestration-research)
 
 echo "== manual-only workflow skills live under skills/"
 if run_test relocated; then
@@ -102,6 +102,14 @@ if run_test codex_manual_only; then
         assert_contains "$REPO_ROOT/skills/$s/agents/openai.yaml" "allow_implicit_invocation: false" \
             "$s opts out of Codex implicit invocation"
     done
+fi
+
+echo "== implementation workers can invoke PR creation"
+if run_test create_pull_request_invocable; then
+    assert_not_contains "$REPO_ROOT/skills/create-pull-request/SKILL.md" "disable-model-invocation: true" \
+        "create-pull-request permits worker invocation in Claude Code"
+    assert_contains "$REPO_ROOT/skills/create-pull-request/agents/openai.yaml" "allow_implicit_invocation: true" \
+        "create-pull-request permits worker invocation in Codex"
 fi
 
 echo "== the shared rule set stays agent-invocable"

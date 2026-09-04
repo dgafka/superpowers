@@ -1,12 +1,12 @@
 ---
 name: create-pull-request
 allowed-tools: Bash(gh pr create:*), Bash(gh pr list:*), Bash(gh pr view:*), Bash(gh pr checks:*), Bash(gh pr comment:*), Bash(gh run view:*), Bash(gh api:*), Bash(git log:*), Bash(git diff:*), Bash(git status:*), Bash(git branch:*), Bash(git rev-parse:*), Bash(git symbolic-ref:*), Bash(git push:*), Bash(git add:*), Bash(git commit:*), Bash(git remote:*), Bash(orca:*), Bash(orca-dev:*), Bash(orca-ide:*)
-disable-model-invocation: true
 description: >-
   Create a pull request for the current branch, detecting the repo's own
   conventions and PR template rather than assuming any project's rules.
   Use when the user asks to create a PR, open a PR, push the current branch
-  as a pull request, or invokes /create-pull-request.
+  as a pull request, invokes /create-pull-request, or an approved implementation
+  worker needs to publish its result or observe its PR.
 ---
 
 Create a pull request for the current branch. Every repo-specific detail —
@@ -14,6 +14,14 @@ title style, ticket references, template sections — comes from **detection,
 the repo's own PR template, or asking the user**. Never hardcode a
 project's conventions (ticket prefixes, service tags, labels, mandatory
 decorations, a specific language).
+
+## Orchestrated Implementation and Observation Entry Points
+
+When invoked by `orchestrator-subworktree`, use the approved launch context: repository, feature and target branches, publication permission, observer name/mode/location, coordinator Run, and original implementation task, terminal, and Dispatch. Explicit approval to publish on completion authorizes creation after the title/body passes the checks below; show the result without requiring a second approval. If publication was not approved, route the completed preview to the coordinator for a user decision. Ordinary direct invocation still uses Step 8.
+
+The implementation default is `ci`. The initial confirmation must identify the concrete observer launch as well as PR publication. Reuse that approval in Step 10; do not ask again for the mode or unchanged launch. Preserve explicit manual/full choices when the user overrides this default.
+
+An observer invokes `superpowers:create-pull-request` in **observation-only mode**, with mode `ci` or `full`, and starts at Step 11. It never runs PR preparation, creation, or observer launch steps. Its prompt must include the PR URL/number, repository, feature/base branches, implementation task and sub-worktree, original worker terminal/Dispatch, coordinator Run, and findings route. Missing routing context must be resolved before watching.
 
 ## Reader-Friendly Output
 
@@ -26,14 +34,15 @@ The specializations in Steps 4–7 below build on that shared rule set.
 
 ### 1. Gather Context
 
-Run these in parallel:
+Read branch/status, default branch, and repository identity in parallel. Resolve `<base>` before running the dependent log/diff commands:
 
 - `git branch --show-current` — current branch
 - `git status` — uncommitted changes
 - Detect the default branch: `git symbolic-ref refs/remotes/origin/HEAD`
   (strip to the branch name, e.g. `origin/main` → `main`). If that fails,
-  probe for `main`, then `master`. **Never assume `main`.** Call the result
-  `<base>` for every command below.
+  probe for `main`, then `master`. **Never assume `main`.** Retain this
+  as the detected default branch.
+- For orchestrated work, use the approved target branch as `<base>` (the prerequisite branch for a dependent PR); otherwise use the detected default branch. Keep the default branch separately for the branch guard.
 - `git log <base>..HEAD --oneline` — commits on this branch
 - `git diff <base>...HEAD --stat` — changed-files summary
 - `git diff <base>...HEAD` — full diff, used to **verify** the motivation
@@ -42,7 +51,7 @@ Run these in parallel:
 
 **Guards:**
 
-- If the current branch **is** `<base>` (the default branch) — stop and
+- If the current branch **is** the detected default branch or the selected `<base>` — stop and
   tell the user they need to be on a feature branch first.
 - If there are uncommitted changes — warn the user and ask whether to
   proceed without them.
@@ -251,25 +260,25 @@ not optional and not a judgment call about whether the body "seems fine".
 
 ### 8. Preview & Confirm
 
-Show the user the complete title and body. Ask:
+For orchestrated publication already authorized in the launch context, show the complete title and body and continue. Otherwise show the user the complete title and body. Ask:
 
 > Does this PR look good? You can request changes or approve.
 
-Do not create anything until the user approves. Apply requested changes
+Without prior publication authorization, do not create anything until the user approves. Apply requested changes
 and re-show the preview.
 
 ### 9. Push and Create
 
-- If the branch hasn't been pushed, push it: `git push -u origin <branch>`.
-- Create the PR: `gh pr create --title "..." --body "..."`. Always create
+- Push all verified commits: `git push -u origin <branch>`, including updates to a previously pushed branch.
+- Check for an existing open PR for this exact repository and head branch; reuse it when its target and ready-for-review state match the approved context. Report mismatches through the coordinator (or to the user for direct invocation) before proceeding. Otherwise create the PR with the explicit repository and base: `gh pr create --repo <owner/repo> --base <base> --head <branch> --title "..." --body-file <prepared-body-file>`. Always create
   it ready-for-review — do not offer or use draft mode.
 - Do not add labels, GIFs, or any other project-specific decoration that
   wasn't detected from this repo's own conventions or template.
-- Return the PR URL to the user.
+- Return the PR URL to the user. In orchestrated implementation mode, also send it immediately to the main coordinator through Orca, with the branch and commit SHA.
 
 ### 10. Choose Observation Mode
 
-After returning the PR URL, ask how the user wants to observe it:
+After returning the PR URL, use the approved observation mode and concrete launch when supplied. Otherwise ask how the user wants to observe it:
 
 | Mode | Behavior |
 |---|---|
@@ -277,14 +286,16 @@ After returning the PR URL, ask how the user wants to observe it:
 | **Full observe** | Watch CI and review comments. Route failures and actionable feedback to the implementation worker, which fixes issues and responds to comment threads. |
 | **CI observe** | Watch CI only. Route CI failures to the implementation worker. Never fetch, process, or respond to review comments. |
 
-PR approval authorizes creation only. Wait for this separate choice before starting observation.
+PR approval alone authorizes creation only. Start observation when both the mode and concrete launch are approved; the initial implementation confirmation may supply both.
 
 - For **manual**, stop.
-- For **full** or **CI**, propose one read-only `observe-<specific-topic>` sub-session in the existing implementation worktree, tracked as an Orca task. Before launch, fill and show `../orchestrator-agent/launch-confirmation.md`, resolved from this skill directory, and obtain explicit confirmation. Include the selected mode and findings route; omit Owns and Base rows. The mode choice can also confirm the launch if the concrete table was already shown. Invoke the **orchestration** skill for dispatch.
+- For **full** or **CI**, propose one read-only `observe-<specific-topic>` sub-session in the existing implementation worktree, tracked as an Orca task. Unless that exact launch was already approved, fill and show `../orchestrator-agent/launch-confirmation.md`, resolved from this skill directory, and obtain explicit confirmation. Include the selected mode and findings route; omit Owns and Base rows. The mode choice can also confirm the launch if the concrete table was already shown. Invoke the **orchestration** skill for dispatch.
 - Preserve the selected mode and implementation ownership route in the task context: repository and PR number, feature and base branches, implementation task name, implementation sub-worktree, original worker terminal/Dispatch when available, and a short PR brief.
 - Start the observer as a sub-session: a separate Codex terminal within that existing worktree. Do not create an observation worktree. It never edits files, commits, pushes, or replies as the implementation author.
 
-Once the observer starts, the PR-creating worker does not perform observation passes. It waits for routed findings or other work.
+Confirm the observer Dispatch exists before reporting it as started. If launching is unavailable from the worker, route the approved launch to the coordinator in the same Run and await its receipt. Reuse an existing observer instead of launching a duplicate.
+
+Once the observer starts, the PR-creating worker does not perform observation passes. In orchestrated mode, it reports completion and ends its dispatched turn. The coordinator retains its terminal for the approved correction cycle and resumes it with a fresh Dispatch when needed. A direct caller without an active Dispatch waits for routed findings without sending `worker_done`.
 
 ### 11. Observe and Route Findings
 
@@ -304,11 +315,11 @@ The observer classifies new information:
 
 The observer does not fix findings itself. Route actionable evidence through Orca:
 
-- If the original implementation worker has a live Dispatch, send the finding to that Dispatch.
+- If the original implementation worker has a live Dispatch, send the finding to that Dispatch. Include the PR URL, checked head SHA, failing check/run URL, relevant log excerpt, and actionable failure summary; do not re-route the same finding while its fix is active.
 - If its Dispatch has settled, notify the Run coordinator. The coordinator creates a named follow-up task in the same implementation sub-worktree and reuses the exact worker terminal when available; otherwise it proposes a fresh sub-session in that sub-worktree using the shared confirmation table before launch.
 - Keep only one fix task active for a PR at a time.
 
-The implementation worker owns every correction. For behavioral changes it follows RED -> GREEN -> REFACTOR, reproducing the issue with a focused failing test before editing production code. It runs the focused tests and checks for the correction; CI supplies broader repository coverage. It commits, pushes, and reports the new commit through Orca. In full mode it also responds to the relevant review thread with what changed, or answers a comment that required no code change. The observer then resumes against the updated PR.
+The implementation worker owns every correction. For behavioral changes it follows RED -> GREEN -> REFACTOR, reproducing the issue with a focused failing test before editing production code. It runs the focused tests and checks for the correction; CI supplies broader repository coverage. It commits, pushes, and reports the new commit through Orca. In full mode it also responds to the relevant review thread with what changed, or answers a comment that required no code change. The observer then resumes against the updated PR head SHA; a failure from an older head is not evidence that the correction failed.
 
 Stop observation when:
 
