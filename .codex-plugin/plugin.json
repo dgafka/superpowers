@@ -22,7 +22,7 @@
   "interface": {
     "displayName": "Superpowers",
     "shortDescription": "Agent orchestration, research, TDD, and delivery workflows",
-    "longDescription": "Use Superpowers to guide agent work through conversational design, reusable Orca implementation orchestration, optional concurrent research, per-task TDD, and verification before completion.",
+    "longDescription": "Use Superpowers to guide agent work through conversational design, reusable Orca implementation orchestration, optional concurrent research, and per-task TDD.",
     "developerName": "Jesse Vincent",
     "category": "Coding",
     "capabilities": [

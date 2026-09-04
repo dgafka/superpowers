@@ -5,7 +5,6 @@
 > Before starting implementation, invoke each skill in **Required Skills** via the Skill tool.
 
 - **superpowers:writing-skills** — the entire spec is an edit to a skill file (`skills/test-driven-development/SKILL.md`); this skill governs how to edit skill files correctly.
-- **superpowers:verification-before-completion** — acceptance requires re-reading the resulting `SKILL.md` end-to-end to confirm internal consistency, well-formed Markdown, unchanged frontmatter, and no orphan references — exactly the evidence-before-assertion check this skill enforces.
 
 ## Problem
 
@@ -20,16 +19,16 @@ A third, smaller issue: the skill negatively frames the preferred testing tactic
 
 Edit `skills/test-driven-development/SKILL.md` in place. Three changes in one pass:
 
-1. **Tighten the inner loop.** The implementer runs only the test they just wrote during RED, GREEN, and REFACTOR. Suite-wide regression is deferred to `verification-before-completion`.
+1. **Tighten the inner loop.** The implementer runs only the test they just wrote during RED, GREEN, and REFACTOR. Focused task-relevant checks run at completion; broader repository coverage belongs to CI.
 2. **Reframe testing tactic.** Remove all "mock"-language and label the preferred tactic positively: **Detroit/Chicago School TDD** (real collaborators, state-based assertions).
 3. **Strip persuasion content.** Remove sections that try to argue the AI out of bad behavior. Keep only specificational content: what to do, when, and how to recognize completion.
 
-The cycle-speed tradeoff is accepted explicitly: regressions in code outside the new test's scope will not surface until completion-time. That is the deal.
+The cycle-speed tradeoff is accepted explicitly: regressions in code outside the new test's scope may surface in focused completion checks or CI. That is the deal.
 
 ## Scope
 
 - **In scope:** edits to `skills/test-driven-development/SKILL.md` only.
-- **Out of scope:** edits to any other skill, including `verification-before-completion`, `using-superpowers`, and `writing-skills`. See **Follow-up Work** at the end for skills that need a similar persuasion-strip in a future spec.
+- **Out of scope:** edits to any other skill, including `using-superpowers` and `writing-skills`. See **Follow-up Work** at the end for skills that need a similar persuasion-strip in a future spec.
 - **Out of scope:** new files, new sections beyond those listed below, or restructuring of existing material that isn't directly relevant.
 - **Out of scope:** the `testing-anti-patterns.md` companion file.
 
@@ -62,7 +61,7 @@ Insert a new section `## Inner Loop Scope` immediately after `## Red-Green-Refac
 Content (keep specificational, no persuasion):
 
 - The rule: during RED → GREEN → REFACTOR for a single cycle, run **only** the test you're driving. No other tests. No suite.
-- Where the suite **is** run: `verification-before-completion` owns full-suite verification before commit / PR.
+- At task completion, run focused tests and checks for the affected behavior. Broader repository coverage belongs to CI.
 - One concrete command example using a PHPUnit single-test filter. One line noting the same pattern applies to other runners (`pytest -k`, `jest -t`, `go test -run`, etc.) — do not enumerate exhaustively.
 
 Half a screen at most. Do **not** include a "why this matters" paragraph or rationale block — the rule stands on its own.
@@ -72,7 +71,7 @@ Half a screen at most. Do **not** include a "why this matters" paragraph or rati
 The current checklist contains `- [ ] All tests pass`. Replace with two specific items:
 
 - `- [ ] Your new test passes (inner loop)`
-- `- [ ] Full suite verified separately via verification-before-completion`
+- `- [ ] Focused task-relevant verification run at the end of implementation`
 
 Leave every other checklist item untouched.
 
@@ -173,7 +172,7 @@ The implementation is done when:
 
 1. `skills/test-driven-development/SKILL.md` reflects all six changes above, and no others.
 2. The `Other tests still pass` bullet and the `Other tests fail? Fix now.` line are gone from "Verify GREEN".
-3. A new `## Inner Loop Scope` section exists between `## Red-Green-Refactor` and `## Good Tests` and contains: the rule, the pointer to `verification-before-completion`, and one command example. It does **not** contain a "why" paragraph or tradeoff statement.
+3. A new `## Inner Loop Scope` section exists between `## Red-Green-Refactor` and `## Good Tests` and contains: the rule, the focused completion-check guidance, and one command example. It does **not** contain a "why" paragraph or tradeoff statement.
 4. The verification checklist replaces `All tests pass` with the two new items.
 5. The file contains zero matches for "mock", "mocks", or "mocking" (case-insensitive). Testing tactic is framed as Detroit/Chicago School with a one-sentence definition in the RED lead-in.
 6. The following are deleted: `## Why Order Matters`, `## Common Rationalizations`, `## Red Flags - STOP and Start Over`. The Iron Law's `**No exceptions:**` bullet block and the standalone "Implement fresh from tests. Period." line are deleted. The "skip TDD just this once" line in `## When to Use` is deleted.
@@ -198,7 +197,6 @@ No code tests are appropriate.
 
 The same persuasion-stripping principle applies to other skills in the repo. A **separate spec** will handle these in a future pass:
 
-- **`skills/verification-before-completion/SKILL.md`** — has `## Red Flags - STOP`, `## Rationalization Prevention` table, `## Why This Matters` section.
 - **`skills/using-superpowers/SKILL.md`** — has `## Red Flags` table ("These thoughts mean STOP—you're rationalizing"), the "you cannot rationalize your way out of this" line, and rationalization-style framing inside the flow.
 
 The follow-up work is **not** part of this spec. List included so the audit is on record.

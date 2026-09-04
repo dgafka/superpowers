@@ -141,9 +141,6 @@ Invoke the workflow that matches the work. Implementation workers receive their 
 **Testing**
 - **test-driven-development** - RED-GREEN-REFACTOR cycle (includes testing anti-patterns reference)
 
-**Debugging**
-- **verification-before-completion** - Ensure it's actually fixed
-
 **Collaboration** 
 - **brainstorming** - Socratic design refinement
 - **orchestrator-agent** - Coordinates implementation sub-worktrees, explicitly requested review sub-sessions, and stacked PRs through Orca; directly invokable and reused by orchestration-research

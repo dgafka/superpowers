@@ -94,7 +94,7 @@ Include remote publication in the sub-worktree confirmation table. If it was not
 
 ## Other Sub-sessions
 
-Use sub-sessions in an existing worktree for read-only research, CI/PR observation, and explicitly requested independent verification. Show the shared confirmation table and obtain approval before launching each. Research uses `orchestration-research`; observation follows `create-pull-request`; verification invokes `verification-before-completion`, receives explicit checks, and reports evidence without fixes. Do not create worktrees for these activities.
+Use sub-sessions in an existing worktree for read-only research, CI/PR observation, and explicitly requested independent verification. Show the shared confirmation table and obtain approval before launching each. Research uses `orchestration-research`; observation follows `create-pull-request`; verification receives explicit task-relevant checks and reports evidence without fixes. Do not create worktrees for these activities.
 
 Keep routine tests and follow-up fixes with the original implementation worker. Sub-sessions share files and services: coordinate tests that write generated files or use shared services, and serialize conflicting activity. A new independent implementation still requires a sub-worktree.
 

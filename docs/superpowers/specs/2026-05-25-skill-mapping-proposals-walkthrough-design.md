@@ -24,8 +24,8 @@ Restructure `skills/brainstorming/SKILL.md` so:
 - **Subagent writes** `docs/superpowers/specs/YYYY-MM-DD-<topic>-skill-proposals.md` and returns only the file path. It edits no other file. The proposals file is split into two sections: Phase 1 (proposed spec changes) and Phase 2 (behaviour-driven skill candidates).
 - **Parent runs two-phase walk-through:**
   - **Phase 1 — Proposed spec changes.** Batched message listing each numbered change. User replies `confirm all` / a list of numbers / `refine N` / `reject all`. `refine N` opens a focused exchange on one change, ending in confirm or reject. After Phase 1 resolves, accepted changes are folded into the design state.
-  - **Phase 2 — Behaviour-driven skills.** Batched message listing all candidates (pre-accepted by default). User replies `accept all` (or just acknowledges to keep defaults) / `opt out N` or `opt out 1, 3` / `none`. The two hard-coded defaults `superpowers:test-driven-development` and `superpowers:verification-before-completion` are always present in the Phase 2 list, regardless of subagent output, and are pre-accepted like the rest.
-- **Both phases always run**, even when one is empty (predictable structure). An empty Phase 1 surfaces "no proposed spec changes — moving on." An empty Phase 2 still shows the two pre-accepted defaults and asks for opt-outs.
+  - **Phase 2 — Behaviour-driven skills.** Batched message listing all candidates (pre-accepted by default). User replies `accept all` (or just acknowledges to keep defaults) / `opt out N` or `opt out 1, 3` / `none`. The hard-coded default `superpowers:test-driven-development` is always present in the Phase 2 list, regardless of subagent output, and is pre-accepted like the rest.
+- **Both phases always run**, even when one is empty (predictable structure). An empty Phase 1 surfaces "no proposed spec changes — moving on." An empty Phase 2 still shows the pre-accepted default and asks for opt-outs.
 - **Categories drop from three to two:** `spec-driving` and `behaviour-driving`. The `spec-behaviour-driving` category and all references to it are removed.
 - **Documentation step** writes the design spec with Phase 1 confirmations baked in and a `## Required Skills` block listing every Phase 2 skill the user did not opt out of. Then the proposals file is deleted (`rm`). Only the design spec is committed.
 
@@ -63,7 +63,7 @@ Replace with:
 
 ```
 7. Dispatch skill-mapping subagent to write proposals file — only if the user confirmed at step 6: dispatch a general-purpose subagent on the approved design summary to write docs/superpowers/specs/YYYY-MM-DD-<topic>-skill-proposals.md, with Phase 1 (proposed spec changes) and Phase 2 (behaviour-driven skill candidates). Subagent returns only the file path (see Skill Mapping (Before Writing) below).
-8. Walk user through proposals — only if the user confirmed at step 6: Phase 1 first (confirm/refine/reject per spec change, batched), then Phase 2 (opt-out batched for behaviour skills; the two defaults superpowers:test-driven-development and superpowers:verification-before-completion are always pre-accepted) (see Walk-through (Phase 1 + Phase 2) below).
+8. Walk user through proposals — only if the user confirmed at step 6: Phase 1 first (confirm/refine/reject per spec change, batched), then Phase 2 (opt-out batched for behaviour skills; the default superpowers:test-driven-development is always pre-accepted) (see Walk-through (Phase 1 + Phase 2) below).
 9. Write design doc — save to docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md with Phase 1 confirmations baked into the body and a ## Required Skills block listing every Phase 2 skill the user did not opt out of. Delete the proposals file with rm before committing. Commit only the design spec.
 ```
 
@@ -119,13 +119,10 @@ The proposals file structure the subagent MUST produce:
 ### 1. `superpowers:test-driven-development`  [default]
 **Why relevant:** <one sentence tying skill to the design>
 
-### 2. `superpowers:verification-before-completion`  [default]
-**Why relevant:** <one sentence tying skill to the design>
-
-### 3. `<subagent candidate>`
+### 2. `<subagent candidate>`
 **Why relevant:** <one sentence>
 
-### 4. ...
+### 3. ...
 ~~~
 
 The subagent prompt MUST include:
@@ -142,9 +139,9 @@ The subagent prompt MUST include:
    - **Strictness rule:** when a skill could plausibly be either category, default to `spec-driving`. Only assign `behaviour-driving` when the runtime discipline is the substantive value AND the spec cannot absorb it.
    - For each `spec-driving` skill: emit zero, one, or several **Phase 1 proposals** — each a concrete proposed edit to the spec (where to add or modify, what text). Skip the skill if it produces no proposed edit.
    - For each `behaviour-driving` skill: emit one **Phase 2 candidate** with a one-sentence `Why relevant`.
-   - **Two hard-coded Phase 2 defaults** are always included in the Phase 2 list and marked `[default]` regardless of whether the subagent independently matched them: `superpowers:test-driven-development` and `superpowers:verification-before-completion`. The subagent writes both into the Phase 2 section as items 1 and 2.
+   - **The hard-coded Phase 2 default** is always included in the Phase 2 list and marked `[default]` regardless of whether the subagent independently matched it: `superpowers:test-driven-development`. The subagent writes it into the Phase 2 section as item 1.
    - Write the proposals file at the exact path provided. Return only the file path in the response. Do not edit any other file.
-   - If no skills match beyond the two defaults, the Phase 1 section is "_No proposed spec changes._" and the Phase 2 section contains only the two defaults.
+   - If no skills match beyond the default, the Phase 1 section is "_No proposed spec changes._" and the Phase 2 section contains only the default.
 
 After the subagent returns the path, the brainstormer reads the file and runs the Walk-through (Phase 1 + Phase 2) described below.
 
@@ -180,17 +177,16 @@ When the user picks `refine N`: enter a focused exchange on that one proposal. A
 
 When Phase 1 is fully resolved (every numbered proposal either confirmed or rejected), proceed to Phase 2.
 
-**Phase 2 — Behaviour-driven skills.** Show the user a single batched message listing all Phase 2 candidates. Defaults (items 1 and 2) are marked `[default]`:
+**Phase 2 — Behaviour-driven skills.** Show the user a single batched message listing all Phase 2 candidates. The default (item 1) is marked `[default]`:
 
 > Phase 2 — Required Skills candidates (all pre-accepted, opt out as needed):
 > 1. `superpowers:test-driven-development`  [default]
-> 2. `superpowers:verification-before-completion`  [default]
+> 2. `<subagent candidate>` — <one-sentence why relevant>
 > 3. `<subagent candidate>` — <one-sentence why relevant>
-> 4. `<subagent candidate>` — <one-sentence why relevant>
 >
 > Reply with: `accept all` (default), `opt out N` or `opt out 1, 3`, or `none` to clear the block.
 
-If Phase 2 has only the two defaults and no subagent candidates, show those two and ask the same question.
+If Phase 2 has only the default and no subagent candidates, show it and ask the same question.
 
 Track which Phase 2 candidates the user opted out of. Everything not opted out is accepted.
 
@@ -221,7 +217,7 @@ The block format (unchanged):
 - **<skill name>** — <one-sentence why_relevant>
 ~~~
 
-**Zero-listable-skills fallback:** if after Phase 2 the user opted out of every Phase 2 candidate (including both defaults), OR if the user declined skill mapping at the Confirm Skill Mapping step, the block becomes:
+**Zero-listable-skills fallback:** if after Phase 2 the user opted out of every Phase 2 candidate (including the default), OR if the user declined skill mapping at the Confirm Skill Mapping step, the block becomes:
 
 ~~~
 ## Required Skills
@@ -241,7 +237,7 @@ In the "Confirm Skill Mapping" subsection of `skills/brainstorming/SKILL.md`, th
 
 Replace the current "Spec skill mapping" paragraph (line 13) with:
 
-> **Spec skill mapping.** During brainstorming, after the user verbally approves the design, the brainstormer asks whether to run skill mapping for this design (opt-in — overhead isn't worth it for small or throwaway changes; TDD and verification-before-completion still apply at execution time via `executing-specs`'s own required workflow skills regardless of this choice). If confirmed, a `general-purpose` subagent scans the available skills list against the approved design summary and writes an ephemeral proposals file at `docs/superpowers/specs/YYYY-MM-DD-<topic>-skill-proposals.md`. The file has two sections: Phase 1 (proposed spec changes from `spec-driving` skills) and Phase 2 (behaviour-driven skill candidates). The brainstormer then runs a two-phase walk-through with the user: Phase 1 (each proposed spec change is confirmed, refined-then-confirmed, or rejected — batched message, one-by-one for refinement) and Phase 2 (all candidates pre-accepted, user opts out as needed; the two hard-coded defaults `superpowers:test-driven-development` and `superpowers:verification-before-completion` are always included). Categories are now just two: `spec-driving` (value absorbed into the spec via Phase 1, never listed in `## Required Skills`) and `behaviour-driving` (listed in `## Required Skills` unless opted out in Phase 2). The `spec-behaviour-driving` category is removed; when a skill could be either, the strictness rule defaults to `spec-driving`. After the walk-through, the design spec is written with Phase 1 confirmations baked in and `## Required Skills` populated from Phase 2 acceptances, then the proposals file is deleted with `rm`. Only the design spec is committed; rejected and opted-out items leave no trace. If the user declined skill mapping, the block uses the zero-listable-skills fallback (`_No specific skills required beyond defaults._`). There is no second mapping pass after the spec exists.
+> **Spec skill mapping.** During brainstorming, after the user verbally approves the design, the brainstormer asks whether to run skill mapping for this design (opt-in — overhead isn't worth it for small or throwaway changes; TDD still applies at execution time via `executing-specs`'s own required workflow skills regardless of this choice). If confirmed, a `general-purpose` subagent scans the available skills list against the approved design summary and writes an ephemeral proposals file at `docs/superpowers/specs/YYYY-MM-DD-<topic>-skill-proposals.md`. The file has two sections: Phase 1 (proposed spec changes from `spec-driving` skills) and Phase 2 (behaviour-driven skill candidates). The brainstormer then runs a two-phase walk-through with the user: Phase 1 (each proposed spec change is confirmed, refined-then-confirmed, or rejected — batched message, one-by-one for refinement) and Phase 2 (all candidates pre-accepted, user opts out as needed; the hard-coded default `superpowers:test-driven-development` is always included). Categories are now just two: `spec-driving` (value absorbed into the spec via Phase 1, never listed in `## Required Skills`) and `behaviour-driving` (listed in `## Required Skills` unless opted out in Phase 2). The `spec-behaviour-driving` category is removed; when a skill could be either, the strictness rule defaults to `spec-driving`. After the walk-through, the design spec is written with Phase 1 confirmations baked in and `## Required Skills` populated from Phase 2 acceptances, then the proposals file is deleted with `rm`. Only the design spec is committed; rejected and opted-out items leave no trace. If the user declined skill mapping, the block uses the zero-listable-skills fallback (`_No specific skills required beyond defaults._`). There is no second mapping pass after the spec exists.
 
 ### Change 9 — "Targeted subagent dispatch" paragraph
 
@@ -269,9 +265,9 @@ to:
 
 The implementation is done when:
 
-1. The checklist in `skills/brainstorming/SKILL.md` items 7, 8, 9 match the text specified in Change 1. Item 7 references writing the proposals file. Item 8 references Phase 1 and Phase 2 and names both hard-coded defaults. Item 9 references deleting the proposals file before committing.
+1. The checklist in `skills/brainstorming/SKILL.md` items 7, 8, 9 match the text specified in Change 1. Item 7 references writing the proposals file. Item 8 references Phase 1 and Phase 2 and names the hard-coded default. Item 9 references deleting the proposals file before committing.
 2. The process flow graphviz block in `skills/brainstorming/SKILL.md` contains the four new nodes (`Subagent writes proposals file`, `Phase 1: walk through spec changes`, `Phase 2: confirm behaviour skills`, `Delete proposals file`) and the edges specified in Change 2. The nodes `Map required skills\n(dispatch subagent)` and `Re-investigate design\nagainst skill expectations` are absent from the graphviz block.
-3. The "Skill Mapping (Before Writing)" subsection in `skills/brainstorming/SKILL.md` instructs the subagent to write `docs/superpowers/specs/YYYY-MM-DD-<topic>-skill-proposals.md` and return only the file path. The proposals file template (with Phase 1 and Phase 2 sections) is shown verbatim in the subsection. The subagent instructions list both `superpowers:test-driven-development` and `superpowers:verification-before-completion` as hard-coded Phase 2 defaults that are always included regardless of independent matching.
+3. The "Skill Mapping (Before Writing)" subsection in `skills/brainstorming/SKILL.md` instructs the subagent to write `docs/superpowers/specs/YYYY-MM-DD-<topic>-skill-proposals.md` and return only the file path. The proposals file template (with Phase 1 and Phase 2 sections) is shown verbatim in the subsection. The subagent instructions list `superpowers:test-driven-development` as the hard-coded Phase 2 default that is always included regardless of independent matching.
 4. The category reference table in `skills/brainstorming/SKILL.md` contains exactly two rows: `spec-driving` and `behaviour-driving`. The `spec-behaviour-driving` row is absent. The "Listed in `## Required Skills`?" column reflects the new flow ("No (changes are absorbed into the spec body via Phase 1)" and "Yes (added to the block in Phase 2, subject to user opt-out)").
 5. The "Walk-through (Phase 1 + Phase 2)" subsection in `skills/brainstorming/SKILL.md` replaces the old "Re-investigation" subsection. It contains the Phase 1 batched-message template (`confirm all`/numbers/`refine N`/`reject all`), the Phase 2 batched-message template with the opt-out semantics, the rule that both phases always run even when empty, and the explicit "Rejected, refined-then-rejected, and opted-out items never appear in the design spec" rule. The old four-state table (Covered / Silent — technical only / Silent — affects flow or business logic / Contradicts) is absent.
 6. The "Documentation" subsection in `skills/brainstorming/SKILL.md` instructs that the design spec is written with Phase 1 confirmations baked in, `## Required Skills` is populated from Phase 2 non-opt-outs, the proposals file is deleted with `rm`, and only the design spec is committed. The zero-listable-skills fallback is preserved and triggers when the user opted out of every Phase 2 candidate or declined skill mapping at step 6.
@@ -291,7 +287,7 @@ This is a skill + documentation edit. Verification is by reading and grepping:
 - Re-read `skills/brainstorming/SKILL.md` end-to-end after edits. Confirm:
   - Checklist items 7, 8, 9 match Change 1 verbatim (or close paraphrase preserving every named element).
   - Graphviz block contains the four new nodes and the edges from Change 2, and the two old nodes/edges are absent.
-  - "Skill Mapping (Before Writing)" subsection contains the proposals-file template verbatim and lists both hard-coded defaults.
+  - "Skill Mapping (Before Writing)" subsection contains the proposals-file template verbatim and lists the hard-coded default.
   - Category reference table has exactly two rows.
   - "Walk-through (Phase 1 + Phase 2)" subsection replaces "Re-investigation" and contains both batched-message templates.
   - "Documentation" subsection contains the `rm` instruction and the zero-listable-skills fallback.

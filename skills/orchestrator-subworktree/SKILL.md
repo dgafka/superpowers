@@ -13,8 +13,6 @@ There is one execution path. Do not ask how to execute and do not dispatch anoth
 
 **REQUIRED SUB-SKILL:** Use superpowers:test-driven-development for every behavior change.
 
-**REQUIRED SUB-SKILL:** Use superpowers:verification-before-completion before reporting success.
-
 **REQUIRED SUB-SKILL:** Use orchestration for Orca task questions and lifecycle reporting.
 
 ## 1. Anchor to the Sub-worktree

@@ -34,7 +34,7 @@ Two Claude instances provided detailed feedback from actual development sessions
 - **BUT** response contained `"model": "claude-sonnet-4-20250514"` - was actually using Anthropic
 
 **Root cause:**
-`verification-before-completion` checks operations succeed but not that outcomes reflect intended configuration changes.
+The verification process checked that operations succeeded but not that outcomes reflected intended configuration changes.
 
 **Impact:** High - False confidence in integration tests, bugs ship to production
 
@@ -183,56 +183,7 @@ No enforcement that subagents read relevant skills. No prompt includes skill rea
 
 ## Proposed Improvements
 
-### 1. verification-before-completion: Add Configuration Change Verification
-
-**Add new section:**
-
-```markdown
-## Verifying Configuration Changes
-
-When testing changes to configuration, providers, feature flags, or environment:
-
-**Don't just verify the operation succeeded. Verify the output reflects the intended change.**
-
-### Common Failure Pattern
-
-Operation succeeds because *some* valid config exists, but it's not the config you intended to test.
-
-### Examples
-
-| Change | Insufficient | Required |
-|--------|-------------|----------|
-| Switch LLM provider | Status 200 | Response contains expected model name |
-| Enable feature flag | No errors | Feature behavior actually active |
-| Change environment | Deploy succeeds | Logs/vars reference new environment |
-| Set credentials | Auth succeeds | Authenticated user/context is correct |
-
-### Gate Function
-
-```
-BEFORE claiming configuration change works:
-
-1. IDENTIFY: What should be DIFFERENT after this change?
-2. LOCATE: Where is that difference observable?
-   - Response field (model name, user ID)
-   - Log line (environment, provider)
-   - Behavior (feature active/inactive)
-3. RUN: Command that shows the observable difference
-4. VERIFY: Output contains expected difference
-5. ONLY THEN: Claim configuration change works
-
-Red flags:
-  - "Request succeeded" without checking content
-  - Checking status code but not response body
-  - Verifying no errors but not positive confirmation
-```
-
-**Why this works:**
-Forces verification of INTENT, not just operation success.
-
----
-
-### 2. subagent-driven-development: Add Process Hygiene for E2E Tests
+### 1. subagent-driven-development: Add Process Hygiene for E2E Tests
 
 **Add new section:**
 
@@ -290,7 +241,7 @@ After tests:
 
 ---
 
-### 3. subagent-driven-development: Add Lean Context Option
+### 2. subagent-driven-development: Add Lean Context Option
 
 **Modify Step 2: Execute Task with Subagent**
 
@@ -352,7 +303,7 @@ Reduces token usage, increases focus, faster completion when appropriate.
 
 ---
 
-### 4. subagent-driven-development: Add Self-Reflection Step
+### 3. subagent-driven-development: Add Self-Reflection Step
 
 **Modify Step 2: Execute Task with Subagent**
 
@@ -387,7 +338,7 @@ Adds ~30 seconds per task, but catches issues before review.
 
 ---
 
-### 5. requesting-code-review: Add Explicit File Reading
+### 4. requesting-code-review: Add Explicit File Reading
 
 **Modify the code-reviewer template:**
 
@@ -416,7 +367,7 @@ Explicit instruction prevents "file not found" issues.
 
 ---
 
-### 6. testing-anti-patterns: Add Mock-Interface Drift Anti-Pattern
+### 5. testing-anti-patterns: Add Mock-Interface Drift Anti-Pattern
 
 **Add new Anti-Pattern 6:**
 
@@ -499,7 +450,7 @@ Directly addresses the failure pattern from feedback.
 
 ---
 
-### 7. subagent-driven-development: Require Skills Reading for Test Subagents
+### 6. subagent-driven-development: Require Skills Reading for Test Subagents
 
 **Add to prompt template when task involves testing:**
 
@@ -525,7 +476,7 @@ Adds time to each task, but prevents entire classes of bugs.
 
 ---
 
-### 8. subagent-driven-development: Allow Implementer to Fix Self-Identified Issues
+### 7. subagent-driven-development: Allow Implementer to Fix Self-Identified Issues
 
 **Modify Step 2:**
 
@@ -564,46 +515,41 @@ Slightly more complex prompt, but faster end-to-end.
 
 ### Phase 1: High-Impact, Low-Risk (Do First)
 
-1. **verification-before-completion: Configuration change verification**
-   - Clear addition, doesn't change existing content
-   - Addresses high-impact problem (false confidence in tests)
-   - File: `skills/verification-before-completion/SKILL.md`
-
-2. **testing-anti-patterns: Mock-interface drift**
+1. **testing-anti-patterns: Mock-interface drift**
    - Adds new anti-pattern, doesn't modify existing
    - Addresses high-impact problem (runtime crashes)
    - File: `skills/testing-anti-patterns/SKILL.md`
 
-3. **requesting-code-review: Explicit file reading**
+2. **requesting-code-review: Explicit file reading**
    - Simple addition to template
    - Fixes concrete problem (reviewers can't find files)
    - File: `skills/requesting-code-review/SKILL.md`
 
 ### Phase 2: Moderate Changes (Test Carefully)
 
-4. **subagent-driven-development: Process hygiene**
+3. **subagent-driven-development: Process hygiene**
    - Adds new section, doesn't change workflow
    - Addresses medium-high impact (test reliability)
    - File: `skills/subagent-driven-development/SKILL.md`
 
-5. **subagent-driven-development: Self-reflection**
+4. **subagent-driven-development: Self-reflection**
    - Changes prompt template (higher risk)
    - But documented to catch bugs
    - File: `skills/subagent-driven-development/SKILL.md`
 
-6. **subagent-driven-development: Skills reading requirement**
+5. **subagent-driven-development: Skills reading requirement**
    - Adds prompt overhead
    - But ensures skills are actually used
    - File: `skills/subagent-driven-development/SKILL.md`
 
 ### Phase 3: Optimization (Validate First)
 
-7. **subagent-driven-development: Lean context option**
+6. **subagent-driven-development: Lean context option**
    - Adds complexity (two approaches)
    - Needs validation that it doesn't cause confusion
    - File: `skills/subagent-driven-development/SKILL.md`
 
-8. **subagent-driven-development: Allow implementer to fix**
+7. **subagent-driven-development: Allow implementer to fix**
    - Changes workflow (higher risk)
    - Optimization, not bug fix
    - File: `skills/subagent-driven-development/SKILL.md`
@@ -695,7 +641,6 @@ How do we know these improvements work?
 ## Recommendation
 
 **Proceed with Phase 1 immediately:**
-- verification-before-completion: Configuration change verification
 - testing-anti-patterns: Mock-interface drift
 - requesting-code-review: Explicit file reading
 
