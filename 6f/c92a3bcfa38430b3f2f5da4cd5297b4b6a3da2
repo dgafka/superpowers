@@ -1,0 +1,54 @@
+skills/create-pull-request/SKILL.md
+  s_e0d2743108d495::t_4096cddf3899c2 8-9,18-25,37,45,54,263,267,272,277,281,289,292,296,318,322
+  s_e0d2743108d495::t_2562af87ebe82d 43-44,273,298
+  s_31a53c71ae2f75::t_40e88d97fb03fe 297
+skills/orchestrator-agent/launch-confirmation.md
+  s_e0d2743108d495::t_ccc69ceade8834 30-39
+skills/orchestrator-agent/SKILL.md
+  s_e0d2743108d495::t_ccc69ceade8834 33-35,44-45,89-90,93-96,99
+  s_e0d2743108d495::t_02159dd4051772 114
+tests/manual-only-skills/test-manual-only-skills.sh
+  s_31a53c71ae2f75::t_bf6134b4d4438a 81,107-112
+  s_8b6fe548e96e6b::t_57571b71426b3c 113-114
+skills/create-pull-request/agents/openai.yaml
+  s_e0d2743108d495::t_4096cddf3899c2 2
+skills/orchestrator-subworktree/SKILL.md
+  s_e0d2743108d495::t_02159dd4051772 50
+  s_e0d2743108d495::t_4096cddf3899c2 16-17,44,48-49,55,61
+  s_e0d2743108d495::t_2562af87ebe82d 56
+  s_31a53c71ae2f75::t_29d855d32c3c62 51
+CLAUDE.md
+  s_e0d2743108d495::t_ccc69ceade8834 13-14,19
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "6fc92a3bcfa38430b3f2f5da4cd5297b4b6a3da2",
+  "prompts": {},
+  "sessions": {
+    "s_31a53c71ae2f75": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a06ce5-3682-7b22-83c0-8c6626d36aec",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "Dariusz Gafka <dariusz.gafka@lendable.co.uk>"
+    },
+    "s_8b6fe548e96e6b": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a06cc0-3937-7161-86f8-a3375a9cdb93",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "Dariusz Gafka <dariusz.gafka@lendable.co.uk>"
+    },
+    "s_e0d2743108d495": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "01a06ce5-3682-7b22-83c0-8c6626d36aec",
+        "model": "unknown"
+      },
+      "human_author": "Dariusz Gafka <dariusz.gafka@lendable.co.uk>"
+    }
+  }
+}
