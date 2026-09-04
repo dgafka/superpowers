@@ -1,0 +1,55 @@
+skills/create-pull-request/SKILL.md
+  s_8730327538131d::t_4b5559b1c26114 283,285,308
+skills/orchestration-research/SKILL.md
+  s_8730327538131d::t_4b5559b1c26114 3,24,30,33
+tests/skill-triggering/run-all.sh
+  s_8730327538131d::t_e59ec31dce15fe 12
+skills/improve-workflow/SKILL.md
+  s_8730327538131d::t_e59ec31dce15fe 134
+skills/review-changes/SKILL.md
+  s_8730327538131d::t_4b5559b1c26114 12,27,52-59,73
+tests/skill-triggering/prompts/orchestrator-subworktree.txt
+  s_8730327538131d::t_4b5559b1c26114 1
+tests/skill-triggering/run-test.sh
+  s_8730327538131d::t_e59ec31dce15fe 16
+skills/orchestrator-agent/launch-confirmation.md
+  s_0ece87647e54ad::t_e2e99cc9b848e9 1-29
+README.md
+  s_8730327538131d::t_75c4f78f7f6fcf 125
+  s_8730327538131d::t_4b5559b1c26114 11,13,123,127,129,133-135,149,151,155
+skills/orchestrator-subworktree/SKILL.md
+  s_8730327538131d::t_e59ec31dce15fe 1-2,4-5,7-9,11-19,21-23,25-49,51-61,63-67
+  s_8730327538131d::t_4b5559b1c26114 3,6,10,20,24,50,62
+CLAUDE.md
+  s_8730327538131d::t_4b5559b1c26114 9,11,13
+  s_8730327538131d::t_e59ec31dce15fe 27
+tests/manual-only-skills/test-manual-only-skills.sh
+  s_0ece87647e54ad::t_a3a139ba709595 163-173
+skills/orchestrator-agent/SKILL.md
+  s_8730327538131d::t_75c4f78f7f6fcf 93,97
+  s_8730327538131d::t_e59ec31dce15fe 3-4,11,19-21,31,33,39,50,53-54,56-63,77,90,94-96,98-101,106
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "926aa2fa90294a1b0df084c70b4af1a1621d481e",
+  "prompts": {},
+  "sessions": {
+    "s_0ece87647e54ad": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a06cba-ac4e-7173-a424-aa103830aa47",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "Dariusz Gafka <dariusz.gafka@lendable.co.uk>"
+    },
+    "s_8730327538131d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "01a06cba-ac4e-7173-a424-aa103830aa47",
+        "model": "unknown"
+      },
+      "human_author": "Dariusz Gafka <dariusz.gafka@lendable.co.uk>"
+    }
+  }
+}
