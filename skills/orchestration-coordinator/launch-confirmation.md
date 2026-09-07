@@ -75,10 +75,10 @@ An existing explicit approval of the unchanged table remains valid.
 Reuse the existing approval for ordinary continuation within the approved scope. A new terminal or changed scope requires a new table.
 
 For implementation launches, the Discipline / Skill row must include
-`superpowers:create-pull-request` alongside the implementation and TDD skills.
+`dgafka:create-pull-request` alongside the implementation and TDD skills.
 The PR row states publication on completion and the approved target/stack position.
 Present the named CI observer in its own table in the same approval message:
-`superpowers:create-pull-request`, observation-only mode `ci`, a separate Codex
+`dgafka:create-pull-request`, observation-only mode `ci`, a separate Codex
 terminal in that implementation worktree, and findings to the original worker.
 This approval also covers keeping that worker terminal available for CI fixes.
 Reuse both unchanged approvals at completion for publication, observation mode,

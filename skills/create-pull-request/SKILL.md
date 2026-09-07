@@ -19,7 +19,7 @@ When invoked by `orchestration-sub-worktree`, use the approved launch context: r
 
 The implementation default is `ci`. The initial confirmation must identify the concrete observer launch as well as PR publication. Reuse that approval in Step 10 for the mode and unchanged launch. Preserve explicit manual/full choices when the user overrides this default.
 
-An observer invokes `superpowers:create-pull-request` in **observation-only mode**, with mode `ci` or `full`, and starts at Step 11. Its workflow consists of observation and findings delivery. Its prompt must include the PR URL/number, repository, feature/base branches, implementation task and sub-worktree, original worker terminal/Dispatch, coordinator Run, and findings route. Missing routing context must be resolved before watching.
+An observer invokes `dgafka:create-pull-request` in **observation-only mode**, with mode `ci` or `full`, and starts at Step 11. Its workflow consists of observation and findings delivery. Its prompt must include the PR URL/number, repository, feature/base branches, implementation task and sub-worktree, original worker terminal/Dispatch, coordinator Run, and findings route. Missing routing context must be resolved before watching.
 
 ## Reader-Friendly Output
 

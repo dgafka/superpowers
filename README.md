@@ -35,7 +35,7 @@ Superpowers is available via the [official Claude plugin marketplace](https://cl
 Install the plugin from Anthropic's official marketplace:
 
 ```bash
-/plugin install superpowers@claude-plugins-official
+/plugin install dgafka@superpowers-dgafka
 ```
 
 ### Claude Code (Superpowers Marketplace)
@@ -45,13 +45,13 @@ The Superpowers marketplace provides Superpowers and some other related plugins 
 In Claude Code, register the marketplace first:
 
 ```bash
-/plugin marketplace add obra/superpowers-marketplace
+/plugin marketplace add dgafka/superpowers
 ```
 
 Then install the plugin from this marketplace:
 
 ```bash
-/plugin install superpowers@superpowers-marketplace
+/plugin install dgafka@superpowers-dgafka
 ```
 
 ### OpenAI Codex CLI
@@ -65,7 +65,7 @@ Then install the plugin from this marketplace:
 Search for Superpowers
 
 ```bash
-superpowers
+dgafka
 ```
 
 Select `Install Plugin`
@@ -73,8 +73,8 @@ Select `Install Plugin`
 ### OpenAI Codex App
 
 - In the Codex app, click on Plugins in the sidebar.
-- You should see `Superpowers` in the Coding section. 
-- Click the `+` next to Superpowers and follow the prompts.
+- You should see `dgafka` in the Coding section.
+- Click the `+` next to dgafka and follow the prompts.
 
 
 ### Cursor (via Plugin Marketplace)
@@ -82,17 +82,17 @@ Select `Install Plugin`
 In Cursor Agent chat, install from marketplace:
 
 ```text
-/add-plugin superpowers
+/add-plugin dgafka
 ```
 
-or search for "superpowers" in the plugin marketplace.
+or search for "dgafka" in the plugin marketplace.
 
 ### OpenCode
 
 Tell OpenCode:
 
 ```
-Fetch and follow instructions from https://raw.githubusercontent.com/obra/superpowers/refs/heads/main/.opencode/INSTALL.md
+Fetch and follow instructions from https://raw.githubusercontent.com/dgafka/superpowers/refs/heads/main/.opencode/INSTALL.md
 ```
 
 **Detailed docs:** [docs/README.opencode.md](docs/README.opencode.md)
@@ -100,20 +100,20 @@ Fetch and follow instructions from https://raw.githubusercontent.com/obra/superp
 ### GitHub Copilot CLI
 
 ```bash
-copilot plugin marketplace add obra/superpowers-marketplace
-copilot plugin install superpowers@superpowers-marketplace
+copilot plugin marketplace add dgafka/superpowers
+copilot plugin install dgafka@superpowers-dgafka
 ```
 
 ### Gemini CLI
 
 ```bash
-gemini extensions install https://github.com/obra/superpowers
+gemini extensions install https://github.com/dgafka/superpowers
 ```
 
 To update:
 
 ```bash
-gemini extensions update superpowers
+gemini extensions update dgafka
 ```
 
 ## The Basic Workflow

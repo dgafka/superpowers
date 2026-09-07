@@ -11,9 +11,9 @@ Implement the approved work directly in the current sub-worktree and Codex sessi
 
 Execute the approved assignment directly in this worker session.
 
-**REQUIRED SUB-SKILL:** Use superpowers:test-driven-development for every behavior change.
+**REQUIRED SUB-SKILL:** Use dgafka:test-driven-development for every behavior change.
 
-**REQUIRED SUB-SKILL:** Use superpowers:create-pull-request after verification to publish the implementation PR and start its approved CI observation sub-session.
+**REQUIRED SUB-SKILL:** Use dgafka:create-pull-request after verification to publish the implementation PR and start its approved CI observation sub-session.
 
 **REQUIRED SUB-SKILL:** Use orchestration for Orca task questions and lifecycle reporting.
 
@@ -60,9 +60,9 @@ also checks the integrated enabled path after the required units are delivered.
 Include the variable, enabling value, default, remaining prerequisites, and
 activation readiness in the PR and completion report.
 
-Invoke `superpowers:create-pull-request` in its orchestrated implementation mode. Pass the approved repository, PR base (the prerequisite branch for dependent work), publication authorization, named CI observer launch, and original worker/Dispatch route. Create or reuse a ready-for-review PR, then send its URL to the main coordinator through Orca immediately.
+Invoke `dgafka:create-pull-request` in its orchestrated implementation mode. Pass the approved repository, PR base (the prerequisite branch for dependent work), publication authorization, named CI observer launch, and original worker/Dispatch route. Create or reuse a ready-for-review PR, then send its URL to the main coordinator through Orca immediately.
 
-For automatic observation, trigger the approved `observe-<topic>` sub-session in this implementation worktree using the observation entry point in `superpowers:create-pull-request`. Use mode `ci` by default, or `full` when explicitly approved. An explicit manual override skips observation and its launch receipt. Ask the coordinator to dispatch it in the same Run when worker-side dispatch is unavailable; wait for the launch receipt before reporting successful completion. Reuse an existing observer. Report missing launch approval or a failed automatic launch as a blocker.
+For automatic observation, trigger the approved `observe-<topic>` sub-session in this implementation worktree using the observation entry point in `dgafka:create-pull-request`. Use mode `ci` by default, or `full` when explicitly approved. An explicit manual override skips observation and its launch receipt. Ask the coordinator to dispatch it in the same Run when worker-side dispatch is unavailable; wait for the launch receipt before reporting successful completion. Reuse an existing observer. Report missing launch approval or a failed automatic launch as a blocker.
 
 Report completion through the active Orca Dispatch with:
 

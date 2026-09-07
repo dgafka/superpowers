@@ -90,7 +90,7 @@ the changes to a dedicated implementation sub-worktree. Keep the retrospective
 changes in a separate PR from the implementation that prompted them.
 
 The implementation worker applies the approved edits, verifies them, and uses
-`superpowers:create-pull-request` to publish against the approved fork and base.
+`dgafka:create-pull-request` to publish against the approved fork and base.
 Pass the template guidance below as context. If publication is unavailable,
 report the verified branch, commits, and blocker. The user owns integration.
 
@@ -112,9 +112,9 @@ ls.github/PULL_REQUEST_TEMPLATE.md.github/pull_request_template.md PULL_REQUEST_
 - **Environment / tool tables** → fill from the actual session: harness (Claude Code, Codex, etc.), model, model ID
 
 Preserve the template headings, replace its placeholders, and prepare the body
-as a file for `superpowers:create-pull-request` to publish with `--body-file`.
+as a file for `dgafka:create-pull-request` to publish with `--body-file`.
 
-**If no template exists:** use the default structure from `superpowers:create-pull-request`,
+**If no template exists:** use the default structure from `dgafka:create-pull-request`,
 with the approved friction summary as motivation.
 
 Use a title identifying the retrospective topic, following the detected repository convention.
@@ -150,7 +150,7 @@ Then stop. Integration of the retrospective changes is the user's call.
 ## Integration
 
 **Typically called by:**
-- **superpowers:orchestration-coordinator** — the orchestration run that completed the implementation tasks
+- **dgafka:orchestration-coordinator** — the orchestration run that completed the implementation tasks
 
 **Operates on:**
 - The superpowers skills repo (separate from the project where the implementation happened)

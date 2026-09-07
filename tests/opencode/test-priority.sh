@@ -151,12 +151,12 @@ else
     echo "$output" | grep -i "priority\|project\|personal" | head -10
 fi
 
-# Test 4: Test explicit superpowers: prefix bypasses priority
+# Test 4: Test explicit dgafka: prefix bypasses priority
 echo ""
-echo "Test 4: Testing superpowers: prefix forces superpowers version..."
+echo "Test 4: Testing dgafka: prefix forces the plugin version..."
 
 cd "$TEST_HOME/test-project"
-output=$(timeout 60s opencode run --print-logs "Use the use_skill tool to load superpowers:priority-test specifically. Show me the exact content including any PRIORITY_MARKER text." 2>&1) || {
+output=$(timeout 60s opencode run --print-logs "Use the use_skill tool to load dgafka:priority-test specifically. Show me the exact content including any PRIORITY_MARKER text." 2>&1) || {
     exit_code=$?
     if [ $exit_code -eq 124 ]; then
         echo "  [FAIL] OpenCode timed out after 60s"
@@ -165,9 +165,9 @@ output=$(timeout 60s opencode run --print-logs "Use the use_skill tool to load s
 }
 
 if echo "$output" | grep -qi "PRIORITY_MARKER_SUPERPOWERS_VERSION"; then
-    echo "  [PASS] superpowers: prefix correctly forces superpowers version"
+    echo "  [PASS] dgafka: prefix correctly forces the plugin version"
 elif echo "$output" | grep -qi "PRIORITY_MARKER_PROJECT_VERSION\|PRIORITY_MARKER_PERSONAL_VERSION"; then
-    echo "  [FAIL] superpowers: prefix did not force superpowers version"
+    echo "  [FAIL] dgafka: prefix did not force the plugin version"
     exit 1
 else
     echo "  [WARN] Could not verify priority marker in output"

@@ -161,7 +161,7 @@ if run_test orchestration_tdd_contract; then
     assert_file_absent "$REPO_ROOT/skills/using-superpowers" \
         "using-superpowers skill is removed"
     assert_contains "$REPO_ROOT/skills/orchestration-coordinator/SKILL.md" \
-        "Use superpowers:test-driven-development for every behavior change" \
+        "Use dgafka:test-driven-development for every behavior change" \
         "orchestration-coordinator requires standalone TDD in every implementation task"
     assert_contains "$REPO_ROOT/skills/orchestration-coordinator/SKILL.md" \
         "RED -> GREEN -> REFACTOR" \

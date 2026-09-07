@@ -10,7 +10,7 @@ description: Create and refine reusable agent instructions. Use when creating sk
 Apply RED-GREEN-REFACTOR to process documentation: establish an observed failure,
 write the instruction that addresses it, and verify the resulting behavior.
 
-**REQUIRED BACKGROUND:** Understand superpowers:test-driven-development before
+**REQUIRED BACKGROUND:** Understand dgafka:test-driven-development before
 using this skill. Adapt its cycle to instruction testing as described below.
 
 Personal skills live in the platform's skill directory, such as
@@ -120,7 +120,7 @@ Choose a relevant language and make code examples runnable.
 
 Reference another skill by name with a clear instruction:
 
-> **REQUIRED SUB-SKILL:** Use superpowers:test-driven-development.
+> **REQUIRED SUB-SKILL:** Use dgafka:test-driven-development.
 
 Reference supporting files with ordinary relative Markdown links and specify
 when to read them. Resolve paths from the directory containing the skill.
@@ -196,7 +196,7 @@ Track these as checklist items in session state:
 - [ ] Changes stay within the user's approved scope.
 
 Report the changes and verification evidence. When publication is authorized,
-use superpowers:create-pull-request against the approved fork and base branch.
+use dgafka:create-pull-request against the approved fork and base branch.
 The user owns integration.
 
 ## Authoring References

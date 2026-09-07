@@ -10,7 +10,7 @@ argument-hint: "[objective, sub-worktree dependencies, and optional run-wide gui
 
 Coordinate an implementation objective from the main worktree. Implementation workers own code changes in their assigned sub-worktrees. Accept a clear objective, approved design, or existing task DAG. When needed, decompose a clear request into implementation sub-worktrees in session state.
 
-**REQUIRED SUB-SKILL:** Load and apply superpowers:brainstorming on every invocation, before execution planning, to work out the solution with your human partner. When the conversation already contains an approved design, use that context and its existing approvals; work through unresolved solution decisions using brainstorming. Resume this coordinator after brainstorming returns the approved design.
+**REQUIRED SUB-SKILL:** Load and apply dgafka:brainstorming on every invocation, before execution planning, to work out the solution with your human partner. When the conversation already contains an approved design, use that context and its existing approvals; work through unresolved solution decisions using brainstorming. Resume this coordinator after brainstorming returns the approved design.
 
 Use the approved conversational design to plan execution. Inspect the repository to resolve execution details. When an unresolved question requires comparing solution approaches or changing the design, return that question to `brainstorming` and resume execution planning from the approved outcome.
 
@@ -85,7 +85,7 @@ and execution summaries so your human partner can inspect the current record.
 
 Before each launch, verify that its execution box has been shown, explicitly approved, and matches the worker prompt. A delivery overview or design approval is followed by this concrete launch confirmation. If the template cannot be loaded, resolve its location before preparing or dispatching launches. If a box is missing or its scope has changed, show the complete box and obtain approval before proceeding. Reuse an unchanged box and its approval already present in the conversation.
 
-Include `superpowers:create-pull-request` in the Discipline / Skill row and ready-for-review publication in the PR row. Also present a separate table for the named `observe-<topic>` Codex sub-session in that implementation worktree, using `superpowers:create-pull-request` in observation-only mode `ci`, with findings routed to the original implementation worker. Approval covers publication after verification and retention of that worker terminal for CI fixes. Preserve an explicit user choice of manual/full observation.
+Include `dgafka:create-pull-request` in the Discipline / Skill row and ready-for-review publication in the PR row. Also present a separate table for the named `observe-<topic>` Codex sub-session in that implementation worktree, using `dgafka:create-pull-request` in observation-only mode `ci`, with findings routed to the original implementation worker. Approval covers publication after verification and retention of that worker terminal for CI fixes. Preserve an explicit user choice of manual/full observation.
 
 Ask the user to confirm the presented sub-worktree and observer launch. One message may present a concurrent wave, with one table per launch; every launch must be individually identifiable and explicitly approved. Dispatch only approved launches. Reuse approval of an unchanged table at dispatch.
 
@@ -94,9 +94,9 @@ Create each implementation as a separate Orca child sub-worktree from the main c
 Every implementation task prompt must include these instructions:
 
 - Invoke `orchestration-sub-worktree` for the worker workflow.
-- **REQUIRED SUB-SKILL:** Use superpowers:test-driven-development for every behavior change.
+- **REQUIRED SUB-SKILL:** Use dgafka:test-driven-development for every behavior change.
 - Follow RED -> GREEN -> REFACTOR for each increment: write one focused test, watch it fail for the expected reason, write the minimum implementation, watch it pass, then refactor while green.
-- **REQUIRED SUB-SKILL:** Use superpowers:create-pull-request after verification; create or reuse the ready-for-review PR against the approved target branch, report its URL to the main coordinator, and trigger the approved CI observer in the same worktree.
+- **REQUIRED SUB-SKILL:** Use dgafka:create-pull-request after verification; create or reuse the ready-for-review PR against the approved target branch, report its URL to the main coordinator, and trigger the approved CI observer in the same worktree.
 - Include the publication authorization, concrete observer approval, and original worker/Dispatch route in the prompt.
 - Include the deliverable outcome, execution and delivery prerequisites, and any environment-variable feature flag contract from the delivery proposal.
 - Copy the approved execution box's Description into the prompt as ordered implementation steps, preserving every assigned step and its scope.
@@ -144,7 +144,7 @@ unrelated dependency-ready tasks moving while review or fixes are in progress.
 
 Orca dependencies are the execution source of truth. GitHub stacks express review and merge order.
 
-Implementation workers own PR creation through `superpowers:create-pull-request`. The coordinator receives each PR URL and observer launch receipt, and reuses those ready-for-review PRs.
+Implementation workers own PR creation through `dgafka:create-pull-request`. The coordinator receives each PR URL and observer launch receipt, and reuses those ready-for-review PRs.
 
 For each completed dependency chain:
 
