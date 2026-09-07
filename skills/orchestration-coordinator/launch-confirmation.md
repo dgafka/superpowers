@@ -4,6 +4,40 @@ Before creating a sub-worktree or starting a sub-session, fill and show this
 table, then obtain explicit approval for that concrete launch. A sub-session
 is a separate Codex terminal session within the named existing worktree.
 
+## Create and Maintain the Execution Record
+
+When preparing the first launch boxes, the coordinator creates
+`launch-execution.md` at the root of the main coordinator worktree. Record the
+objective and Orca Run identifier, then add one section per named implementation
+sub-worktree containing its complete launch confirmation box using the template
+below. Add that worktree's observer and any later review or verification boxes
+as subsections. Show the same boxes in conversation for approval before launch.
+
+For each box, record approval as pending until your human partner explicitly
+approves it. Keep the approved box intact and track execution beneath it:
+
+- Current status and last update time
+- Implementation step checklist matching the numbered Description steps
+- Worker and Orca task identifiers, branch, and execution location once known
+- Latest progress, verification evidence and checked commit, PR URL, CI and
+  review results, blockers, and next action
+- Timestamped updates with the reporting worker or observer and its evidence
+
+The coordinator owns this file. Update the matching section after each launch,
+worker progress report, question or blocker, verification result, PR publication,
+observer or reviewer finding, fix, and completion report. Mark steps complete
+from reported evidence and keep implementation completion, CI, review, and
+integration status separate. Record pending or failed checks explicitly.
+
+When launch scope changes, append the revised box and its approval state while
+preserving the previous approved version. Resume an existing record for the same
+Run; for a new Run, preserve the previous contents in an archive before creating
+the new record. On resumption, reconcile the record with current Orca state and
+worker reports. Orca remains the scheduling source of truth; this file presents
+the approved assignments and their execution history to your human partner.
+
+## Launch Box Template
+
 | Field | Proposed launch |
 |---|---|
 | Sub-worktree / Sub-session | Use only the applicable label and exact launch name |

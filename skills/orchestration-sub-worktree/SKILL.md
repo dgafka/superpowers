@@ -43,6 +43,12 @@ If required task context is absent, use Orca's blocking `ask/reply` flow. Keep t
 
 The orchestrator may answer when accumulated research already determines the result. A material plan change goes back to the user through the orchestrator.
 
+Report meaningful progress through Orca as assigned Description steps complete
+or blockers arise. Include the step numbers, outcome, relevant commit and
+verification evidence, and next action. The coordinator uses these reports to
+update `launch-execution.md` in the main worktree; route corrections to that
+record through the coordinator.
+
 ## 3. Verify, Publish, and Report
 
 Run only the focused tests and checks relevant to the task's owned behavior and affected surface. Leave broader repository coverage to CI. Confirm that the committed changes and remaining worktree state match the approved scope.

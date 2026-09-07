@@ -120,7 +120,7 @@ gemini extensions update superpowers
 
 1. **brainstorming** - Activates before writing code. Refines rough ideas through questions, explores alternatives, and presents a conversational design for validation.
 
-2. **orchestration-coordinator** - Ends implementation planning with a proposal for deliverable sub-worktrees, dependencies, execution order, and parallel work. Requires environment-variable feature flags for logic awaiting other units, plus a launch confirmation table and isolated TDD for each implementation.
+2. **orchestration-coordinator** - Ends implementation planning with a proposal for deliverable sub-worktrees, dependencies, execution order, and parallel work. Creates `launch-execution.md` in the main worktree with every launch box and updates progress from worker reports. Requires environment-variable feature flags for logic awaiting other units, plus a launch confirmation table and isolated TDD for each implementation.
 
 3. **orchestration-sub-worktree** - Implements approved work directly in its assigned sub-worktree with TDD and final verification.
 

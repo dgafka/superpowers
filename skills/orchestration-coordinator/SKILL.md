@@ -70,11 +70,18 @@ current pricing. The checkout integration unit verifies both modes with the
 completed pricing unit before reporting `ENABLE_NEW_PRICING=true` ready to enable.
 
 Use the proposal to populate the launch confirmations below. Keep the delivery
-plan in conversation and the approved dependencies in Orca.
+proposal in conversation, record the launch boxes and progress in
+`launch-execution.md`, and keep the approved dependencies in Orca.
 
 ## Approval and Dispatch
 
 Before preparing launches, read [launch-confirmation.md](launch-confirmation.md), resolved from this skill directory. Use its contents to render the sub-worktree execution box: one fully populated confirmation table for each proposed launch, visible in conversation before creating the sub-worktree or triggering its worker. Fill in every applicable field, including Description with the complete ordered implementation steps for that worktree. Follow its model defaults and pass the displayed model explicitly at dispatch. Keep ownership boundaries and the verified Git base in the worker context.
+
+Follow that template's execution-record instructions to create or update
+`launch-execution.md` in the main worktree before launch. Include every
+sub-worktree's full box, record its approval, and maintain its progress as worker
+and sub-session updates arrive. Link the file when presenting the launch boxes
+and execution summaries so your human partner can inspect the current record.
 
 Before each launch, verify that its execution box has been shown, explicitly approved, and matches the worker prompt. A delivery overview or design approval is followed by this concrete launch confirmation. If the template cannot be loaded, resolve its location before preparing or dispatching launches. If a box is missing or its scope has changed, show the complete box and obtain approval before proceeding. Reuse an unchanged box and its approval already present in the conversation.
 
@@ -93,6 +100,7 @@ Every implementation task prompt must include these instructions:
 - Include the publication authorization, concrete observer approval, and original worker/Dispatch route in the prompt.
 - Include the deliverable outcome, execution and delivery prerequisites, and any environment-variable feature flag contract from the delivery proposal.
 - Copy the approved execution box's Description into the prompt as ordered implementation steps, preserving every assigned step and its scope.
+- Report progress against those numbered steps, plus blockers and verification evidence, through Orca so the coordinator can maintain `launch-execution.md`.
 - Run only the focused inner-loop and task-relevant tests; broader repository coverage belongs to CI.
 
 The coordinator remains in the main worktree.
@@ -158,6 +166,7 @@ Reuse the existing approval when continuing a sub-session within its approved sc
 
 ## Coordination Discipline
 
+- Update `launch-execution.md` from each worker or sub-session report using the execution-record instructions in `launch-confirmation.md`; preserve approved boxes and record progress beneath them.
 - Use Orca dependencies and `task-list --ready` rather than mental scheduling.
 - Report exact sub-worktree or sub-session names and whether each is running, ready, blocked, or awaited.
 - Treat timeouts as checkpoints while workers remain live.
