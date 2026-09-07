@@ -1,0 +1,75 @@
+tests/skill-triggering/run-all.sh
+  s_af70504080c202::t_116a3568f0a8b4 13
+  s_af70504080c202::t_a666eaf07e2309 12
+skills/recognize-and-learn/SKILL.md
+  s_af70504080c202::t_116a3568f0a8b4 87,153
+skills/review-changes/SKILL.md
+  s_af70504080c202::t_116a3568f0a8b4 52,108
+README.md
+  s_67cdea6506f9e2::t_b27d2df3afee0d 123
+  s_af70504080c202::t_a666eaf07e2309 145
+  s_af70504080c202::t_ba0067e9eca404 125,127,129,131,144
+tests/skill-triggering/run-test.sh
+  s_af70504080c202::t_a666eaf07e2309 16
+skills/improve-workflow/SKILL.md
+  s_af70504080c202::t_ba0067e9eca404 25,128
+  s_af70504080c202::t_116a3568f0a8b4 127
+skills/create-pull-request/SKILL.md
+  s_af70504080c202::t_a666eaf07e2309 18
+  s_af70504080c202::t_116a3568f0a8b4 270
+skills/orchestration-coordinator/SKILL.md
+  s_af70504080c202::t_ba0067e9eca404 3,15,34,153
+  s_af70504080c202::t_116a3568f0a8b4 2,4,7,11,17,19,21,23,25,27,29,75,78,80-88,90-93,96-152,154-166
+  s_67cdea6506f9e2::t_7f9ffd814b1dd5 31,33,35-38,40,46-49,51-74,94
+  s_af70504080c202::t_a666eaf07e2309 89
+  s_67cdea6506f9e2::t_11295e94f358ef 13,41-45,76-77,79,95
+  s_67cdea6506f9e2::t_7b671f1a50f32d 32
+  s_67cdea6506f9e2::t_03a92ac204a173 39
+  s_67cdea6506f9e2::t_4fb69b65f4cadb 50
+  s_67cdea6506f9e2::t_731ba96793616e 14
+tests/manual-only-skills/test-manual-only-skills.sh
+  s_af70504080c202::t_ba0067e9eca404 81,125-126,133-135
+  s_af70504080c202::t_116a3568f0a8b4 127-128,130-132,145,147-148,150,163,165-166,168
+  s_af70504080c202::t_a666eaf07e2309 173
+skills/orchestration-sub-worktree/SKILL.md
+  s_af70504080c202::t_a666eaf07e2309 2,6,30,50-56
+  s_67cdea6506f9e2::t_11295e94f358ef 25
+tests/skill-triggering/prompts/orchestration-coordinator.txt
+  s_af70504080c202::t_ba0067e9eca404 1
+skills/orchestration-coordinator/launch-confirmation.md
+  s_67cdea6506f9e2::t_11295e94f358ef 1-51
+skills/brainstorming/SKILL.md
+  s_67cdea6506f9e2::t_11295e94f358ef 24,74
+  s_67cdea6506f9e2::t_7f9ffd814b1dd5 65-69
+CLAUDE.md
+  s_af70504080c202::t_ba0067e9eca404 9,11,19,32
+  s_67cdea6506f9e2::t_b27d2df3afee0d 27-28
+  s_af70504080c202::t_a666eaf07e2309 33
+  s_af70504080c202::t_116a3568f0a8b4 34
+tests/opencode/test-tools.sh
+  s_af70504080c202::t_116a3568f0a8b4 39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "fa00273b8889f82f19087abcdaed991db16e42a2",
+  "prompts": {},
+  "sessions": {
+    "s_67cdea6506f9e2": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a07aea-2019-7ed2-8405-f9532691f1dd",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "Dariusz Gafka <dariusz.gafka@lendable.co.uk>"
+    },
+    "s_af70504080c202": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "01a07aea-2019-7ed2-8405-f9532691f1dd",
+        "model": "unknown"
+      },
+      "human_author": "Dariusz Gafka <dariusz.gafka@lendable.co.uk>"
+    }
+  }
+}
