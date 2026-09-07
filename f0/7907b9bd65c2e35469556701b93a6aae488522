@@ -1,0 +1,69 @@
+skills/recognize-and-learn/SKILL.md
+  s_4ff8620d2c2839::t_1495027ec75e42 93,115,117,153
+README.md
+  s_4ff8620d2c2839::t_8cf6802c231105 76
+  s_4ff8620d2c2839::t_d1177bb6ccff67 38,48,54,68,77,85,88,95,103-104,110,116
+.claude-plugin/plugin.json
+  s_4ff8620d2c2839::t_1495027ec75e42 2
+gemini-extension.json
+  s_4ff8620d2c2839::t_1495027ec75e42 2
+skills/orchestration-coordinator/launch-confirmation.md
+  s_4ff8620d2c2839::t_1495027ec75e42 78,81
+package.json
+  s_4ff8620d2c2839::t_1495027ec75e42 2
+  s_4ff8620d2c2839::t_aa252f228c7ab4 5
+tests/codex-plugin-sync/test-sync-to-codex-plugin.sh
+  s_4ff8620d2c2839::t_3d7079e1c54197 195,234-236,241-242,250,261-264,266,268,273,277,279,285,288-292,300-303,492,509,525,528,530,535,537,544
+tests/opencode/test-plugin-loading.sh
+  s_4ff8620d2c2839::t_aa252f228c7ab4 16
+tests/manual-only-skills/test-manual-only-skills.sh
+  s_4ff8620d2c2839::t_1495027ec75e42 164
+scripts/sync-to-codex-plugin.sh
+  s_4ff8620d2c2839::t_59444c2e0482bf 23,36,303,305,328,385-386,388,395-396
+docs/README.opencode.md
+  s_4ff8620d2c2839::t_4b44f9db2a452c 1,3,7,11,17,21,25-26,29,31,49,77,81,87,99,116-117
+skills/writing-skills/SKILL.md
+  s_4ff8620d2c2839::t_1495027ec75e42 13,123,199
+skills/orchestration-sub-worktree/SKILL.md
+  s_4ff8620d2c2839::t_1495027ec75e42 14,16,63,65
+.cursor-plugin/plugin.json
+  s_4ff8620d2c2839::t_1495027ec75e42 2
+skills/orchestration-coordinator/SKILL.md
+  s_4ff8620d2c2839::t_1495027ec75e42 13,88,97,99,147
+.codex-plugin/plugin.json
+  s_4ff8620d2c2839::t_1495027ec75e42 2
+skills/create-pull-request/SKILL.md
+  s_4ff8620d2c2839::t_1495027ec75e42 22
+tests/opencode/test-priority.sh
+  s_4ff8620d2c2839::t_59444c2e0482bf 154,156,159,168,170
+tests/opencode/test-tools.sh
+  s_4ff8620d2c2839::t_59444c2e0482bf 39-40,79,81-82,84,95,97
+.claude-plugin/marketplace.json
+  s_4ff8620d2c2839::t_1495027ec75e42 10
+.github/PULL_REQUEST_TEMPLATE.md
+  s_4ff8620d2c2839::t_1495027ec75e42 64
+.opencode/plugins/dgafka.js
+  s_4ff8620d2c2839::t_aa252f228c7ab4 2,12-13,16,23-24
+.opencode/INSTALL.md
+  s_4ff8620d2c2839::t_d1177bb6ccff67 1,9,13,19,23,27-28,31,33,44,49,55,63,82-83
+CLAUDE.md
+  s_4ff8620d2c2839::t_1495027ec75e42 13
+tests/opencode/setup.sh
+  s_4ff8620d2c2839::t_aa252f228c7ab4 19-20,22,24,32,36,73
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "f07907b9bd65c2e35469556701b93a6aae488522",
+  "prompts": {},
+  "sessions": {
+    "s_4ff8620d2c2839": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a07c02-9f75-7273-9a3e-cedcd04b8c01",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "Dariusz Gafka <dariusz.gafka@lendable.co.uk>"
+    }
+  }
+}
