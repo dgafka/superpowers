@@ -84,7 +84,7 @@ The proposed changes typically land in the superpowers fork — not in the proje
 
 ### Step 5: Route Approved Changes to Implementation
 
-Invoke `orchestrator-agent` with the approved findings, skills-repository path,
+Invoke `orchestration-coordinator` with the approved findings, skills-repository path,
 proposed edits, and verification criteria. It owns launch approval and assigns
 the changes to a dedicated implementation sub-worktree. Keep the retrospective
 changes in a separate PR from the implementation that prompted them.
@@ -150,7 +150,7 @@ Then stop. Integration of the retrospective changes is the user's call.
 ## Integration
 
 **Typically called by:**
-- **superpowers:orchestrator-agent** — the orchestration run that completed the implementation tasks
+- **superpowers:orchestration-coordinator** — the orchestration run that completed the implementation tasks
 
 **Operates on:**
 - The superpowers skills repo (separate from the project where the implementation happened)

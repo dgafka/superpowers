@@ -22,8 +22,7 @@ This skill is a thin collector. Its only hard job is to gather the review
 signals and correlate each with the fix that followed. Everything from
 categorization onward — deciding which lessons are worth enforcing and designing
 how to apply them — is **led by the brainstorming skill**, which owns the design
-conversation before the user starts `orchestrator-agent` or, when open
-questions remain, `orchestration-research`.
+conversation before the user starts `orchestration-coordinator` to plan execution.
 
 Run it **inside the project the PR belongs to** (superpowers installed as a
 plugin), so the resulting improvements land where they belong: the project's CI
@@ -125,9 +124,8 @@ leads:
   which to pursue.
 - Design *how* to apply each agreed improvement — a **new** rule/skill vs. an
   **update** to an existing one.
-- After the design is approved, the user may invoke `orchestrator-agent` for
-  direct implementation, or `orchestration-research` when evidence is still
-  needed before implementation.
+- After the design is approved, the user may invoke `orchestration-coordinator` for
+  execution planning and coordination.
 
 End this skill after invoking `brainstorming` with the collected findings. Brainstorming owns the design conversation and directs the user to the subsequent implementation workflow.
 

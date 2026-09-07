@@ -8,6 +8,7 @@ is a separate Codex terminal session within the named existing worktree.
 |---|---|
 | Sub-worktree / Sub-session | Use only the applicable label and exact launch name |
 | Goal | Intended outcome; review focus for a reviewer |
+| Description | Complete ordered implementation steps for this sub-worktree; scoped activities for a sub-session |
 | Execution | New child sub-worktree, or sub-session in an exact existing worktree; agent and model |
 | Dependencies | Prerequisite names or none |
 | Discipline / Skill | Worker skill and relevant execution rules |
@@ -17,6 +18,12 @@ is a separate Codex terminal session within the named existing worktree.
 
 Use the defined table rows. Preserve scope ownership and the verified Git
 base in the internal worker context. Use short cells with readable labels.
+Keep Description concrete and complete: identify the affected components or
+interfaces, behavior changes, integration or migration work, and feature flag
+work when applicable. Number the steps within the cell, using line breaks for
+readability. Match the delivery proposal's Description column and copy these
+approved steps into the worker prompt. Include verification and publication
+work in their dedicated rows so the box describes the full assignment.
 Omit the PR row when it does not apply. For reviews, state explicitly whether
 external comments are authorized, based on the user's explicit permission.
 

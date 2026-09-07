@@ -13,7 +13,7 @@ MAX_TURNS="${3:-3}"
 
 if [ -z "$SKILL_NAME" ] || [ -z "$PROMPT_FILE" ]; then
     echo "Usage: $0 <skill-name> <prompt-file> [max-turns]"
-    echo "Example: $0 orchestrator-subworktree ./prompts/orchestrator-subworktree.txt"
+    echo "Example: $0 orchestration-sub-worktree ./prompts/orchestration-sub-worktree.txt"
     exit 1
 fi
 

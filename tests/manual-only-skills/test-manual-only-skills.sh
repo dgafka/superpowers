@@ -78,7 +78,7 @@ assert_no_hits() {
 }
 
 # Workflow skills that must be manual-only on both platforms.
-WORKFLOW_SKILLS=(improve-workflow cleanup-worktree orchestration-research)
+WORKFLOW_SKILLS=(improve-workflow cleanup-worktree)
 
 echo "== manual-only workflow skills live under skills/"
 if run_test relocated; then
@@ -122,17 +122,17 @@ if run_test shared_rules_invocable; then
         "reader-friendly-writing has no Codex opt-out"
 fi
 
-echo "== orchestrator-agent stays reusable by orchestration-research"
-if run_test orchestrator_agent_invocable; then
-    OA="$REPO_ROOT/skills/orchestrator-agent/SKILL.md"
-    assert_file_exists "$OA" "skills/orchestrator-agent/SKILL.md exists"
+echo "== orchestration-coordinator stays reusable"
+if run_test orchestration_coordinator_invocable; then
+    OA="$REPO_ROOT/skills/orchestration-coordinator/SKILL.md"
+    assert_file_exists "$OA" "skills/orchestration-coordinator/SKILL.md exists"
     assert_not_contains "$OA" "disable-model-invocation" \
-        "orchestrator-agent allows skill-to-skill invocation"
-    assert_file_absent "$REPO_ROOT/skills/orchestrator-agent/agents/openai.yaml" \
-        "orchestrator-agent does not opt out of Codex invocation"
-    assert_contains "$REPO_ROOT/skills/orchestration-research/SKILL.md" \
-        "Use orchestrator-agent" \
-        "orchestration-research requires orchestrator-agent"
+        "orchestration-coordinator allows skill-to-skill invocation"
+    assert_file_absent "$REPO_ROOT/skills/orchestration-coordinator/agents/openai.yaml" \
+        "orchestration-coordinator does not opt out of Codex invocation"
+    assert_contains "$REPO_ROOT/skills/brainstorming/SKILL.md" \
+        'invoke `orchestration-coordinator`' \
+        "brainstorming hands execution planning to orchestration-coordinator"
 fi
 
 echo "== explicitly requested reviews reuse review-changes through Orca"
@@ -142,12 +142,12 @@ if run_test orchestrated_reviews; then
         "review-changes allows orchestrated invocation"
     assert_file_absent "$REPO_ROOT/skills/review-changes/agents/openai.yaml" \
         "review-changes does not opt out of Codex invocation"
-    assert_contains "$REPO_ROOT/skills/orchestrator-agent/SKILL.md" \
+    assert_contains "$REPO_ROOT/skills/orchestration-coordinator/SKILL.md" \
         "review-<topic>" \
-        "orchestrator-agent defines review task names"
-    assert_contains "$REPO_ROOT/skills/orchestrator-agent/SKILL.md" \
+        "orchestration-coordinator defines review task names"
+    assert_contains "$REPO_ROOT/skills/orchestration-coordinator/SKILL.md" \
         "only when the user explicitly requests" \
-        "orchestrator-agent gates review task creation"
+        "orchestration-coordinator gates review task creation"
     assert_contains "$REVIEW" "## Orchestrated Review Mode" \
         "review-changes defines its Orca worker mode"
     assert_contains "$REVIEW" "Keep the review read-only." \
@@ -160,17 +160,17 @@ echo "== orchestration owns implementation TDD without a global bootstrap"
 if run_test orchestration_tdd_contract; then
     assert_file_absent "$REPO_ROOT/skills/using-superpowers" \
         "using-superpowers skill is removed"
-    assert_contains "$REPO_ROOT/skills/orchestrator-agent/SKILL.md" \
+    assert_contains "$REPO_ROOT/skills/orchestration-coordinator/SKILL.md" \
         "Use superpowers:test-driven-development for every behavior change" \
-        "orchestrator-agent requires standalone TDD in every implementation task"
-    assert_contains "$REPO_ROOT/skills/orchestrator-agent/SKILL.md" \
+        "orchestration-coordinator requires standalone TDD in every implementation task"
+    assert_contains "$REPO_ROOT/skills/orchestration-coordinator/SKILL.md" \
         "RED -> GREEN -> REFACTOR" \
-        "orchestrator-agent places the TDD cycle in the worker contract"
+        "orchestration-coordinator places the TDD cycle in the worker contract"
 fi
 
 echo "== implementation skill uses the sub-worktree name"
 if run_test subworktree_name; then
-    assert_file_exists "$REPO_ROOT/skills/orchestrator-subworktree/SKILL.md" \
+    assert_file_exists "$REPO_ROOT/skills/orchestration-sub-worktree/SKILL.md" \
         "renamed implementation skill is discoverable"
     assert_file_absent "$REPO_ROOT/skills/orchestrator-subworktree-task" \
         "old implementation skill directory is removed"

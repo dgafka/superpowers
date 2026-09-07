@@ -120,17 +120,15 @@ gemini extensions update superpowers
 
 1. **brainstorming** - Activates before writing code. Refines rough ideas through questions, explores alternatives, and presents a conversational design for validation.
 
-2. **orchestrator-agent** - Coordinates a clear implementation objective across approved, named implementation sub-worktrees, requiring a launch confirmation table and isolated TDD for each.
+2. **orchestration-coordinator** - Ends implementation planning with a proposal for deliverable sub-worktrees, dependencies, execution order, and parallel work. Requires environment-variable feature flags for logic awaiting other units, plus a launch confirmation table and isolated TDD for each implementation.
 
-3. **orchestration-research** - Adds confirmed, concurrent read-only research sub-sessions, then hands the synthesized implementation DAG to `orchestrator-agent`.
+3. **orchestration-sub-worktree** - Implements approved work directly in its assigned sub-worktree with TDD and final verification.
 
-4. **orchestrator-subworktree** - Implements approved work directly in its assigned sub-worktree with TDD and final verification.
+4. **review-changes** - On explicit request, runs `review-<topic>` as a confirmed sub-session within the existing implementation worktree, against local changes or a pull request.
 
-5. **review-changes** - On explicit request, runs `review-<topic>` as a confirmed sub-session within the existing implementation worktree, against local changes or a pull request.
+5. **test-driven-development** - Activates during implementation. Enforces RED-GREEN-REFACTOR: write failing test, watch it fail, write minimal code, watch it pass, commit. Deletes code written before tests.
 
-6. **test-driven-development** - Activates during implementation. Enforces RED-GREEN-REFACTOR: write failing test, watch it fail, write minimal code, watch it pass, commit. Deletes code written before tests.
-
-A **sub-session** is a separate Codex terminal within an existing worktree. Use it for review, read-only research, CI/PR observation, and explicitly requested independent verification. Each new sub-worktree or sub-session gets a confirmation table without Owns or Base rows. Routine tests and fixes stay with the original implementation worker. Orca tasks remain the underlying scheduling objects.
+A **sub-session** is a separate Codex terminal within an existing worktree. Use it for review, CI/PR observation, and explicitly requested independent verification. Each new sub-worktree or sub-session gets a confirmation table without Owns or Base rows. Routine tests and fixes stay with the original implementation worker. Orca tasks remain the underlying scheduling objects.
 
 Invoke the workflow that matches the work. Implementation workers receive their required skills directly in the Orca task prompt.
 
@@ -143,9 +141,8 @@ Invoke the workflow that matches the work. Implementation workers receive their 
 
 **Collaboration** 
 - **brainstorming** - Socratic design refinement
-- **orchestrator-agent** - Coordinates implementation sub-worktrees, explicitly requested review sub-sessions, and stacked PRs through Orca; directly invokable and reused by orchestration-research
-- **orchestration-research** - Coordinates research and hands implementation to orchestrator-agent (user-triggered only)
-- **orchestrator-subworktree** - Implements approved work directly in its assigned sub-worktree
+- **orchestration-coordinator** - Coordinates implementation sub-worktrees, explicitly requested review sub-sessions, and stacked PRs through Orca; directly invokable after brainstorming approves the solution
+- **orchestration-sub-worktree** - Implements approved work directly in its assigned sub-worktree
 - **recognize-and-learn** - Post-implementation retrospective; proposes process/skill changes on a branch + PR
 
 **Delivery** (user-triggered only — the agent never starts these on its own)

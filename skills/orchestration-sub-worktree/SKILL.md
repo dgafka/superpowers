@@ -1,9 +1,9 @@
 ---
-name: orchestrator-subworktree
+name: orchestration-sub-worktree
 description: Use when implementing approved work directly inside its dedicated Orca sub-worktree
 ---
 
-# Orchestrator Sub-worktree
+# Orchestration Sub-worktree
 
 ## Overview
 
@@ -22,10 +22,12 @@ Execute the approved assignment directly in this worker session.
 Read the injected Orca task prompt end-to-end. Identify:
 
 - Sub-worktree name, goal, and observable outcome
+- Approved execution box Description, provided as the ordered implementation steps to cover in this sub-worktree
 - Run-wide guidance and task-specific additions
 - Owned scope and explicit exclusions
 - Dependency branch and expected stack position
 - Acceptance criteria and verification commands
+- Delivery prerequisites and any environment-variable feature flag contract, including disabled behavior and activation conditions
 
 Verify the current checkout is the task's dedicated sub-worktree, its name matches the Orca task where tooling permits, and the branch is not the repository's default branch. If placement differs, report the error and await the coordinator's corrected placement before editing.
 
@@ -44,6 +46,13 @@ The orchestrator may answer when accumulated research already determines the res
 ## 3. Verify, Publish, and Report
 
 Run only the focused tests and checks relevant to the task's owned behavior and affected surface. Leave broader repository coverage to CI. Confirm that the committed changes and remaining worktree state match the approved scope.
+
+For flagged behavior, follow the assigned contract from `orchestration-coordinator`.
+Verify existing behavior with the environment variable unset and disabled, and
+test the enabled path for the unit's scope. The unit assigned readiness verification
+also checks the integrated enabled path after the required units are delivered.
+Include the variable, enabling value, default, remaining prerequisites, and
+activation readiness in the PR and completion report.
 
 Invoke `superpowers:create-pull-request` in its orchestrated implementation mode. Pass the approved repository, PR base (the prerequisite branch for dependent work), publication authorization, named CI observer launch, and original worker/Dispatch route. Create or reuse a ready-for-review PR, then send its URL to the main coordinator through Orca immediately.
 

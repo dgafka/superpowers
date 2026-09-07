@@ -49,7 +49,7 @@ authorized.
 
 - Run as a sub-session: a separate Codex terminal within the implementation
   sub-worktree. The launching coordinator must
-  first show `../orchestrator-agent/launch-confirmation.md` (resolved from this
+  first show `../orchestration-coordinator/launch-confirmation.md` (resolved from this
   skill directory), filled for this sub-session, and obtain confirmation. Reuse that approval inside the reviewer.
 - Review the supplied stable commit while implementation edits are paused. If
   the checkout changes, report it and re-establish the target with the coordinator
@@ -105,7 +105,7 @@ tell the user inline posting won't be available this run — the review still
 runs, ending in a chat-only list (see Step 5).
 
 Manual invocation always runs in the current session. In orchestrated mode,
-`orchestrator-agent` owns the separate reviewer session; reuse the approved reviewer placement.
+`orchestration-coordinator` owns the separate reviewer session; reuse the approved reviewer placement.
 
 ### 3. Phase 1 — Understanding
 

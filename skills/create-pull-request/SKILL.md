@@ -15,7 +15,7 @@ the repo's own PR template, or asking the user**. Resolve conventions for the re
 
 ## Orchestrated Implementation and Observation Entry Points
 
-When invoked by `orchestrator-subworktree`, use the approved launch context: repository, feature and target branches, publication permission, observer name/mode/location, coordinator Run, and original implementation task, terminal, and Dispatch. Explicit approval to publish on completion authorizes creation after the title/body passes the checks below; show the result and use that approval. If publication was not approved, route the completed preview to the coordinator for a user decision. Ordinary direct invocation still uses Step 8.
+When invoked by `orchestration-sub-worktree`, use the approved launch context: repository, feature and target branches, publication permission, observer name/mode/location, coordinator Run, and original implementation task, terminal, and Dispatch. Explicit approval to publish on completion authorizes creation after the title/body passes the checks below; show the result and use that approval. If publication was not approved, route the completed preview to the coordinator for a user decision. Ordinary direct invocation still uses Step 8.
 
 The implementation default is `ci`. The initial confirmation must identify the concrete observer launch as well as PR publication. Reuse that approval in Step 10 for the mode and unchanged launch. Preserve explicit manual/full choices when the user overrides this default.
 
@@ -267,7 +267,7 @@ After returning the PR URL, use the approved observation mode and concrete launc
 PR approval alone authorizes creation only. Start observation when both the mode and concrete launch are approved; the initial implementation confirmation may supply both.
 
 - For **manual**, stop.
-- For **full** or **CI**, propose one read-only `observe-<specific-topic>` sub-session in the existing implementation worktree, tracked as an Orca task. Unless that exact launch was already approved, fill and show `../orchestrator-agent/launch-confirmation.md`, resolved from this skill directory, and obtain explicit confirmation. Include the selected mode and findings route; use the table's defined rows. The mode choice can also confirm the launch if the concrete table was already shown. Invoke the **orchestration** skill for dispatch.
+- For **full** or **CI**, propose one read-only `observe-<specific-topic>` sub-session in the existing implementation worktree, tracked as an Orca task. Unless that exact launch was already approved, fill and show `../orchestration-coordinator/launch-confirmation.md`, resolved from this skill directory, and obtain explicit confirmation. Include the selected mode and findings route; use the table's defined rows. The mode choice can also confirm the launch if the concrete table was already shown. Invoke the **orchestration** skill for dispatch.
 - Preserve the selected mode and implementation ownership route in the task context: repository and PR number, feature and base branches, implementation task name, implementation sub-worktree, original worker terminal/Dispatch when available, and a short PR brief.
 - Start the observer as a sub-session: a separate Codex terminal within that existing worktree. The observer reads PR state and routes findings; the implementation worker owns edits, commits, pushes, and author replies.
 
