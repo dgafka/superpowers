@@ -1,0 +1,40 @@
+tests/skill-instructions/test-instructions.py
+  s_4e13a73f758d5b::t_3944f537259264 39-43,49-50
+  s_4e13a73f758d5b::t_51f61193abb1d9 48
+  s_4e13a73f758d5b::t_fe6938f3438f41 51-55,57-58
+  s_4e13a73f758d5b::t_e9d1e283ec65e1 56
+  s_4e13a73f758d5b::t_52f4bdd9a3b626 44-47
+skills/orchestration-coordinator/SKILL.md
+  s_4e13a73f758d5b::t_e3acf9200f9886 96-115
+  s_4e13a73f758d5b::t_2e7f9cd24cc35d 86-94,119-122
+  s_4e13a73f758d5b::t_d422faef984f19 95
+skills/orchestration-coordinator/launch-confirmation.md
+  s_4e13a73f758d5b::t_aeb3858482a765 83-85
+  s_4e13a73f758d5b::t_e3acf9200f9886 25-26
+  s_4e13a73f758d5b::t_2e7f9cd24cc35d 27,74-77,79-81
+  s_73ee5c6bc76775::t_5f6feabacb7907 82
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "c0350362390230a7577ca9f0c6d61b41e0847d89",
+  "prompts": {},
+  "sessions": {
+    "s_4e13a73f758d5b": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a07ff6-606b-70e2-bea7-5b625d4055db",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "Dariusz Gafka <dariusz.gafka@lendable.co.uk>"
+    },
+    "s_73ee5c6bc76775": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0801e-369f-7203-91c3-e615ceb4a392",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Dariusz Gafka <dariusz.gafka@lendable.co.uk>"
+    }
+  }
+}
