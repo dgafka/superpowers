@@ -22,6 +22,9 @@ approves it. Keep the approved box intact and track execution beneath it:
 - Latest progress, verification evidence and checked commit, PR URL, CI and
   review results, blockers, and next action
 - Timestamped updates with the reporting worker or observer and its evidence
+- Self-review result against the approved business requirements; when it does
+  not align, the exact correction request, worker revision, and re-review result
+- The dispatch-time approval timestamp and the exact named launch it authorizes
 
 The coordinator owns this file. Update the matching section after each launch,
 worker progress report, question or blocker, verification result, PR publication,
@@ -68,11 +71,18 @@ sub-session, including research, review, observation, and verification.
 Pass the displayed model explicitly when launching. If the runtime cannot resolve the
 selected model, report the blocker and ask the user to choose a replacement.
 
-For a concurrent wave, show one table per launch and identify every launch
-covered by the user's confirmation. Obtain approval of the concrete table after presenting it.
-An existing explicit approval of the unchanged table remains valid.
+Immediately before dispatching any sub-worktree, show its current complete box
+and obtain a fresh explicit confirmation to proceed with that exact named
+launch. A planning approval does not authorize a later dispatch, even when the
+box is unchanged. Record this dispatch-time approval in `launch-execution.md`.
 
-Reuse the existing approval for ordinary continuation within the approved scope. A new terminal or changed scope requires a new table.
+For concurrent ready launches, show one table per launch and identify every
+launch covered by the confirmation. Obtain a distinct explicit approval for each
+concrete table after presenting it.
+
+After dispatch, reuse the existing approval for ordinary continuation within the
+approved scope. It never authorizes dispatching another sub-worktree. A new
+terminal or changed scope requires a new table.
 
 For implementation launches, the Discipline / Skill row must include
 `dgafka:create-pull-request` alongside the implementation and TDD skills.

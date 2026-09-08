@@ -83,11 +83,43 @@ sub-worktree's full box, record its approval, and maintain its progress as worke
 and sub-session updates arrive. Link the file when presenting the launch boxes
 and execution summaries so your human partner can inspect the current record.
 
-Before each launch, verify that its execution box has been shown, explicitly approved, and matches the worker prompt. A delivery overview or design approval is followed by this concrete launch confirmation. If the template cannot be loaded, resolve its location before preparing or dispatching launches. If a box is missing or its scope has changed, show the complete box and obtain approval before proceeding. Reuse an unchanged box and its approval already present in the conversation.
+Before executing any sub-worktree, including the first and every later
+dependency-ready sub-worktree, require a just-in-time launch approval. Show its
+current complete execution box to your human partner immediately before
+dispatch and obtain explicit confirmation to proceed with that exact named
+launch. Verify that the approved box matches the worker prompt. Do not reuse an
+earlier planning approval, even when the box is unchanged. If the template
+cannot be loaded, resolve its location before preparing or dispatching launches.
+If a box is missing or its scope has changed, show the complete box and obtain
+approval before proceeding.
+
+### Coordinator Self-review of Worker Confirmations
+
+After a sub-worktree worker sends its draft confirmation to the main coordinator,
+perform a requirements-aware self-review before presenting that confirmation to
+your human partner. Compare the draft with the approved business requirements,
+conversational design, run-wide guidance, delivery proposal, dependencies,
+acceptance checks, feature-flag contract, and PR and observation commitments.
+
+When the draft does not align, do not request launch approval. Report the
+specific mismatch and return the required corrections to that sub-worktree
+worker through Orca. The worker updates its proposed scope, ordered steps,
+acceptance checks, dependencies, or feature-flag contract and must resubmit a
+revised confirmation. Re-review every revision until it aligns. Record each
+self-review result, correction request, and revised confirmation in
+`launch-execution.md`.
+
+When the draft aligns, report that it aligns with the approved business
+requirements and is ready for your human partner's launch approval. The
+coordinator still owns the final launch box and does not dispatch until its
+unchanged table receives explicit approval.
 
 Include `dgafka:create-pull-request` in the Discipline / Skill row and ready-for-review publication in the PR row. Also present a separate table for the named `observe-<topic>` Codex sub-session in that implementation worktree, using `dgafka:create-pull-request` in observation-only mode `ci`, with findings routed to the original implementation worker. Approval covers publication after verification and retention of that worker terminal for CI fixes. Preserve an explicit user choice of manual/full observation.
 
-Ask the user to confirm the presented sub-worktree and observer launch. One message may present a concurrent wave, with one table per launch; every launch must be individually identifiable and explicitly approved. Dispatch only approved launches. Reuse approval of an unchanged table at dispatch.
+Ask the user to confirm the presented sub-worktree and observer launch. When
+multiple worktrees become ready together, one message may present one current
+table per launch; every launch must be individually identifiable and explicitly
+approved to proceed. Dispatch only after that just-in-time approval.
 
 Create each implementation as a separate Orca child sub-worktree from the main coordinator worktree. Independent tasks use sibling sub-worktrees based on the agreed trunk. A dependent task uses its prerequisite's stable branch as its Git base. When a task depends on multiple sibling branches, ask how to linearize or integrate them before choosing a base.
 
