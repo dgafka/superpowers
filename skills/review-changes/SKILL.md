@@ -48,9 +48,9 @@ approved implementation context, focus, and whether inline PR comments are
 authorized.
 
 - Run as a sub-session: a separate Codex terminal within the implementation
-  sub-worktree. The launching coordinator must
-  first show `../orchestration-coordinator/launch-confirmation.md` (resolved from this
-  skill directory), filled for this sub-session, and obtain confirmation. Reuse that approval inside the reviewer.
+  sub-worktree. The coordinator dispatches this existing-worktree session
+  directly without a launch-confirmation box. Reuse the implementation
+  worktree's approved objective, scope, and routing context inside the reviewer.
 - Review the supplied stable commit while implementation edits are paused. If
   the checkout changes, report it and re-establish the target with the coordinator
   before continuing.

@@ -1,8 +1,10 @@
 # Launch Confirmation
 
-Before creating a sub-worktree or starting a sub-session, fill and show this
-table, then obtain explicit approval for that concrete launch. A sub-session
-is a separate Codex terminal session within the named existing worktree.
+Before creating a new sub-worktree, fill and show this table, then obtain
+explicit approval for that concrete sub-worktree launch. Sessions started in an
+existing sub-worktree are dispatched directly without this table or launch
+approval. A sub-session is a separate Codex terminal session within the named
+existing worktree.
 
 ## Create and Maintain the Execution Record
 
@@ -11,7 +13,9 @@ When preparing the first launch boxes, the coordinator creates
 objective and Orca Run identifier, then add one section per named implementation
 sub-worktree containing its complete launch confirmation box using the template
 below. Add that worktree's observer and any later review or verification boxes
-as subsections. Show the same boxes in conversation for approval before launch.
+as subsections. Show new sub-worktree boxes in conversation for approval before
+creation. Record sessions in existing sub-worktrees beneath the matching
+worktree's execution history without creating a new approval box.
 
 For each box, record approval as pending until your human partner explicitly
 approves it. Keep the approved box intact and track execution beneath it:
@@ -71,25 +75,30 @@ sub-session, including research, review, observation, and verification.
 Pass the displayed model explicitly when launching. If the runtime cannot resolve the
 selected model, report the blocker and ask the user to choose a replacement.
 
-Immediately before dispatching any sub-worktree, show its current complete box
+Immediately before creating any new sub-worktree, show its current complete box
 and obtain a fresh explicit confirmation to proceed with that exact named
-launch. A planning approval does not authorize a later dispatch, even when the
+launch. A planning approval does not authorize a later creation, even when the
 box is unchanged. Record this dispatch-time approval in `launch-execution.md`.
+Dispatch sessions in existing sub-worktrees directly and record their session
+name, purpose, worker route, and start result in the existing execution
+history.
 
-For concurrent ready launches, show one table per launch and identify every
-launch covered by the confirmation. Obtain a distinct explicit approval for each
-concrete table after presenting it.
+For concurrent ready new sub-worktree launches, show one table per launch and
+identify every launch covered by the confirmation. Obtain a distinct explicit
+approval for each concrete table after presenting it.
 
-After dispatch, reuse the existing approval for ordinary continuation within the
-approved scope. It never authorizes dispatching another sub-worktree. A new
-terminal or changed scope requires a new table.
+After dispatch, continue sessions in existing sub-worktrees within their
+approved worktree context. A changed objective or acceptance criteria is
+reported to the user for a scope decision; it does not require a launch box
+unless a new sub-worktree is needed.
 
 For implementation launches, the Discipline / Skill row must include
 `dgafka:create-pull-request` alongside the implementation and TDD skills.
-The PR row states publication on completion and the approved target/stack position.
-Present the named CI observer in its own table in the same approval message:
-`dgafka:create-pull-request`, observation-only mode `ci`, a separate Codex
-terminal in that implementation worktree, and findings to the original worker.
-This approval also covers keeping that worker terminal available for CI fixes.
-Reuse both unchanged approvals at completion for publication, observation mode,
-and the approved observer launch.
+The PR row states publication on completion and the approved target/stack position,
+plus the named observer, mode, existing worktree, and findings route. The
+observer uses `dgafka:create-pull-request` in observation-only mode `ci` in a
+separate Codex terminal in that implementation worktree, with findings sent to
+the original worker. The new-sub-worktree approval also covers publication and
+keeping that worker terminal available for CI fixes.
+At completion, reuse the approved publication and observation mode; dispatch the
+observer directly in the existing implementation worktree.

@@ -75,7 +75,7 @@ proposal in conversation, record the launch boxes and progress in
 
 ## Approval and Dispatch
 
-Before preparing launches, read [launch-confirmation.md](launch-confirmation.md), resolved from this skill directory. Use its contents to render the sub-worktree execution box: one fully populated confirmation table for each proposed launch, visible in conversation before creating the sub-worktree or triggering its worker. Fill in every applicable field, including Description with the complete ordered implementation steps for that worktree. Follow its model defaults and pass the displayed model explicitly at dispatch. Keep ownership boundaries and the verified Git base in the worker context.
+Before preparing new sub-worktree launches, read [launch-confirmation.md](launch-confirmation.md), resolved from this skill directory. Use its contents to render the sub-worktree execution box: one fully populated confirmation table for each proposed new sub-worktree, visible in conversation before creating it or triggering its worker. Fill in every applicable field, including Description with the complete ordered implementation steps for that worktree. Follow its model defaults and pass the displayed model explicitly at dispatch. Keep ownership boundaries and the verified Git base in the worker context. Sessions started in an existing sub-worktree use the existing worktree context directly and do not receive a launch-confirmation box.
 
 Follow that template's execution-record instructions to create or update
 `launch-execution.md` in the main worktree before launch. Include every
@@ -83,15 +83,16 @@ sub-worktree's full box, record its approval, and maintain its progress as worke
 and sub-session updates arrive. Link the file when presenting the launch boxes
 and execution summaries so your human partner can inspect the current record.
 
-Before executing any sub-worktree, including the first and every later
-dependency-ready sub-worktree, require a just-in-time launch approval. Show its
-current complete execution box to your human partner immediately before
-dispatch and obtain explicit confirmation to proceed with that exact named
-launch. Verify that the approved box matches the worker prompt. Do not reuse an
-earlier planning approval, even when the box is unchanged. If the template
-cannot be loaded, resolve its location before preparing or dispatching launches.
-If a box is missing or its scope has changed, show the complete box and obtain
-approval before proceeding.
+Before creating any new sub-worktree, require a just-in-time launch approval.
+Show its current complete execution box to your human partner immediately
+before creation and obtain explicit confirmation to proceed with that exact
+named sub-worktree. Verify that the approved box matches the worker prompt. Do
+not reuse an earlier planning approval, even when the box is unchanged. If the
+template cannot be loaded, resolve its location before preparing or creating a
+new sub-worktree. Record sessions started in an existing sub-worktree directly
+against that worktree's execution record and dispatch them without a launch
+confirmation box or launch approval. If the session needs a different
+sub-worktree, create that new sub-worktree through the approval flow.
 
 ### Coordinator Self-review of Worker Confirmations
 
@@ -114,12 +115,13 @@ requirements and is ready for your human partner's launch approval. The
 coordinator still owns the final launch box and does not dispatch until its
 unchanged table receives explicit approval.
 
-Include `dgafka:create-pull-request` in the Discipline / Skill row and ready-for-review publication in the PR row. Also present a separate table for the named `observe-<topic>` Codex sub-session in that implementation worktree, using `dgafka:create-pull-request` in observation-only mode `ci`, with findings routed to the original implementation worker. Approval covers publication after verification and retention of that worker terminal for CI fixes. Preserve an explicit user choice of manual/full observation.
+Include `dgafka:create-pull-request` in the Discipline / Skill row and ready-for-review publication in the PR row. Name the `observe-<topic>` Codex sub-session in the implementation worktree's execution context, using `dgafka:create-pull-request` in observation-only mode `ci`, with findings routed to the original implementation worker. Dispatch that existing-worktree observer directly without a confirmation box. The new-sub-worktree approval covers publication after verification and retention of that worker terminal for CI fixes. Preserve an explicit user choice of manual/full observation.
 
-Ask the user to confirm the presented sub-worktree and observer launch. When
-multiple worktrees become ready together, one message may present one current
-table per launch; every launch must be individually identifiable and explicitly
-approved to proceed. Dispatch only after that just-in-time approval.
+Ask the user to confirm each presented new sub-worktree launch. When multiple
+worktrees become ready together, one message may present one current table per
+new sub-worktree; every launch must be individually identifiable and explicitly
+approved to proceed. Dispatch sessions in existing sub-worktrees directly and
+report their names, purpose, and findings route in the execution record.
 
 Create each implementation as a separate Orca child sub-worktree from the main coordinator worktree. Independent tasks use sibling sub-worktrees based on the agreed trunk. A dependent task uses its prerequisite's stable branch as its Git base. When a task depends on multiple sibling branches, ask how to linearize or integrate them before choosing a base.
 
@@ -130,7 +132,7 @@ Every implementation task prompt must include these instructions:
 - Follow RED -> GREEN -> REFACTOR for each increment: write one focused test, watch it fail for the expected reason, write the minimum implementation, watch it pass, then refactor while green.
 - **REQUIRED SUB-SKILL:** Use dgafka:create-pull-request after verification; create or reuse the ready-for-review PR against the approved target branch, report its URL to the main coordinator, and trigger the approved CI observer in the same worktree.
 - Do not report completion until the final commit is pushed, the PR exists and is ready for review, and the PR head SHA matches that final commit. Report publication failures as blockers; a no-change unit reports that no PR is applicable.
-- Include the publication authorization, concrete observer approval, and original worker/Dispatch route in the prompt.
+- Include the publication authorization, observer mode and findings route, and original worker/Dispatch route in the prompt.
 - Include the deliverable outcome, execution and delivery prerequisites, and any environment-variable feature flag contract from the delivery proposal.
 - Copy the approved execution box's Description into the prompt as ordered implementation steps, preserving every assigned step and its scope.
 - Report progress against those numbered steps, plus blockers and verification evidence, through Orca so the coordinator can maintain `launch-execution.md`.
@@ -147,10 +149,6 @@ Workers ask the coordinator through Orca's blocking `ask/reply` flow. Answer whe
 Create `review-<topic>` only when the user explicitly requests a separate review
 of the matching completed `implement-<topic>` sub-worktree. Track the review
 sub-session as an Orca task depending on that implementation task.
-
-Before launching the review sub-session, present the same confirmation table,
-using Sub-session as the name row and identifying the existing worktree, review
-commit, review focus, and external-comment permission. Obtain confirmation.
 
 Run the review sub-session in a separate Codex terminal within the implementation
 sub-worktree against a stable commit. Pause
@@ -198,11 +196,11 @@ Report PR publication and CI results separately, including pending CI or observa
 
 ## Other Sub-sessions
 
-Use sub-sessions in an existing worktree for CI/PR observation and explicitly requested independent verification. Show the shared confirmation table and obtain approval before launching each. Observation follows `create-pull-request`; verification receives explicit task-relevant checks and returns evidence to the implementation worker.
+Use sub-sessions in an existing worktree for CI/PR observation and explicitly requested independent verification. Dispatch each directly in that existing worktree without a confirmation box or launch approval. Observation follows `create-pull-request`; verification receives explicit task-relevant checks and returns evidence to the implementation worker.
 
 Keep routine tests and follow-up fixes with the original implementation worker. Sub-sessions share files and services: coordinate tests that write generated files or use shared services, and serialize conflicting activity. A new independent implementation still requires a sub-worktree.
 
-Reuse the existing approval when continuing a sub-session within its approved scope, such as re-review after fixes or another observation pass. A new terminal or changed scope requires a new table and confirmation.
+Reuse the existing worktree context when continuing a sub-session within its scope, such as re-review after fixes or another observation pass. A changed scope is reported to the user when it changes the approved objective or acceptance criteria; it still does not require a launch-confirmation box unless a new sub-worktree is needed.
 
 ## Coordination Discipline
 

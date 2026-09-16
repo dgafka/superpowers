@@ -48,12 +48,14 @@ class SkillInstructions(unittest.TestCase):
         self.assertRegex(coordinator, r'resubmit a\s+revised confirmation')
         self.assertIn('Self-review result', record)
 
-    def test_coordinator_requires_dispatch_time_approval_for_every_launch(self):
+    def test_coordinator_requires_approval_only_for_new_sub_worktrees(self):
         coordinator = (SKILLS / 'orchestration-coordinator' / 'SKILL.md').read_text()
         record = (SKILLS / 'orchestration-coordinator' / 'launch-confirmation.md').read_text()
 
         self.assertIn('just-in-time launch approval', coordinator)
-        self.assertRegex(coordinator, r'Do not reuse an\s+earlier planning approval')
+        self.assertIn('Before creating any new sub-worktree', coordinator)
+        self.assertIn('without a confirmation box or launch approval', coordinator)
+        self.assertIn('without this table or launch\napproval', record)
         self.assertIn('dispatch-time approval', record)
 
 

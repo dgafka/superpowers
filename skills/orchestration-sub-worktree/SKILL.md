@@ -68,9 +68,9 @@ also checks the integrated enabled path after the required units are delivered.
 Include the variable, enabling value, default, remaining prerequisites, and
 activation readiness in the PR and completion report.
 
-Invoke `dgafka:create-pull-request` in its orchestrated implementation mode. Pass the approved repository, PR base (the prerequisite branch for dependent work), publication authorization, named CI observer launch, and original worker/Dispatch route. Create or reuse a ready-for-review PR, then send its URL to the main coordinator through Orca immediately.
+Invoke `dgafka:create-pull-request` in its orchestrated implementation mode. Pass the approved repository, PR base (the prerequisite branch for dependent work), publication authorization, observer name/mode/worktree/findings route, and original worker/Dispatch route. Create or reuse a ready-for-review PR, then send its URL to the main coordinator through Orca immediately.
 
-For automatic observation, trigger the approved `observe-<topic>` sub-session in this implementation worktree using the observation entry point in `dgafka:create-pull-request`. Use mode `ci` by default, or `full` when explicitly approved. An explicit manual override skips observation and its launch receipt. Ask the coordinator to dispatch it in the same Run when worker-side dispatch is unavailable; wait for the launch receipt before reporting successful completion. Reuse an existing observer. Report missing launch approval or a failed automatic launch as a blocker.
+For automatic observation, trigger the `observe-<topic>` sub-session in this implementation worktree using the observation entry point in `dgafka:create-pull-request`. Use mode `ci` by default, or `full` when explicitly selected. An explicit manual override skips observation and its launch receipt. Ask the coordinator to dispatch it in the same Run when worker-side dispatch is unavailable; wait for the launch receipt before reporting successful completion. Reuse an existing observer. Report a failed automatic launch as a blocker.
 
 Report completion through the active Orca Dispatch with:
 
