@@ -1,0 +1,30 @@
+skills/create-pull-request/SKILL.md
+  s_3304047f6d6883::t_ed63f396524d24 255
+skills/orchestration-sub-worktree/SKILL.md
+  s_3304047f6d6883::t_ed63f396524d24 56,58,60-63,84-86
+  s_3304047f6d6883::t_b61dff239de07f 57
+  s_3304047f6d6883::t_73c3bedb05cd35 59
+  s_3304047f6d6883::t_12fe7e74f99ed3 87
+tests/manual-only-skills/test-manual-only-skills.sh
+  s_3304047f6d6883::t_76d29d81eaccc5 182-200
+skills/orchestration-coordinator/SKILL.md
+  s_3304047f6d6883::t_b61dff239de07f 182
+  s_3304047f6d6883::t_ed63f396524d24 132,183-187
+  s_3304047f6d6883::t_19d22418d199b6 188
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "2eb9986673d1dbd08ce699df4b6e6b8438c7281c",
+  "prompts": {},
+  "sessions": {
+    "s_3304047f6d6883": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0aa37-9390-7651-ba56-097ab70e7faf",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Dariusz Gafka <dariusz.gafka@lendable.co.uk>"
+    }
+  }
+}
