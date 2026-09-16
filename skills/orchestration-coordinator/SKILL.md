@@ -129,6 +129,7 @@ Every implementation task prompt must include these instructions:
 - **REQUIRED SUB-SKILL:** Use dgafka:test-driven-development for every behavior change.
 - Follow RED -> GREEN -> REFACTOR for each increment: write one focused test, watch it fail for the expected reason, write the minimum implementation, watch it pass, then refactor while green.
 - **REQUIRED SUB-SKILL:** Use dgafka:create-pull-request after verification; create or reuse the ready-for-review PR against the approved target branch, report its URL to the main coordinator, and trigger the approved CI observer in the same worktree.
+- Do not report completion until the final commit is pushed, the PR exists and is ready for review, and the PR head SHA matches that final commit. Report publication failures as blockers; a no-change unit reports that no PR is applicable.
 - Include the publication authorization, concrete observer approval, and original worker/Dispatch route in the prompt.
 - Include the deliverable outcome, execution and delivery prerequisites, and any environment-variable feature flag contract from the delivery proposal.
 - Copy the approved execution box's Description into the prompt as ordered implementation steps, preserving every assigned step and its scope.
@@ -177,6 +178,13 @@ unrelated dependency-ready tasks moving while review or fixes are in progress.
 Orca dependencies are the execution source of truth. GitHub stacks express review and merge order.
 
 Implementation workers own PR creation through `dgafka:create-pull-request`. The coordinator receives each PR URL and observer launch receipt, and reuses those ready-for-review PRs.
+
+No implementation worker is complete until its branch is pushed and its ready-for-review PR exists. The worker must verify that the remote branch and
+PR head both contain the final commit, and that the PR targets the approved
+base. Treat a missing PR, an unpublished commit, a mismatched PR head, or a
+publication failure as a blocker; do not release dependencies or accept
+`worker_done` for that unit. A unit with no approved file changes reports that
+there is no deliverable PR instead.
 
 For each completed dependency chain:
 

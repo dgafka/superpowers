@@ -252,6 +252,7 @@ and re-show the preview.
 - Push all verified commits: `git push -u origin <branch>`, including updates to a previously pushed branch.
 - Check for an existing open PR for this exact repository and head branch; reuse it when its target and ready-for-review state match the approved context. Report mismatches through the coordinator (or to the user for direct invocation) before proceeding. Otherwise create the PR with the explicit repository and base: `gh pr create --repo <owner/repo> --base <base> --head <branch> --title "..." --body-file <prepared-body-file>`. Create it ready-for-review.
 - Apply project-specific decoration when the detected conventions or template require it.
+- Verify publication before returning success: confirm the remote branch contains the final commit, the PR targets the approved base, the PR is ready for review, and the PR head SHA matches the final commit SHA. If push or PR creation fails, report a publication blocker and do not report completion.
 - Return the PR URL to the user. In orchestrated implementation mode, also send it immediately to the main coordinator through Orca, with the branch and commit SHA.
 
 ### 10. Choose Observation Mode

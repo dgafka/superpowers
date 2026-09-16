@@ -53,6 +53,14 @@ record through the coordinator.
 
 Run only the focused tests and checks relevant to the task's owned behavior and affected surface. Leave broader repository coverage to CI. Confirm that the committed changes and remaining worktree state match the approved scope.
 
+Publication is a hard completion gate for every deliverable that changes files.
+Do not send worker_done until the final commit is pushed and the ready-for-review PR exists. After invoking `dgafka:create-pull-request`, verify
+the remote branch contains the final commit, the PR targets the approved base,
+the PR is ready for review. Verify the PR head SHA matches the final commit SHA.
+If push or PR publication fails, report a publication blocker and keep the
+worker active for recovery. If the approved work produces no changes, report
+that there is no deliverable PR and stop without creating one.
+
 For flagged behavior, follow the assigned contract from `orchestration-coordinator`.
 Verify existing behavior with the environment variable unset and disabled, and
 test the enabled path for the unit's scope. The unit assigned readiness verification
@@ -72,6 +80,10 @@ Report completion through the active Orca Dispatch with:
 - Verification commands and results
 - Files modified
 - Deviations, blockers, or follow-up dependencies
+
+Before reporting completion, include the final commit SHA, pushed remote branch,
+PR head SHA, approved PR base, and ready-for-review state. These values must
+describe the same final commit.
 
 Send `worker_done` exactly once using the IDs injected by Orca, then end the dispatched turn. The orchestrator owns dependency release, stacked-PR linkage, integration choices, and worker cleanup. It retains the original worker terminal for CI fixes during the approved observation cycle; after settlement, a fix arrives as a fresh Dispatch in that exact terminal. Use the lifecycle IDs from each fresh Dispatch.
 
