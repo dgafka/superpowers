@@ -1,0 +1,38 @@
+tests/skill-instructions/test-instructions.py
+  s_d0958a730a596d::t_21e0604d3b015e 51,56-58
+skills/review-changes/SKILL.md
+  s_d0958a730a596d::t_37891449b79e5a 51-53
+skills/create-pull-request/SKILL.md
+  s_d0958a730a596d::t_37891449b79e5a 271
+  s_d0958a730a596d::t_0f19b3759ac8c3 20
+skills/orchestration-sub-worktree/SKILL.md
+  s_d0958a730a596d::t_0f19b3759ac8c3 71
+  s_d0958a730a596d::t_cfc481a5fc2eef 73
+CLAUDE.md
+  s_d0958a730a596d::t_21e0604d3b015e 11
+skills/orchestration-coordinator/launch-confirmation.md
+  s_d0958a730a596d::t_0f19b3759ac8c3 97-102
+  s_d0958a730a596d::t_db6838ae6e5930 3-7,16-18
+  s_d0958a730a596d::t_cfc481a5fc2eef 103-104
+  s_d0958a730a596d::t_c0c54637579027 78,80,82-84,86-88,90-93
+skills/orchestration-coordinator/SKILL.md
+  s_d0958a730a596d::t_0e7726c28dbcf8 78,86-95,120-124,199,203
+  s_d0958a730a596d::t_37891449b79e5a 118
+  s_d0958a730a596d::t_cfc481a5fc2eef 135
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "d97d83ef40edd295bee76bb0817ed5992ada0b9a",
+  "prompts": {},
+  "sessions": {
+    "s_d0958a730a596d": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0aa4f-7c78-7cd0-b060-4d3329c281fb",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Dariusz Gafka <dariusz.gafka@lendable.co.uk>"
+    }
+  }
+}
