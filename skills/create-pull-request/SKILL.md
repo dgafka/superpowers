@@ -194,24 +194,26 @@ example is warranted.
   or an explanation of applicability. Inside the template's
   primary prose section (whatever it calls the why — "Motivation",
   "Description", "Summary"), use the same ordered shape as the default
-  structure below: `### Why`, then the visual (`### Resulting flow` or
-  `### Before / after`), then `### Example` if
-  Step 5 selected one. Omit a subheading when it is genuinely empty.
+  structure below: `### Why`, with the selected alert directly inside that
+  section when Step 5 identified a must-not-miss fact, then the visual
+  (`### Resulting flow` or `### Before / after`), then `### Example` if Step 5
+  selected one. Omit a subheading when it is genuinely empty.
   Heading *levels* differ by one between the two paths — here everything
   is `###` beneath the template's own `##`; in the no-template structure
   below, Why is itself `##`. The **order and the names** are identical
-  either way, which is what a daily reader navigates by. An alert, if Step
-  5 selected one, leads that primary prose section.
+  either way, which is what a daily reader navigates by.
 - **If no template was found** — use this default structure:
 
   ```
   ## Why
 
-  <one GitHub alert, only when a single fact needs special attention —
-  omit otherwise>
+  > [!IMPORTANT]
+  > **<the core constraint the reviewer must not miss>**
+  > <the concrete consequence or behavior it protects>
 
   <opening sentence states the outcome and stands alone, then 2-4
-  sentences or bullets of problem and context from Step 4>
+  sentences or bullets of problem and context from Step 4; omit the alert
+  when no single fact needs special attention>
 
   ### Resulting flow          <- heading when the visual is a diagram
   ### Before / after          <- heading when the visual is a table
