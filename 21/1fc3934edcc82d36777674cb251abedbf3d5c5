@@ -1,0 +1,27 @@
+skills/writing-skills/SKILL.md
+  s_6786ad73d4d360::t_917e5e89fb8bdf 44-63,221-224
+  s_6786ad73d4d360::t_db34acdc38a8f1 199
+skills/reader-friendly-writing/SKILL.md
+  s_6786ad73d4d360::t_917e5e89fb8bdf 31-48,77-79,84-86
+skills/writing-skills/anthropic-best-practices.md
+  s_6786ad73d4d360::t_917e5e89fb8bdf 17-18
+  s_6786ad73d4d360::t_f2221241251ac0 11,157,242,254,258,924,1016,1020,1056,1100,1104
+skills/brainstorming/scripts/frame-template.html
+  s_6786ad73d4d360::t_d0a362fe019d68 199
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "211fc3934edcc82d36777674cb251abedbf3d5c5",
+  "prompts": {},
+  "sessions": {
+    "s_6786ad73d4d360": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0b4df-ddb2-7341-bfcc-405d4416c6d8",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Dariusz Gafka <dariusz.gafka@lendable.co.uk>"
+    }
+  }
+}
