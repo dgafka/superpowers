@@ -28,6 +28,24 @@ Use scannability to support that understanding. Reviewers read many changes a da
 and scan to *find* the material that matters — then they read that material
 carefully. Optimize so the important part is found fast **and** reads clearly.
 
+## Instruction wording — state the desired action
+
+Write guidance as the behavior you want the reader or agent to perform. Use
+direct positive instructions that identify the action, owner, condition, and
+completion signal. Positive instructions reduce ambiguity during scanning and
+make the expected result easier to apply.
+
+Rewrite prohibition-shaped guidance into the desired action:
+
+| Prohibition-shaped wording | Direct positive wording |
+|---|---|
+| “Do not bury the outcome.” | “Lead with the outcome in the first sentence.” |
+| “Never use vague headings.” | “Use literal headings that identify their content.” |
+| “Avoid filler.” | “Keep every sentence that explains why the change matters or directs review attention.” |
+
+Use a prohibition only when the prohibited behavior is itself the subject of
+the explanation. In normal guidance, describe the target behavior directly.
+
 ## Order — outcome first, riskiest first
 
 - **Lead with BLUF (bottom line up front).** The first sentence states the
@@ -56,16 +74,16 @@ carefully. Optimize so the important part is found fast **and** reads clearly.
   minimal usage example showing how a reader uses the public interface.
 - **State objective facts.** Drop "cleanly refactored," "nicely
   handles," and similar self-praise. State plain facts.
-- **Link to supporting background.** Reference the ticket, design doc,
-  or benchmark rather than pasting it. Keep enough inline that the write-up
-  stands on its own if a link rots.
+- **Reference supporting background.** Name the ticket, design doc, or
+  benchmark and summarize the relevant context inline so the write-up stands
+  on its own.
 - **Reference sibling changes as links.** `#1234` and
   `owner/repo#1234` auto-expand to the title and current state, so a
   deferred-work list stays accurate as those changes land. A paragraph
   describing three follow-ups becomes three lines.
-- **Link to relevant code.** A commit permalink with a line range
-  (`.../blob/<sha>/path/to/file#L10-L24`) renders as an embedded snippet, stays
-  anchored to a commit, and costs no body length.
+- **Point to relevant code.** Give the repository path and line or symbol that
+  starts the review, anchored to the reviewed commit when the platform supports
+  that reference format.
 
 ## Scannability — shape it for a skimmer, then a reader
 
@@ -203,39 +221,3 @@ and fix every failure before the reader sees the draft.
 - Inconsistent structure across write-ups, forcing the reader to re-learn the
   shape every time.
 - Two or more highlighting devices competing for the same attention.
-
-## Sources
-
-- Microsoft — Modern Code Review (Bacchelli & Bird, ICSE 2013), on
-  understanding as the core review challenge:
-  https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/ICSE202013-codereview.pdf
-- Google eng-practices — CL descriptions:
-  https://google.github.io/eng-practices/review/developer/cl-descriptions.html
-- Google eng-practices — What to look for in a review:
-  https://google.github.io/eng-practices/review/reviewer/looking-for.html
-- BLUF (bottom line up front):
-  https://en.wikipedia.org/wiki/BLUF_(communication)
-- Nielsen Norman Group — How Users Read on the Web:
-  https://www.nngroup.com/articles/how-users-read-on-the-web/
-- Nielsen Norman Group — First 2 Words: A Signal for Scanning:
-  https://www.nngroup.com/articles/first-2-words-a-signal-for-scanning/
-- Nielsen Norman Group — F-Shaped Pattern of Reading:
-  https://www.nngroup.com/articles/f-shaped-pattern-reading-web-content-discovered/
-- Readability Guidelines — sentence length:
-  http://readabilityguidelines.wikidot.com/sentence-length
-- Laws of UX — Miller's Law (working-memory chunking):
-  https://lawsofux.com/millers-law/
-- Primer — Progressive disclosure:
-  https://primer.github.io/design/ui-patterns/progressive-disclosure/
-- Mermaid Chart — flowchart complexity / sizing:
-  https://docs.mermaidchart.com/blog/posts/flow-charts-are-on2-complex-so-dont-go-over-100-connections
-- GitHub Docs — Helping others review your changes:
-  https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/getting-started/helping-others-review-your-changes
-- Pragmatic Engineer — Pull request / diff best practices:
-  https://blog.pragmaticengineer.com/pull-request-or-diff-best-practices/
-- GitHub Docs — Basic writing and formatting syntax (alerts):
-  https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#alerts
-- GitHub Docs — Creating a permanent link to a code snippet:
-  https://docs.github.com/en/repositories/working-with-files/using-files/getting-permanent-links-to-files
-- GitHub Docs — Autolinked references and URLs:
-  https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/autolinked-references-and-urls

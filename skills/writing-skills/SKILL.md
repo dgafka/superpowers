@@ -41,8 +41,26 @@ Example:
 
 Express approval conditions positively: “Publish after the approved checks
 pass.” Express ownership positively: “Return findings to the implementation
-worker for fixes.” Remove a negative sentence when it adds no actionable rule
-beyond the surrounding text.
+worker for fixes.” State the target behavior directly so each sentence gives
+the agent an action to perform.
+
+### Use positive instructions
+
+Write the behavior you want the agent to produce. Give the responsible actor,
+condition, action, and completion signal. Positive instructions make the target
+behavior easier to follow than prohibition-shaped wording such as “Do not,”
+“Never,” or “Avoid.”
+
+Rewrite prohibition-shaped guidance into a direct action:
+
+| Prohibition-shaped wording | Direct positive wording |
+|---|---|
+| “Do not skip validation.” | “Run the validator and report its result.” |
+| “Never publish before approval.” | “Publish after the user approves the design.” |
+| “Avoid external references.” | “Keep the required guidance in the skill’s local instructions.” |
+
+Use a prohibition when explaining a forbidden behavior as the topic itself;
+use direct positive wording for operational guidance.
 
 Keep one authoritative instruction for each rule. Put its exceptions beside it,
 and make checklists and examples agree with that rule. When composing skills,
@@ -91,7 +109,6 @@ description: Review code changes for actionable defects. Use when reviewing a pu
 ---
 ```
 
-This description policy follows the [Agent Skills specification](https://agentskills.io/specification).
 Use recognizable domain terms and specific triggers so the agent can select the
 skill. Include a short routing condition when a neighboring skill owns a similar
 request.
@@ -179,7 +196,7 @@ Keep predicted outcomes separate from observed results.
 
 - Conflicting actions for the same condition: choose one rule and update its callers.
 - Multiple names for one concept: use the shared term throughout.
-- A prohibition without a useful action: remove it.
+- Pair every prohibition with a useful action; otherwise state the useful action directly.
 - A changed approval condition: verify it against the user's approved scope.
 - A claimed model outcome without an observed run: label it as an expectation.
 
@@ -201,10 +218,7 @@ The user owns integration.
 
 ## Authoring References
 
-- [Agent Skills specification](https://agentskills.io/specification): metadata and package format.
-- [OpenAI skill documentation](https://learn.chatgpt.com/docs/build-skills): discovery and progressive disclosure.
-- [OpenAI prompting guidance](https://developers.openai.com/api/docs/guides/prompt-engineering): instruction structure and evaluation.
-- [Anthropic authoring guidance](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices): terminology, examples, conditional workflows, and evaluation.
-
-Read vendor guidance for the authoring question at hand. The local conventions
-above define this repository's terminology, placement, and publication workflow.
+Use the local conventions in this skill and the repository's validation scripts
+for metadata, terminology, placement, and publication workflow. Keep guidance
+needed for authoring skills in these local instructions so execution remains
+self-contained and predictable.
