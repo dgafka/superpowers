@@ -182,8 +182,6 @@ and fix every failure before the reader sees the draft.
 - [ ] If a flow diagram is present, is the prior flow shown beside it — or was
       there genuinely no prior flow?
 - [ ] Does every sentence aid the *why* or direct attention? Cut the rest.
-- [ ] Is verification evidence in the template's test-plan section, or in a
-      concise verification paragraph when the template provides no such section?
 - [ ] Within the highlighting budget — ≤1 alert, ≤1 visual, ≤3 bolded terms?
 - [ ] Is long detail behind `<details>` rather than inline?
 

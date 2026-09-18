@@ -195,7 +195,7 @@ example is warranted.
   primary prose section (whatever it calls the why — "Motivation",
   "Description", "Summary"), use the same ordered shape as the default
   structure below: `### Why`, then the visual (`### Resulting flow` or
-  `### Before / after`), then `### Out of scope`, then `### Example` if
+  `### Before / after`), then `### Example` if
   Step 5 selected one. Omit a subheading when it is genuinely empty.
   Heading *levels* differ by one between the two paths — here everything
   is `###` beneath the template's own `##`; in the no-template structure
@@ -218,9 +218,6 @@ example is warranted.
   <one visual, per Step 5 and the shared rule set; omit only when
   justified>
 
-  ### Out of scope
-  <deferred work as links — `#1234` per sibling change>
-
   ### Example
   <minimal usage example, only if selected in Step 5>
 
@@ -229,8 +226,6 @@ example is warranted.
 
 State the behavior change in Why's opening sentence. Use the visual for
 flow details and preserve any additional sections required by the repository template.
-Include verification evidence in its test-plan section, or add a concise
-verification paragraph when using the default structure.
 
 ### 7. Trim
 
