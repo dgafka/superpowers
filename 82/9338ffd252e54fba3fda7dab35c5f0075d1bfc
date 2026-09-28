@@ -1,0 +1,41 @@
+skills/recognize-and-learn/SKILL.md
+  s_b29b3ddbf58960::t_252476f42fbdbc 87-91
+  s_b29b3ddbf58960::t_1519de8866e062 3,12,93-96,160-161
+skills/orchestration-coordinator/launch-confirmation.md
+  s_b29b3ddbf58960::t_614d9f95572a8f 72
+CLAUDE.md
+  s_b29b3ddbf58960::t_5cdb54a772bf36 9,19,32,34
+  s_b29b3ddbf58960::t_1519de8866e062 17
+skills/brainstorming/SKILL.md
+  s_b29b3ddbf58960::t_1519de8866e062 24,73
+  s_b29b3ddbf58960::t_0ee9983524e265 66-67,90
+skills/orchestration-coordinator/agents/openai.yaml
+  s_b29b3ddbf58960::t_0ee9983524e265 1-2
+skills/improve-workflow/SKILL.md
+  s_b29b3ddbf58960::t_252476f42fbdbc 25,127,129
+skills/orchestration-coordinator/SKILL.md
+  s_b29b3ddbf58960::t_252476f42fbdbc 3
+  s_b29b3ddbf58960::t_0ee9983524e265 5
+README.md
+  s_b29b3ddbf58960::t_5cdb54a772bf36 7,11,123,144
+  s_b29b3ddbf58960::t_1519de8866e062 146
+tests/manual-only-skills/test-manual-only-skills.sh
+  s_b29b3ddbf58960::t_171895322831e4 81,125-126,129-130,133,137-139
+  s_b29b3ddbf58960::t_d3195d6fb29e4d 132,134-136
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "829338ffd252e54fba3fda7dab35c5f0075d1bfc",
+  "prompts": {},
+  "sessions": {
+    "s_b29b3ddbf58960": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0d78f-20e4-7ea2-8edc-03ddfb8f7433",
+        "model": "gpt-6-sol"
+      },
+      "human_author": "Dariusz Gafka <dariusz.gafka@lendable.co.uk>"
+    }
+  }
+}
