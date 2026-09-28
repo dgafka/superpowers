@@ -1,6 +1,6 @@
 ---
 name: recognize-and-learn
-description: Use after an implementation cycle finishes to recognize friction — multi-attempt steps, unclear instructions, user corrections, things that weren't obvious — and learn from them by proposing process/skill improvements on a separate branch + PR
+description: Use after an implementation cycle finishes to recognize friction — multi-attempt steps, unclear instructions, user corrections, things that weren't obvious — and propose process/skill improvements for the user to implement
 ---
 
 # Recognize and Learn
@@ -9,7 +9,7 @@ description: Use after an implementation cycle finishes to recognize friction �
 
 A post-implementation retrospective skill. Identify what made the implementation process harder and propose concrete improvements.
 
-Run this immediately after an implementation cycle so the friction is still fresh. Output is a proposed set of changes to skills / process docs, landed on a separate branch with its own PR.
+Run this immediately after an implementation cycle so the friction is still fresh. Output is a proposed set of changes to skills / process docs. The user chooses how to implement approved changes.
 
 **Announce at start:** "I'm using the recognize-and-learn skill — let's capture what slowed us down and propose process improvements."
 
@@ -84,14 +84,16 @@ The proposed changes typically land in the superpowers fork — not in the proje
 
 ### Step 5: Route Approved Changes to Implementation
 
-Invoke `orchestration-coordinator` with the approved findings, skills-repository path,
-proposed edits, and verification criteria. It owns launch approval and assigns
-the changes to a dedicated implementation sub-worktree. Keep the retrospective
-changes in a separate PR from the implementation that prompted them.
+Present the approved findings, skills-repository path, proposed edits, and
+verification criteria to the user. The user chooses the implementation workflow.
+When the user explicitly invokes `orchestration-coordinator`, provide this context
+for its execution planning. Keep the retrospective changes in a separate PR from
+the implementation that prompted them.
 
-The implementation worker applies the approved edits, verifies them, and uses
-`dgafka:create-pull-request` to publish against the approved fork and base.
-Pass the template guidance below as context. If publication is unavailable,
+When the user chooses an implementation worker, pass the approved edits,
+verification criteria, and template guidance below as context. The worker
+applies the edits, verifies them, and uses `dgafka:create-pull-request` to
+publish against the approved fork and base. If publication is unavailable,
 report the verified branch, commits, and blocker. The user owns integration.
 
 ### Using the Project PR Template
@@ -155,4 +157,5 @@ Then stop. Integration of the retrospective changes is the user's call.
 **Operates on:**
 - The superpowers skills repo (separate from the project where the implementation happened)
 
-**Completion:** Return the skills PR and its verification evidence to the user.
+**Completion:** Return the approved proposal to the user. When implementation is
+also authorized, return the skills PR and its verification evidence.

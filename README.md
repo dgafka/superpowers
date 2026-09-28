@@ -4,11 +4,11 @@ Superpowers is a software development methodology for coding agents, built from 
 
 ## How it works
 
-Start with `brainstorming` to refine what you want to build, then invoke the appropriate orchestration workflow.
+Start with `brainstorming` to refine what you want to build. Choose how to implement the approved design.
 
 It develops the design in conversation and presents it in sections short enough to read and validate.
 
-After you've signed off on the design, the orchestrator proposes named implementation sub-worktrees, identifies which can run in parallel, and presents a confirmation table before launching each with RED-GREEN-REFACTOR discipline. It emphasizes true test-first development, YAGNI (You Aren't Gonna Need It), and DRY.
+If you invoke `orchestration-coordinator` after signing off on the design, it proposes named implementation sub-worktrees, identifies which can run in parallel, and presents a confirmation table before launching each with RED-GREEN-REFACTOR discipline. It emphasizes true test-first development, YAGNI (You Aren't Gonna Need It), and DRY.
 
 The explicit dependencies and worker boundaries let agents work autonomously without drifting from the design you approved.
 
@@ -120,7 +120,7 @@ gemini extensions update dgafka
 
 1. **brainstorming** - Activates before writing code. Refines rough ideas through questions, explores alternatives, and presents a conversational design for validation.
 
-2. **orchestration-coordinator** - Ends implementation planning with a proposal for deliverable sub-worktrees, dependencies, execution order, and parallel work. Creates `launch-execution.md` in the main worktree with every launch box and updates progress from worker reports. Requires environment-variable feature flags for logic awaiting other units, plus a launch confirmation table and isolated TDD for each implementation.
+2. **orchestration-coordinator** - When invoked by the user, plans deliverable sub-worktrees, dependencies, execution order, and parallel work. Creates `launch-execution.md` in the main worktree with every launch box and updates progress from worker reports. Requires environment-variable feature flags for logic awaiting other units, plus a launch confirmation table and isolated TDD for each implementation.
 
 3. **orchestration-sub-worktree** - Implements approved work directly in its assigned sub-worktree with TDD and final verification.
 
@@ -141,9 +141,9 @@ Invoke the workflow that matches the work. Implementation workers receive their 
 
 **Collaboration** 
 - **brainstorming** - Socratic design refinement
-- **orchestration-coordinator** - Coordinates implementation sub-worktrees, explicitly requested review sub-sessions, and stacked PRs through Orca; directly invokable after brainstorming approves the solution
+- **orchestration-coordinator** - User-invoked coordination of implementation sub-worktrees, explicitly requested review sub-sessions, and stacked PRs through Orca
 - **orchestration-sub-worktree** - Implements approved work directly in its assigned sub-worktree
-- **recognize-and-learn** - Post-implementation retrospective; proposes process/skill changes on a branch + PR
+- **recognize-and-learn** - Post-implementation retrospective; proposes process/skill changes for the user's implementation choice
 
 **Delivery** (user-triggered only — the agent never starts these on its own)
 - **review-changes** - Review local changes or a PR directly, or serve an explicitly requested `review-<topic>` sub-session

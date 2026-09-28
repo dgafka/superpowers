@@ -1,7 +1,8 @@
 ---
 name: orchestration-coordinator
-description: Use when the user explicitly requests Orca-coordinated implementation across one or more Codex implementation sub-worktrees, or recognize-and-learn hands over an approved implementation direction
+description: Coordinate Orca implementation across one or more Codex sub-worktrees when the user invokes this skill explicitly
 argument-hint: "[objective, sub-worktree dependencies, and optional run-wide guidance]"
+disable-model-invocation: true
 ---
 
 # Orchestration Coordinator

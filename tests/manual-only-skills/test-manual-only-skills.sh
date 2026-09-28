@@ -78,7 +78,7 @@ assert_no_hits() {
 }
 
 # Workflow skills that must be manual-only on both platforms.
-WORKFLOW_SKILLS=(improve-workflow cleanup-worktree)
+WORKFLOW_SKILLS=(improve-workflow cleanup-worktree orchestration-coordinator)
 
 echo "== manual-only workflow skills live under skills/"
 if run_test relocated; then
@@ -122,17 +122,21 @@ if run_test shared_rules_invocable; then
         "reader-friendly-writing has no Codex opt-out"
 fi
 
-echo "== orchestration-coordinator stays reusable"
-if run_test orchestration_coordinator_invocable; then
+echo "== brainstorming leaves execution choice to the user"
+if run_test brainstorming_execution_choice; then
     OA="$REPO_ROOT/skills/orchestration-coordinator/SKILL.md"
     assert_file_exists "$OA" "skills/orchestration-coordinator/SKILL.md exists"
-    assert_not_contains "$OA" "disable-model-invocation" \
-        "orchestration-coordinator allows skill-to-skill invocation"
-    assert_file_absent "$REPO_ROOT/skills/orchestration-coordinator/agents/openai.yaml" \
-        "orchestration-coordinator does not opt out of Codex invocation"
+    assert_no_hits 'orchestration-coordinator' "brainstorming does not choose execution workflow" \
+        "$REPO_ROOT/skills/brainstorming/SKILL.md"
     assert_contains "$REPO_ROOT/skills/brainstorming/SKILL.md" \
-        'invoke `orchestration-coordinator`' \
-        "brainstorming hands execution planning to orchestration-coordinator"
+        'the user chooses how to implement the approved design.' \
+        "brainstorming leaves implementation choice to the user"
+    assert_contains "$REPO_ROOT/skills/brainstorming/SKILL.md" \
+        'return the approved design and decisions to that workflow' \
+        "brainstorming returns to an explicit calling workflow"
+    assert_not_contains "$REPO_ROOT/skills/recognize-and-learn/SKILL.md" \
+        'Invoke `orchestration-coordinator`' \
+        "recognize-and-learn does not invoke manual-only coordinator"
 fi
 
 echo "== explicitly requested reviews reuse review-changes through Orca"

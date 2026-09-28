@@ -21,7 +21,7 @@ Track each checklist item in session state and complete them in order:
 4. **Propose 2-3 approaches** — explain trade-offs and lead with a recommendation.
 5. **Present the design** — validate sections incrementally, scaled to complexity.
 6. **Summarize the approved design** — keep the complete implementation context in conversation.
-7. **Hand off deliberately** — when called by `orchestration-coordinator`, return the approved design to that active coordinator for execution planning. In standalone use, tell the user to invoke `orchestration-coordinator` to plan execution of the approved solution.
+7. **Complete the design** — summarize the approved design in conversation. Return it to an active calling workflow, or leave the implementation choice to the user in standalone use.
 
 ## Understanding the Idea
 
@@ -63,15 +63,14 @@ Break work into units with one clear purpose, explicit dependencies, and observa
 Identify units that may proceed concurrently and those whose behavior or branch base depends on earlier work. Keep refactoring within the approved scope.
 
 Identify behavior changes that remain incomplete until other units are delivered.
-Carry these dependencies into the handoff so `orchestration-coordinator` can
-propose deliverable sub-worktrees, execution order, parallel work, and the
-environment-variable feature flag contracts at the end of implementation planning.
+Include these dependencies in the approved design so the user's chosen implementation
+approach has the context it needs.
 
 ## Completion
 
 After the user approves all design sections, provide a compact final design summary in conversation. Include the goal, chosen approach, boundaries, dependency shape, risks, and acceptance criteria.
 
-Keep the approved design in conversation. When called by `orchestration-coordinator`, return to that active workflow with the approved design and decisions. In standalone use, end with a direction to invoke `orchestration-coordinator` to plan execution: deliverable sub-worktrees, dependencies, ordering, and parallel work.
+Keep the approved design in conversation. When another active workflow called this skill, return the approved design and decisions to that workflow. In standalone use, the user chooses how to implement the approved design.
 
 ## Visual Companion
 
@@ -88,4 +87,4 @@ If accepted, read [visual-companion.md](visual-companion.md), resolved from this
 - **YAGNI ruthlessly** — remove unrequested work.
 - **Explore alternatives** — compare the proposed approaches before choosing one.
 - **Incremental validation** — get approval section by section.
-- **Conversation is the design record** — preserve the approved context for orchestration.
+- **Conversation is the design record** — preserve the approved context for the user's next step.

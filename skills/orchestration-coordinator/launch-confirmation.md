@@ -69,7 +69,7 @@ Omit the PR row when it does not apply. For reviews, state explicitly whether
 external comments are authorized, based on the user's explicit permission.
 
 Always show the model beside the agent in launch confirmation and execution
-summary tables. Default to `codex / gpt-5.6-sol` or `claude code / sonnet 5`
+summary tables. Default to `codex / gpt-6-sol` or `claude code / sonnet 5`
 unless the user specifies another model. Apply this to every sub-worktree and
 sub-session, including research, review, observation, and verification.
 Pass the displayed model explicitly when launching. If the runtime cannot resolve the
