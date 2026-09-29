@@ -114,6 +114,9 @@ Apply this motivation discipline when writing the why:
   and public-interface exceptions when an identifier helps the reader.
 - **Place scope counts with supporting evidence.** For example, report
   "7 of 9 places" beside the check that established it.
+- **Report verification evidence with the completion status.** Use test results
+  to check factual claims while drafting. Include them in the PR body only
+  when the repository template explicitly asks for them.
 - **Link to implementation detail** when it helps the reviewer assess a tradeoff.
 - **Front-load every sentence and bullet.** Put the most important word first
   — readers scan line-starts.
@@ -228,6 +231,8 @@ example is warranted.
 
 State the behavior change in Why's opening sentence. Use the visual for
 flow details and preserve any additional sections required by the repository template.
+Keep the Why section focused on motivation and behavior; leave out a standalone
+Validation or Testing section unless the template defines one.
 
 ### 7. Trim
 
