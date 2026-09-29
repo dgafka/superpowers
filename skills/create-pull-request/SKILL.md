@@ -208,7 +208,7 @@ example is warranted.
   ## Why
 
   > [!IMPORTANT]
-  > **<the core constraint the reviewer must not miss>**
+  > **<the core constraint requiring reviewer attention>**
   > <the concrete consequence or behavior it protects>
 
   <opening sentence states the outcome and stands alone, then 2-4
@@ -249,7 +249,7 @@ and re-show the preview.
 - Push all verified commits: `git push -u origin <branch>`, including updates to a previously pushed branch.
 - Check for an existing open PR for this exact repository and head branch; reuse it when its target and ready-for-review state match the approved context. Report mismatches through the coordinator (or to the user for direct invocation) before proceeding. Otherwise create the PR with the explicit repository and base: `gh pr create --repo <owner/repo> --base <base> --head <branch> --title "..." --body-file <prepared-body-file>`. Create it ready-for-review.
 - Apply project-specific decoration when the detected conventions or template require it.
-- Verify publication before returning success: confirm the remote branch contains the final commit, the PR targets the approved base, the PR is ready for review, and the PR head SHA matches the final commit SHA. If push or PR creation fails, report a publication blocker and do not report completion.
+- Verify publication before returning success: confirm the remote branch contains the final commit, the PR targets the approved base, the PR is ready for review, and the PR head SHA matches the final commit SHA. If push or PR creation fails, report the publication blocker, recover publication, and repeat these checks before reporting completion.
 - Return the PR URL to the user. In orchestrated implementation mode, also send it immediately to the main coordinator through Orca, with the branch and commit SHA.
 
 ### 10. Choose Observation Mode
@@ -292,7 +292,7 @@ The observer classifies new information:
 Route actionable evidence through Orca to the implementation worker:
 
 - If the original implementation worker has a live Dispatch, send the finding to that Dispatch. Include the PR URL, checked head SHA, failing check/run URL, relevant log excerpt, and actionable failure summary; record the active fix and route that finding once.
-- If its Dispatch has settled, notify the Run coordinator. The coordinator creates a named follow-up task in the same implementation sub-worktree and reuses the exact worker terminal when available; otherwise it proposes a fresh sub-session in that sub-worktree using the shared confirmation table before launch.
+- If its Dispatch has settled, notify the Run coordinator. The coordinator creates a named follow-up task in the same implementation sub-worktree and reuses the exact worker terminal when available; otherwise it dispatches a replacement session in the same implementation sub-worktree using its approved scope and routing context. Record the replacement in the execution history.
 - Keep only one fix task active for a PR at a time.
 
 The implementation worker owns every correction. For behavioral changes it follows RED -> GREEN -> REFACTOR, reproducing the issue with a focused failing test before editing production code. It runs the focused tests and checks for the correction; CI supplies broader repository coverage. It commits, pushes, and reports the new commit through Orca. In full mode it also responds to the relevant review thread with what changed, or answers a comment that required no code change. The observer then resumes against the updated PR head SHA; assess the correction using results for the updated head.

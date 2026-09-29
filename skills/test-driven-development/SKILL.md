@@ -18,8 +18,12 @@ Write the test first. Watch it fail. Write minimal code to pass.
 **Always:**
 - New features
 - Bug fixes
-- Refactoring
 - Behavior changes
+
+**Behavior-preserving refactoring:** Establish passing coverage for the affected
+behavior and keep it green throughout. Add characterization coverage first when
+needed. When refactoring reveals a defect or requires changed behavior, start a
+RED-GREEN-REFACTOR cycle for that behavior.
 
 **Exceptions (ask your human partner):**
 - Throwaway prototypes
@@ -28,9 +32,9 @@ Write the test first. Watch it fail. Write minimal code to pass.
 
 ## The Iron Law
 
-**Observe the focused test fail for the expected reason before writing production code.**
+**For new or changed behavior, observe the focused test fail for the expected reason before writing production code.**
 
-Write code before the test? Delete it. Start over.
+Implemented new or changed behavior before its failing test? Delete that implementation and start over.
 
 Drive the fresh implementation from the failing test.
 
@@ -172,8 +176,9 @@ The same single-test pattern applies to other runners: `pytest -k`, `jest -t`, `
 Before marking work complete:
 
 - [ ] Every new or changed behavior has test coverage
-- [ ] Watched each test fail before implementing
-- [ ] Each test failed for the expected behavioral reason
+- [ ] Watched each behavior-change test fail before implementing
+- [ ] Each behavior-change test failed for the expected behavioral reason
+- [ ] Behavior-preserving refactoring kept affected coverage green
 - [ ] Wrote minimal code to pass each test
 - [ ] Your new test passes (inner loop)
 - [ ] Focused task-relevant verification run at the end of implementation
@@ -206,6 +211,6 @@ If you must reach for test doubles (rare under Detroit/Chicago School), read [te
 
 ## Final Rule
 
-**Each production change follows an observed failing test for its intended behavior.**
+**Each new or changed behavior follows an observed failing test. Behavior-preserving refactoring starts and stays green.**
 
 Agree exceptions with your human partner before proceeding.

@@ -123,14 +123,18 @@ Use a title identifying the retrospective topic, following the detected reposito
 
 ### Step 6: Report Back
 
-Tell the user:
+For proposal-only completion, report the approved improvements, target skills,
+and verification criteria. Leave the implementation choice to the user.
+
+After authorized implementation, also report:
 
 - Branch name and base branch
 - Commit SHAs created
 - PR URL if one was opened
 - A one-sentence summary of what changed
+- Verification results and any publication blocker
 
-Then stop. Integration of the retrospective changes is the user's call.
+Return the result to your human partner for their integration decision.
 
 ## When to Stop and Ask for Help
 

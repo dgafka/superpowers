@@ -87,34 +87,34 @@ and execution summaries so your human partner can inspect the current record.
 Before creating any new sub-worktree, require a just-in-time launch approval.
 Show its current complete execution box to your human partner immediately
 before creation and obtain explicit confirmation to proceed with that exact
-named sub-worktree. Verify that the approved box matches the worker prompt. Do
-not reuse an earlier planning approval, even when the box is unchanged. If the
+named sub-worktree. Verify that the approved box matches the worker prompt. Obtain this
+launch approval for the current box even when planning approved the same scope. If the
 template cannot be loaded, resolve its location before preparing or creating a
 new sub-worktree. Record sessions started in an existing sub-worktree directly
 against that worktree's execution record and dispatch them without a launch
 confirmation box or launch approval. If the session needs a different
 sub-worktree, create that new sub-worktree through the approval flow.
 
-### Coordinator Self-review of Worker Confirmations
+### Coordinator Self-review of Launch Confirmations
 
-After a sub-worktree worker sends its draft confirmation to the main coordinator,
-perform a requirements-aware self-review before presenting that confirmation to
-your human partner. Compare the draft with the approved business requirements,
-conversational design, run-wide guidance, delivery proposal, dependencies,
-acceptance checks, feature-flag contract, and PR and observation commitments.
+The coordinator prepares the draft launch confirmation and performs a
+requirements-aware self-review before presenting it to your human partner.
+Compare the draft with the approved business requirements, conversational
+design, run-wide guidance, delivery proposal, dependencies, acceptance checks,
+feature-flag contract, and PR and observation commitments.
 
-When the draft does not align, do not request launch approval. Report the
-specific mismatch and return the required corrections to that sub-worktree
-worker through Orca. The worker updates its proposed scope, ordered steps,
-acceptance checks, dependencies, or feature-flag contract and must resubmit a
-revised confirmation. Re-review every revision until it aligns. Record each
-self-review result, correction request, and revised confirmation in
-`launch-execution.md`.
+Resolve each mismatch by revising the draft scope, ordered steps, acceptance
+checks, dependencies, or feature-flag contract. Route changes to approved
+requirements to your human partner for a scope decision. Re-review each revision
+before presenting it for launch approval. Record each self-review result,
+correction, and revised confirmation in `launch-execution.md`.
 
-When the draft aligns, report that it aligns with the approved business
-requirements and is ready for your human partner's launch approval. The
-coordinator still owns the final launch box and does not dispatch until its
-unchanged table receives explicit approval.
+When the draft aligns, report that it is ready for your human partner's launch
+approval. Dispatch after the current complete table receives explicit approval.
+After dispatch, the worker validates the assignment against the approved box
+and reports any mismatch through Orca's blocking `ask/reply` flow. The coordinator
+resolves the mismatch within approved scope or obtains the user's scope decision
+before the worker resumes affected work.
 
 Include `dgafka:create-pull-request` in the Discipline / Skill row and ready-for-review publication in the PR row. Name the `observe-<topic>` Codex sub-session in the implementation worktree's execution context, using `dgafka:create-pull-request` in observation-only mode `ci`, with findings routed to the original implementation worker. Dispatch that existing-worktree observer directly without a confirmation box. The new-sub-worktree approval covers publication after verification and retention of that worker terminal for CI fixes. Preserve an explicit user choice of manual/full observation.
 
@@ -130,9 +130,9 @@ Every implementation task prompt must include these instructions:
 
 - Invoke `orchestration-sub-worktree` for the worker workflow.
 - **REQUIRED SUB-SKILL:** Use dgafka:test-driven-development for every behavior change.
-- Follow RED -> GREEN -> REFACTOR for each increment: write one focused test, watch it fail for the expected reason, write the minimum implementation, watch it pass, then refactor while green.
+- Follow RED -> GREEN -> REFACTOR for each behavior-change increment: write one focused test, watch it fail for the expected reason, write the minimum implementation, watch it pass, then refactor while green. For standalone behavior-preserving refactoring, establish passing coverage and keep it green.
 - **REQUIRED SUB-SKILL:** Use dgafka:create-pull-request after verification; create or reuse the ready-for-review PR against the approved target branch, report its URL to the main coordinator, and trigger the approved CI observer in the same worktree.
-- Do not report completion until the final commit is pushed, the PR exists and is ready for review, and the PR head SHA matches that final commit. Report publication failures as blockers; a no-change unit reports that no PR is applicable.
+- Report completion after verifying the final commit is pushed and matches the ready-for-review PR head. Report publication failures as blockers; a no-change unit reports that no PR is applicable.
 - Include the publication authorization, observer mode and findings route, and original worker/Dispatch route in the prompt.
 - Include the deliverable outcome, execution and delivery prerequisites, and any environment-variable feature flag contract from the delivery proposal.
 - Copy the approved execution box's Description into the prompt as ordered implementation steps, preserving every assigned step and its scope.
@@ -178,12 +178,13 @@ Orca dependencies are the execution source of truth. GitHub stacks express revie
 
 Implementation workers own PR creation through `dgafka:create-pull-request`. The coordinator receives each PR URL and observer launch receipt, and reuses those ready-for-review PRs.
 
-No implementation worker is complete until its branch is pushed and its ready-for-review PR exists. The worker must verify that the remote branch and
-PR head both contain the final commit, and that the PR targets the approved
-base. Treat a missing PR, an unpublished commit, a mismatched PR head, or a
-publication failure as a blocker; do not release dependencies or accept
-`worker_done` for that unit. A unit with no approved file changes reports that
-there is no deliverable PR instead.
+Accept implementation completion after the worker verifies that the final
+commit is pushed, the ready-for-review PR head matches that commit, and the PR
+targets the approved base. Report missing or failed publication as a blocker.
+Accept `worker_done` and release dependencies after these publication checks and
+the required observer launch receipt, honoring an explicit manual override.
+For an approved no-change outcome, accept the worker's report that there is no
+deliverable PR.
 
 For each completed dependency chain:
 
@@ -193,7 +194,7 @@ For each completed dependency chain:
 4. Confirm the approved CI observer is running in each implementation worktree. If the worker cannot dispatch it, launch that exact approved sub-session in the same Run and return its receipt. Preserve explicit manual/full overrides.
 5. Treat independent dependency chains as separate stacks.
 
-Report PR publication and CI results separately, including pending CI or observation blockers. Keep the original worker available for the approved correction cycle: record retention with Orca `worker-retain` after its Dispatch settles, then create a fresh fix task in the same worktree and reuse that exact terminal when findings arrive. Keep only one fix active per PR. A replacement terminal requires a new confirmation table. Release the retained worker after observation stops and outstanding fixes settle.
+Report PR publication and CI results separately, including pending CI or observation blockers. Keep the original worker available for the approved correction cycle: record retention with Orca `worker-retain` after its Dispatch settles, then create a fresh fix task in the same worktree and reuse that exact terminal when findings arrive. Keep only one fix active per PR. Dispatch a replacement terminal in the same sub-worktree using its approved scope and routing context, and record the replacement in the execution history. Release the retained worker after observation stops and outstanding fixes settle.
 
 ## Other Sub-sessions
 

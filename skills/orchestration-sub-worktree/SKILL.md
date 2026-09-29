@@ -37,7 +37,7 @@ If required task context is absent, use Orca's blocking `ask/reply` flow. Keep t
 
 1. Run the supplied environment setup when needed.
 2. Decompose the task into small, testable increments in session state.
-3. For each increment, follow RED -> GREEN -> REFACTOR.
+3. For each behavior-change increment, follow RED -> GREEN -> REFACTOR. For standalone behavior-preserving refactoring, establish passing coverage and keep it green.
 4. Commit coherent test-and-implementation increments on the task branch.
 5. Stay within the approved task. Send a blocking question to the orchestrator when ambiguity affects behavior, scope, dependencies, or acceptance criteria.
 
@@ -54,7 +54,7 @@ record through the coordinator.
 Run only the focused tests and checks relevant to the task's owned behavior and affected surface. Leave broader repository coverage to CI. Confirm that the committed changes and remaining worktree state match the approved scope.
 
 Publication is a hard completion gate for every deliverable that changes files.
-Do not send worker_done until the final commit is pushed and the ready-for-review PR exists. After invoking `dgafka:create-pull-request`, verify
+Send `worker_done` after publication verification and the required observer launch receipt, honoring an explicit manual override. After invoking `dgafka:create-pull-request`, verify
 the remote branch contains the final commit, the PR targets the approved base,
 the PR is ready for review. Verify the PR head SHA matches the final commit SHA.
 If push or PR publication fails, report a publication blocker and keep the

@@ -76,13 +76,17 @@ authorized.
 - The user supplied a GitHub PR reference with the request — a URL or
   `owner/repo#123` → fetch it: `gh pr view <ref> --json title,body,number,url`
   and `gh pr diff <ref>`.
-- No reference supplied → diff the current branch against its detected default branch:
+- For an orchestrated local review, use the supplied base branch as `<base>`
+  and the assigned stable commit as `<reviewed-commit>`. Resolve missing context
+  with the coordinator through Orca before reviewing.
+- For a manual local review, use the user-supplied base. Otherwise detect it with
   `git symbolic-ref refs/remotes/origin/HEAD` (strip to branch name); if that
-  fails, probe for `main`, then `master`. Call the result `<base>` and use it
-  for every command below: `git diff <base>...HEAD` and
-  `git log <base>..HEAD --oneline`.
-- **Guard:** if diffing the current branch and it *is* `<base>`, stop and tell
-  the user there's nothing to diff against.
+  fails, probe for `main`, then `master`. Resolve `HEAD` to a commit SHA and use
+  it as `<reviewed-commit>`.
+- For either local mode, inspect `git diff <base>...<reviewed-commit>` and
+  `git log <base>..<reviewed-commit> --oneline`.
+- **Guard:** when the selected comparison has no changes, report that outcome
+  and complete the review.
 
 ### 2. Ask Mode and Focus
 

@@ -36,16 +36,15 @@ class SkillInstructions(unittest.TestCase):
             with self.subTest(skill=path.parent.name):
                 self.assertIsNone(re.search(r'\b(?:this|calling)\s+command\b', path.read_text(), re.I))
 
-    def test_coordinator_returns_requirement_mismatches_for_revision(self):
+    def test_coordinator_prepares_confirmation_before_worker_validation(self):
         coordinator = (SKILLS / 'orchestration-coordinator' / 'SKILL.md').read_text()
         record = (SKILLS / 'orchestration-coordinator' / 'launch-confirmation.md').read_text()
 
         self.assertIn('requirements-aware self-review', coordinator)
-        self.assertRegex(
-            coordinator,
-            r'return the required corrections to that sub-worktree\s+worker',
-        )
-        self.assertRegex(coordinator, r'resubmit a\s+revised confirmation')
+        self.assertIn('The coordinator prepares the draft launch confirmation', coordinator)
+        self.assertIn('Re-review each revision', coordinator)
+        self.assertRegex(coordinator, r'After dispatch, the worker validates the assignment')
+        self.assertIn("Orca's blocking `ask/reply` flow", coordinator)
         self.assertIn('Self-review result', record)
 
     def test_coordinator_requires_approval_only_for_new_sub_worktrees(self):

@@ -12,8 +12,9 @@ When preparing the first launch boxes, the coordinator creates
 `launch-execution.md` at the root of the main coordinator worktree. Record the
 objective and Orca Run identifier, then add one section per named implementation
 sub-worktree containing its complete launch confirmation box using the template
-below. Add that worktree's observer and any later review or verification boxes
-as subsections. Show new sub-worktree boxes in conversation for approval before
+below. Record observers, reviewers, and verification sessions as execution-history
+entries containing their name, purpose, agent and model, scope, reviewed commit
+when applicable, comment permission, routing context, and dispatch receipt. Show new sub-worktree boxes in conversation for approval before
 creation. Record sessions in existing sub-worktrees beneath the matching
 worktree's execution history without creating a new approval box.
 
@@ -27,7 +28,7 @@ approves it. Keep the approved box intact and track execution beneath it:
   review results, blockers, and next action
 - Timestamped updates with the reporting worker or observer and its evidence
 - Self-review result against the approved business requirements; when it does
-  not align, the exact correction request, worker revision, and re-review result
+  not align, the exact mismatch, coordinator revision, and re-review result
 - The dispatch-time approval timestamp and the exact named launch it authorizes
 
 The coordinator owns this file. Update the matching section after each launch,
@@ -47,15 +48,15 @@ the approved assignments and their execution history to your human partner.
 
 | Field | Proposed launch |
 |---|---|
-| Sub-worktree / Sub-session | Use only the applicable label and exact launch name |
-| Goal | Intended outcome; review focus for a reviewer |
-| Description | Complete ordered implementation steps for this sub-worktree; scoped activities for a sub-session |
-| Execution | New child sub-worktree, or sub-session in an exact existing worktree; agent and model |
+| Sub-worktree | Exact implementation sub-worktree name |
+| Goal | Intended deliverable outcome |
+| Description | Complete ordered implementation steps for this sub-worktree |
+| Execution | New child sub-worktree; agent and model |
 | Dependencies | Prerequisite names or none |
 | Discipline / Skill | Worker skill and relevant execution rules |
-| Verification | Acceptance checks; stable reviewed commit for a reviewer |
+| Verification | Acceptance checks |
 | Guidance | Relevant user instructions, or none |
-| PR | When applicable: target, stack position, publication or comment permission, observation mode |
+| PR | When applicable: target, stack position, publication permission, observation mode and findings route |
 
 Use the defined table rows. Preserve scope ownership and the verified Git
 base in the internal worker context. Use short cells with readable labels.
@@ -65,8 +66,8 @@ work when applicable. Number the steps within the cell, using line breaks for
 readability. Match the delivery proposal's Description column and copy these
 approved steps into the worker prompt. Include verification and publication
 work in their dedicated rows so the box describes the full assignment.
-Omit the PR row when it does not apply. For reviews, state explicitly whether
-external comments are authorized, based on the user's explicit permission.
+Omit the PR row when it does not apply. Record review comment authorization
+in the reviewer session entry using the user's explicit permission.
 
 Always show the model beside the agent in launch confirmation and execution
 summary tables. Default to `codex / gpt-6-sol` or `claude code / sonnet 5`

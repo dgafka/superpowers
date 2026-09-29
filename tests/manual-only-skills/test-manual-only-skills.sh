@@ -189,16 +189,16 @@ if run_test completion_requires_pushed_pr; then
     COORDINATOR="$REPO_ROOT/skills/orchestration-coordinator/SKILL.md"
     PR="$REPO_ROOT/skills/create-pull-request/SKILL.md"
     assert_contains "$SUBWORKTREE" \
-        "Do not send worker_done until the final commit is pushed and the ready-for-review PR exists" \
+        'Send `worker_done` after publication verification and the required observer launch receipt' \
         "sub-worktree blocks completion before PR publication"
     assert_contains "$SUBWORKTREE" \
         "Verify the PR head SHA matches the final commit SHA" \
         "sub-worktree verifies the PR points at the final commit"
     assert_contains "$COORDINATOR" \
-        "No implementation worker is complete until its branch is pushed and its ready-for-review PR exists" \
+        "Accept implementation completion after the worker verifies that the final" \
         "coordinator treats pushed PR publication as a completion invariant"
     assert_contains "$PR" \
-        "If push or PR creation fails, report a publication blocker and do not report completion" \
+        "If push or PR creation fails, report the publication blocker, recover publication, and repeat these checks before reporting completion" \
         "PR skill blocks completion when publication fails"
 fi
 
