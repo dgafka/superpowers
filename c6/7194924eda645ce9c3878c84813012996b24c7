@@ -1,0 +1,20 @@
+skills/create-pull-request/SKILL.md
+  s_fe6d98732b1f1a::t_c77126c76aaa18 117-119
+  s_fe6d98732b1f1a::t_9f86c05a5b852e 234-235
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "c67194924eda645ce9c3878c84813012996b24c7",
+  "prompts": {},
+  "sessions": {
+    "s_fe6d98732b1f1a": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0ed16-13dc-7801-b687-1c636244fabb",
+        "model": "gpt-6-sol"
+      },
+      "human_author": "Dariusz Gafka <dariusz.gafka@lendable.co.uk>"
+    }
+  }
+}
