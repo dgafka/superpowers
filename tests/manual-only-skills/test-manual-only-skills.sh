@@ -78,7 +78,7 @@ assert_no_hits() {
 }
 
 # Workflow skills that must be manual-only on both platforms.
-WORKFLOW_SKILLS=(improve-workflow cleanup-worktree orchestration-coordinator)
+WORKFLOW_SKILLS=(improve-workflow cleanup-worktree)
 
 echo "== manual-only workflow skills live under skills/"
 if run_test relocated; then
@@ -102,6 +102,14 @@ if run_test codex_manual_only; then
         assert_contains "$REPO_ROOT/skills/$s/agents/openai.yaml" "allow_implicit_invocation: false" \
             "$s opts out of Codex implicit invocation"
     done
+fi
+
+echo "== orchestration coordinator can be invoked automatically"
+if run_test coordinator_agent_invocable; then
+    assert_not_contains "$REPO_ROOT/skills/orchestration-coordinator/SKILL.md" "disable-model-invocation: true" \
+        "orchestration-coordinator permits model invocation in Claude Code"
+    assert_contains "$REPO_ROOT/skills/orchestration-coordinator/agents/openai.yaml" "allow_implicit_invocation: true" \
+        "orchestration-coordinator permits implicit invocation in Codex"
 fi
 
 echo "== implementation workers can invoke PR creation"
@@ -136,7 +144,7 @@ if run_test brainstorming_execution_choice; then
         "brainstorming returns to an explicit calling workflow"
     assert_not_contains "$REPO_ROOT/skills/recognize-and-learn/SKILL.md" \
         'Invoke `orchestration-coordinator`' \
-        "recognize-and-learn does not invoke manual-only coordinator"
+        "recognize-and-learn leaves the coordination choice to the user"
 fi
 
 echo "== explicitly requested reviews reuse review-changes through Orca"

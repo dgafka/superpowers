@@ -86,7 +86,7 @@ The proposed changes typically land in the superpowers fork — not in the proje
 
 Present the approved findings, skills-repository path, proposed edits, and
 verification criteria to the user. The user chooses the implementation workflow.
-When the user explicitly invokes `orchestration-coordinator`, provide this context
+When the user chooses Orca coordination, provide this context
 for its execution planning. Keep the retrospective changes in a separate PR from
 the implementation that prompted them.
 

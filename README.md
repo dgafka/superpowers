@@ -8,7 +8,7 @@ Start with `brainstorming` to refine what you want to build. Choose how to imple
 
 It develops the design in conversation and presents it in sections short enough to read and validate.
 
-If you invoke `orchestration-coordinator` after signing off on the design, it proposes named implementation sub-worktrees, identifies which can run in parallel, and presents a confirmation table before launching each with RED-GREEN-REFACTOR discipline. It emphasizes true test-first development, YAGNI (You Aren't Gonna Need It), and DRY.
+When you choose Orca coordination for an approved design, `orchestration-coordinator` can activate automatically. It proposes named implementation sub-worktrees, identifies which can run in parallel, and presents a confirmation table before launching each with RED-GREEN-REFACTOR discipline. It emphasizes true test-first development, YAGNI (You Aren't Gonna Need It), and DRY.
 
 The explicit dependencies and worker boundaries let agents work autonomously without drifting from the design you approved.
 
@@ -120,7 +120,7 @@ gemini extensions update dgafka
 
 1. **brainstorming** - Activates before writing code. Refines rough ideas through questions, explores alternatives, and presents a conversational design for validation.
 
-2. **orchestration-coordinator** - When invoked by the user, plans deliverable sub-worktrees, dependencies, execution order, and parallel work. Creates `launch-execution.md` in the main worktree with every launch box and updates progress from worker reports. Requires environment-variable feature flags for logic awaiting other units, plus a launch confirmation table and isolated TDD for each implementation.
+2. **orchestration-coordinator** - When you choose Orca coordination, plans deliverable sub-worktrees, dependencies, execution order, and parallel work. Creates `launch-execution.md` in the main worktree with every launch box and updates progress from worker reports. Requires environment-variable feature flags for logic awaiting other units, plus a launch confirmation table and isolated TDD for each implementation.
 
 3. **orchestration-sub-worktree** - Implements approved work directly in its assigned sub-worktree with TDD and final verification.
 
@@ -141,7 +141,7 @@ Invoke the workflow that matches the work. Implementation workers receive their 
 
 **Collaboration** 
 - **brainstorming** - Socratic design refinement
-- **orchestration-coordinator** - User-invoked coordination of implementation sub-worktrees, explicitly requested review sub-sessions, and stacked PRs through Orca
+- **orchestration-coordinator** - Agent-invocable coordination of implementation sub-worktrees, explicitly requested review sub-sessions, and stacked PRs through Orca when you choose that workflow
 - **orchestration-sub-worktree** - Implements approved work directly in its assigned sub-worktree
 - **recognize-and-learn** - Post-implementation retrospective; proposes process/skill changes for the user's implementation choice
 
