@@ -1,0 +1,40 @@
+CLAUDE.md
+  s_790aefb0ce434e::t_7fcb8854a5785c 36
+  s_7841d7eadd88b6::t_7f1e2982cc7dbd 9,19,34
+skills/recognize-and-learn/SKILL.md
+  s_790aefb0ce434e::t_65f0a7e570fa63 89
+tests/manual-only-skills/test-manual-only-skills.sh
+  s_790aefb0ce434e::t_266567fd29614f 81,107-112
+  s_790aefb0ce434e::t_65f0a7e570fa63 147
+  s_790aefb0ce434e::t_bcfe105243c26e 113-114
+skills/orchestration-coordinator/SKILL.md
+  s_790aefb0ce434e::t_9725c8c43bab28 3
+skills/orchestration-coordinator/agents/openai.yaml
+  s_790aefb0ce434e::t_9725c8c43bab28 2
+README.md
+  s_790aefb0ce434e::t_65f0a7e570fa63 11,123,144
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "ae25b54c1e814a2354464f685ff3aa8690318993",
+  "prompts": {},
+  "sessions": {
+    "s_7841d7eadd88b6": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "01a1342f-bc75-7b33-92ac-bab11a4f08a7",
+        "model": "unknown"
+      },
+      "human_author": "Dariusz Gafka <dariusz.gafka@lendable.co.uk>"
+    },
+    "s_790aefb0ce434e": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a1342f-bc75-7b33-92ac-bab11a4f08a7",
+        "model": "gpt-6-sol"
+      },
+      "human_author": "Dariusz Gafka <dariusz.gafka@lendable.co.uk>"
+    }
+  }
+}
