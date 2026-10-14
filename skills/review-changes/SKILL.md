@@ -22,7 +22,7 @@ self-review fixes turn these proposals into verified regression coverage.
 Resolve repo-specific details (PR template, ticket format, Jira instance)
 through detection or a user decision.
 
-When an approved `review-<topic>` sub-session, tracked as an Orca task, invokes this skill, the
+When an assigned `review-<topic>` sub-session, tracked as an Orca task, invokes this skill, the
 Orchestrated Review Mode below overrides the interactive mode selection and
 action loop. Manual invocations keep the existing workflow unchanged.
 
@@ -49,7 +49,7 @@ authorized.
 
 - Run as a sub-session: a separate Codex terminal within the implementation
   sub-worktree. The coordinator dispatches this existing-worktree session
-  directly without a launch-confirmation box. Reuse the implementation
+  directly and record it in the existing worktree's execution history. Reuse the implementation
   worktree's approved objective, scope, and routing context inside the reviewer.
 - Review the supplied stable commit while implementation edits are paused. If
   the checkout changes, report it and re-establish the target with the coordinator

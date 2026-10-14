@@ -15,9 +15,9 @@ the repo's own PR template, or asking the user**. Resolve conventions for the re
 
 ## Orchestrated Implementation and Observation Entry Points
 
-When invoked by `orchestration-sub-worktree`, use the approved launch context: repository, feature and target branches, publication permission, observer name/mode/location, coordinator Run, and original implementation task, terminal, and Dispatch. Explicit approval to publish on completion authorizes creation after the title/body passes the checks below; show the result and use that approval. If publication was not approved, route the completed preview to the coordinator for a user decision. Ordinary direct invocation still uses Step 8.
+When invoked by `orchestration-sub-worktree`, use the recorded execution context: repository, feature and target branches, publication permission, observer name/mode/location, coordinator Run, and original implementation task, terminal, and Dispatch. Explicit approval to publish on completion authorizes creation after the title/body passes the checks below; show the result and use that approval. If publication was not approved, route the completed preview to the coordinator for a user decision. Ordinary direct invocation still uses Step 8.
 
-The implementation default is `ci`. The initial confirmation must identify the observer name, mode, worktree, and findings route alongside PR publication. Reuse that approval in Step 10 for the mode and unchanged implementation scope. Preserve explicit manual/full choices when the user overrides this default.
+The implementation default is `ci`. The execution context identifies the observer name, mode, worktree, and findings route alongside PR publication. Use that mode in Step 10 for the unchanged implementation scope. Preserve explicit manual/full choices when the user overrides this default.
 
 An observer invokes `dgafka:create-pull-request` in **observation-only mode**, with mode `ci` or `full`, and starts at Step 11. Its workflow consists of observation and findings delivery. Its prompt must include the PR URL/number, repository, feature/base branches, implementation task and sub-worktree, original worker terminal/Dispatch, coordinator Run, and findings route. Missing routing context must be resolved before watching.
 
@@ -259,7 +259,7 @@ and re-show the preview.
 
 ### 10. Choose Observation Mode
 
-After returning the PR URL, use the approved observation mode and concrete launch when supplied. Otherwise ask how the user wants to observe it:
+After returning the PR URL, use the observation mode recorded in the execution context when supplied. Otherwise ask how the user wants to observe it:
 
 | Mode | Behavior |
 |---|---|
@@ -267,16 +267,16 @@ After returning the PR URL, use the approved observation mode and concrete launc
 | **Full observe** | Watch CI and review comments. Route failures and actionable feedback to the implementation worker, which fixes issues and responds to comment threads. |
 | **CI observe** | Watch CI only. Route CI failures to the implementation worker. Limit inputs to PR state and CI checks. |
 
-PR approval alone authorizes creation only. Start observation when both the mode and concrete launch are approved; the initial implementation confirmation may supply both.
+PR approval authorizes creation. Start observation in the mode recorded in the execution context after publication.
 
 - For **manual**, stop.
-- For **full** or **CI**, propose one read-only `observe-<specific-topic>` sub-session in the existing implementation worktree, tracked as an Orca task. Include the selected mode and findings route in the existing worktree execution context; dispatch it directly without a launch-confirmation box. Invoke the **orchestration** skill for dispatch.
+- For **full** or **CI**, create one read-only `observe-<specific-topic>` sub-session in the existing implementation worktree, tracked as an Orca task. Include the selected mode and findings route in the existing worktree execution context; dispatch it directly. Invoke the **orchestration** skill for dispatch.
 - Preserve the selected mode and implementation ownership route in the task context: repository and PR number, feature and base branches, implementation task name, implementation sub-worktree, original worker terminal/Dispatch when available, and a short PR brief.
 - Start the observer as a sub-session: a separate Codex terminal within that existing worktree. The observer reads PR state and routes findings; the implementation worker owns edits, commits, pushes, and author replies.
 
-Confirm the observer Dispatch exists before reporting it as started. If launching is unavailable from the worker, route the approved launch to the coordinator in the same Run and await its receipt. Reuse an existing observer.
+Confirm the observer Dispatch exists before reporting it as started. If launching is unavailable from the worker, route the observer request to the coordinator in the same Run and await its receipt. Reuse an existing observer.
 
-Once the observer starts, it owns observation passes. In orchestrated mode, it reports completion and ends its dispatched turn. The coordinator retains its terminal for the approved correction cycle and resumes it with a fresh Dispatch when needed. A direct caller outside a Dispatch waits for routed findings and reports them in its current session.
+Once the observer starts, it owns observation passes. In orchestrated mode, it reports completion and ends its dispatched turn. The coordinator retains its terminal for the correction cycle and resumes it with a fresh Dispatch when needed. A direct caller outside a Dispatch waits for routed findings and reports them in its current session.
 
 ### 11. Observe and Route Findings
 
@@ -297,7 +297,7 @@ The observer classifies new information:
 Route actionable evidence through Orca to the implementation worker:
 
 - If the original implementation worker has a live Dispatch, send the finding to that Dispatch. Include the PR URL, checked head SHA, failing check/run URL, relevant log excerpt, and actionable failure summary; record the active fix and route that finding once.
-- If its Dispatch has settled, notify the Run coordinator. The coordinator creates a named follow-up task in the same implementation sub-worktree and reuses the exact worker terminal when available; otherwise it dispatches a replacement session in the same implementation sub-worktree using its approved scope and routing context. Record the replacement in the execution history.
+- If its Dispatch has settled, notify the Run coordinator. The coordinator creates a named follow-up task in the same implementation sub-worktree and reuses the exact worker terminal when available; otherwise it dispatches a replacement session in the same implementation sub-worktree using its recorded scope and routing context. Record the replacement in the execution history.
 - Keep only one fix task active for a PR at a time.
 
 The implementation worker owns every correction. For behavioral changes it follows RED -> GREEN -> REFACTOR, reproducing the issue with a focused failing test before editing production code. It runs the focused tests and checks for the correction; CI supplies broader repository coverage. It commits, pushes, and reports the new commit through Orca. In full mode it also responds to the relevant review thread with what changed, or answers a comment that required no code change. The observer then resumes against the updated PR head SHA; assess the correction using results for the updated head.

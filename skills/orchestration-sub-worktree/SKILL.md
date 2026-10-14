@@ -13,7 +13,7 @@ Execute the approved assignment directly in this worker session.
 
 **REQUIRED SUB-SKILL:** Use dgafka:test-driven-development for every behavior change.
 
-**REQUIRED SUB-SKILL:** Use dgafka:create-pull-request after verification to publish the implementation PR and start its approved CI observation sub-session.
+**REQUIRED SUB-SKILL:** Use dgafka:create-pull-request after verification to publish the implementation PR when authorized and start its configured CI observation sub-session.
 
 **REQUIRED SUB-SKILL:** Use orchestration for Orca task questions and lifecycle reporting.
 
@@ -22,7 +22,7 @@ Execute the approved assignment directly in this worker session.
 Read the injected Orca task prompt end-to-end. Identify:
 
 - Sub-worktree name, goal, and observable outcome
-- Approved execution box Description, provided as the ordered implementation steps to cover in this sub-worktree
+- Recorded execution box Description, provided as the ordered implementation steps to cover in this sub-worktree
 - Run-wide guidance and task-specific additions
 - Owned scope and explicit exclusions
 - Dependency branch and expected stack position
@@ -91,9 +91,9 @@ Send `worker_done` exactly once using the IDs injected by Orca, then end the dis
 
 Stop and ask through Orca when:
 
-- The checkout is not the approved implementation sub-worktree
+- The checkout is not the assigned implementation sub-worktree
 - The task requires an unapproved behavioral or architectural decision
 - A dependency is missing or unstable
 - Required verification cannot be run or repeatedly fails for an unexplained reason
 
-Resume implementation in the approved sub-worktree after the coordinator resolves the blocking condition.
+Resume implementation in the assigned sub-worktree after the coordinator resolves the blocking condition.

@@ -36,26 +36,35 @@ class SkillInstructions(unittest.TestCase):
             with self.subTest(skill=path.parent.name):
                 self.assertIsNone(re.search(r'\b(?:this|calling)\s+command\b', path.read_text(), re.I))
 
-    def test_coordinator_prepares_confirmation_before_worker_validation(self):
+    def test_coordinator_prepares_execution_box_before_worker_validation(self):
         coordinator = (SKILLS / 'orchestration-coordinator' / 'SKILL.md').read_text()
-        record = (SKILLS / 'orchestration-coordinator' / 'launch-confirmation.md').read_text()
+        record = (SKILLS / 'orchestration-coordinator' / 'launch-execution-template.md').read_text()
 
         self.assertIn('requirements-aware self-review', coordinator)
-        self.assertIn('The coordinator prepares the draft launch confirmation', coordinator)
+        self.assertIn('The coordinator prepares the execution box', coordinator)
         self.assertIn('Re-review each revision', coordinator)
-        self.assertRegex(coordinator, r'After dispatch, the worker validates the assignment')
+        self.assertIn('After dispatch, the worker validates the assignment', coordinator)
         self.assertIn("Orca's blocking `ask/reply` flow", coordinator)
         self.assertIn('Self-review result', record)
 
-    def test_coordinator_requires_approval_only_for_new_sub_worktrees(self):
+    def test_coordinator_dispatches_ready_work_directly(self):
         coordinator = (SKILLS / 'orchestration-coordinator' / 'SKILL.md').read_text()
-        record = (SKILLS / 'orchestration-coordinator' / 'launch-confirmation.md').read_text()
+        record = (SKILLS / 'orchestration-coordinator' / 'launch-execution-template.md').read_text()
 
-        self.assertIn('just-in-time launch approval', coordinator)
-        self.assertIn('Before creating any new sub-worktree', coordinator)
-        self.assertIn('without a confirmation box or launch approval', coordinator)
-        self.assertIn('without this table or launch\napproval', record)
-        self.assertIn('dispatch-time approval', record)
+        self.assertIn('Dispatch each dependency-ready, conflict-free sub-worktree', coordinator)
+        self.assertIn('Record each launch before dispatch', record)
+        self.assertNotRegex(coordinator, r'(?i)(launch|sub-worktree|sub-session).{0,35}(approval|confirmation)')
+        self.assertNotRegex(record, r'(?i)(launch|sub-worktree|sub-session).{0,35}(approval|confirmation)')
+        for path in (
+            ROOT / 'CLAUDE.md', ROOT / 'README.md',
+            SKILLS / 'orchestration-sub-worktree' / 'SKILL.md',
+            SKILLS / 'create-pull-request' / 'SKILL.md',
+            SKILLS / 'review-changes' / 'SKILL.md',
+        ):
+            with self.subTest(path=path):
+                text = path.read_text().lower()
+                for phrase in ('launch-confirmation', 'launch approval', 'approved launch'):
+                    self.assertNotIn(phrase, text)
 
 
 if __name__ == '__main__':
