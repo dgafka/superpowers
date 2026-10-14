@@ -1,0 +1,54 @@
+skills/review-changes/SKILL.md
+  s_790aefb0ce434e::t_ab4bf7da05d0fc 25
+  s_790aefb0ce434e::t_aad6f813728a3c 52
+tests/skill-instructions/test-instructions.py
+  s_790aefb0ce434e::t_e50ca701b82f62 46,50
+  s_790aefb0ce434e::t_2a13d16411bdfc 58-67
+  s_790aefb0ce434e::t_fe552b3b1762df 39
+  s_790aefb0ce434e::t_adbb6c171b7a8d 41,44,52,54-57
+CLAUDE.md
+  s_7841d7eadd88b6::t_a4c71f468fa6d1 11,13
+  s_7841d7eadd88b6::t_dfd581fc62aeb2 9
+skills/orchestration-coordinator/SKILL.md
+  s_790aefb0ce434e::t_48a0018ed7d890 29,33,72-73,76,78,81-96,101,104-105,112-119,121-122,131,135
+  s_790aefb0ce434e::t_35ed550726da68 191,194,198,202,206,210
+  s_790aefb0ce434e::t_e50ca701b82f62 107-108
+skills/orchestration-sub-worktree/SKILL.md
+  s_790aefb0ce434e::t_2a13d16411bdfc 25
+  s_790aefb0ce434e::t_ab4bf7da05d0fc 16,94,99
+skills/orchestration-coordinator/launch-execution-template.md
+  s_7841d7eadd88b6::t_051984dda069e7 1-91
+README.md
+  s_790aefb0ce434e::t_aad6f813728a3c 123
+  s_7841d7eadd88b6::t_a4c71f468fa6d1 11,127,131
+skills/create-pull-request/SKILL.md
+  s_790aefb0ce434e::t_2a13d16411bdfc 279
+  s_790aefb0ce434e::t_aad6f813728a3c 18,20,270,273,277,300
+  s_790aefb0ce434e::t_e50ca701b82f62 262
+skills/writing-skills/testing-skills-with-subagents.md
+  s_790aefb0ce434e::t_e50ca701b82f62 37-38,46,54
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "e7577299a8dbe5e02a1aab2a072f96a0ecce52be",
+  "prompts": {},
+  "sessions": {
+    "s_7841d7eadd88b6": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "01a1342f-bc75-7b33-92ac-bab11a4f08a7",
+        "model": "unknown"
+      },
+      "human_author": "Dariusz Gafka <dariusz.gafka@lendable.co.uk>"
+    },
+    "s_790aefb0ce434e": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a1342f-bc75-7b33-92ac-bab11a4f08a7",
+        "model": "gpt-6-sol"
+      },
+      "human_author": "Dariusz Gafka <dariusz.gafka@lendable.co.uk>"
+    }
+  }
+}
