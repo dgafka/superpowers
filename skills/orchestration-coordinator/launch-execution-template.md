@@ -68,8 +68,9 @@ when it does not apply. Record review comment authorization in the reviewer
 session entry using the user's explicit permission.
 
 Show the model beside the agent in execution boxes and summaries. Default to
-`codex / gpt-6-sol` or `claude code / sonnet 5` unless the user specifies another
-model. Apply this to every sub-worktree and sub-session, including research,
+`codex / gpt-6.1-sol` unless the user specifies another agent or model. Preserve
+explicit choices from run-wide or assignment-specific guidance. Apply this to
+every sub-worktree and sub-session, including research,
 review, observation, and verification. Pass the displayed model explicitly when
 launching. If the runtime cannot resolve the selected model, report the blocker
 and ask the user to choose a replacement.

@@ -273,6 +273,7 @@ PR approval authorizes creation. Start observation in the mode recorded in the e
 - For **full** or **CI**, create one read-only `observe-<specific-topic>` sub-session in the existing implementation worktree, tracked as an Orca task. Include the selected mode and findings route in the existing worktree execution context; dispatch it directly. Invoke the **orchestration** skill for dispatch.
 - Preserve the selected mode and implementation ownership route in the task context: repository and PR number, feature and base branches, implementation task name, implementation sub-worktree, original worker terminal/Dispatch when available, and a short PR brief.
 - Start the observer as a sub-session: a separate Codex terminal within that existing worktree. The observer reads PR state and routes findings; the implementation worker owns edits, commits, pushes, and author replies.
+- Select and explicitly pass the observer's model using the defaults and user overrides in [launch-execution-template.md](../orchestration-coordinator/launch-execution-template.md), including when launching outside a coordinator Run. Record the selected agent and model in the observer's execution context.
 
 Confirm the observer Dispatch exists before reporting it as started. If launching is unavailable from the worker, route the observer request to the coordinator in the same Run and await its receipt. Reuse an existing observer.
 

@@ -118,6 +118,9 @@ mode `ci`, with findings routed to the original implementation worker. Dispatch
 that observer directly after publication and retain the worker terminal for CI
 fixes. Preserve an explicit user choice of manual/full observation.
 
+Apply the model defaults in [launch-execution-template.md](launch-execution-template.md)
+to both new sub-worktrees and new sub-sessions in existing worktrees, and pass
+the selected model explicitly at launch.
 Dispatch dependency-ready sub-worktrees and sub-sessions directly. Report each
 name, purpose, and findings route in the execution record.
 
