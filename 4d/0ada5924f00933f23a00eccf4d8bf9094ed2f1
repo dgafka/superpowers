@@ -1,0 +1,23 @@
+skills/orchestration-coordinator/SKILL.md
+  s_6d99bf54ef6513::t_9e2812f5a0f513 121-123
+skills/orchestration-coordinator/launch-execution-template.md
+  s_6d99bf54ef6513::t_9e2812f5a0f513 71-73
+skills/create-pull-request/SKILL.md
+  s_6d99bf54ef6513::t_9e2812f5a0f513 276
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "4d0ada5924f00933f23a00eccf4d8bf9094ed2f1",
+  "prompts": {},
+  "sessions": {
+    "s_6d99bf54ef6513": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a16850-cd35-7163-8d50-45abb384b66d",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "Dariusz Gafka <dariusz.gafka@lendable.co.uk>"
+    }
+  }
+}
