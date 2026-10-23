@@ -8,7 +8,7 @@ Start with `brainstorming` to refine what you want to build. Choose how to imple
 
 It develops the design in conversation and presents it in sections short enough to read and validate.
 
-When you choose Orca coordination for an approved design, `orchestration-coordinator` can activate automatically. It proposes named implementation sub-worktrees, identifies which can run in parallel, and records an execution box for each launch with RED-GREEN-REFACTOR discipline. It emphasizes true test-first development, YAGNI (You Aren't Gonna Need It), and DRY.
+When you choose Orca coordination for an approved design, `orchestration-coordinator` can activate automatically. It prepares `plan.md` before execution, grouping separately deliverable sub-worktrees into parallel waves with RED-GREEN-REFACTOR discipline. It marks units complete after merge and starts each next wave after the current wave is fully merged. It emphasizes true test-first development, YAGNI (You Aren't Gonna Need It), and DRY.
 
 The explicit dependencies and worker boundaries let agents work autonomously without drifting from the design you approved.
 
@@ -120,7 +120,7 @@ gemini extensions update dgafka
 
 1. **brainstorming** - Activates before writing code. Refines rough ideas through questions, explores alternatives, and presents a conversational design for validation.
 
-2. **orchestration-coordinator** - When you choose Orca coordination, plans deliverable sub-worktrees, dependencies, execution order, and parallel work. Creates `launch-execution.md` in the main worktree with every execution box and updates progress from worker reports. Requires environment-variable feature flags for logic awaiting other units, plus a recorded execution box and isolated TDD for each implementation.
+2. **orchestration-coordinator** - When you choose Orca coordination, writes `plan.md` in the main worktree before execution, with one separately deliverable unit per sub-worktree grouped into parallel waves. Checks off units after verified merge and advances only when the whole wave is merged. Requires environment-variable feature flags for logic awaiting other units and isolated TDD for each implementation.
 
 3. **orchestration-sub-worktree** - Implements approved work directly in its assigned sub-worktree with TDD and final verification.
 
@@ -128,7 +128,7 @@ gemini extensions update dgafka
 
 5. **test-driven-development** - Activates during implementation. Enforces RED-GREEN-REFACTOR: write failing test, watch it fail, write minimal code, watch it pass, commit. Deletes code written before tests.
 
-A **sub-session** is a separate Codex terminal within an existing worktree. Use it for review, CI/PR observation, and explicitly requested independent verification. Each sub-worktree has a recorded execution box; sub-sessions are recorded in their existing worktree's execution history. Routine tests and fixes stay with the original implementation worker. Orca tasks remain the underlying scheduling objects.
+A **sub-session** is a separate Codex terminal within an existing worktree. Use it for review, CI/PR observation, and explicitly requested independent verification. Each implementation sub-worktree owns one unit in `plan.md`; live worker and sub-session progress stays in Orca. Routine tests and fixes stay with the original implementation worker. Orca tasks remain the underlying scheduling objects.
 
 Invoke the workflow that matches the work. Implementation workers receive their required skills directly in the Orca task prompt.
 
@@ -141,7 +141,7 @@ Invoke the workflow that matches the work. Implementation workers receive their 
 
 **Collaboration** 
 - **brainstorming** - Socratic design refinement
-- **orchestration-coordinator** - Agent-invocable coordination of implementation sub-worktrees, explicitly requested review sub-sessions, and stacked PRs through Orca when you choose that workflow
+- **orchestration-coordinator** - Agent-invocable coordination of implementation sub-worktrees, explicitly requested review sub-sessions, and delivery in waves through Orca when you choose that workflow
 - **orchestration-sub-worktree** - Implements approved work directly in its assigned sub-worktree
 - **recognize-and-learn** - Post-implementation retrospective; proposes process/skill changes for the user's implementation choice
 

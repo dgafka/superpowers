@@ -273,7 +273,7 @@ PR approval authorizes creation. Start observation in the mode recorded in the e
 - For **full** or **CI**, create one read-only `observe-<specific-topic>` sub-session in the existing implementation worktree, tracked as an Orca task. Include the selected mode and findings route in the existing worktree execution context; dispatch it directly. Invoke the **orchestration** skill for dispatch.
 - Preserve the selected mode and implementation ownership route in the task context: repository and PR number, feature and base branches, implementation task name, implementation sub-worktree, original worker terminal/Dispatch when available, and a short PR brief.
 - Start the observer as a sub-session: a separate Codex terminal within that existing worktree. The observer reads PR state and routes findings; the implementation worker owns edits, commits, pushes, and author replies.
-- Select and explicitly pass the observer's model using the defaults and user overrides in [launch-execution-template.md](../orchestration-coordinator/launch-execution-template.md), including when launching outside a coordinator Run. Record the selected agent and model in the observer's execution context.
+- Select and explicitly pass the observer's model using the defaults and user overrides in [orchestration-coordinator](../orchestration-coordinator/SKILL.md), including when launching outside a coordinator Run. Record the selected agent and model in the observer's execution context.
 
 Confirm the observer Dispatch exists before reporting it as started. If launching is unavailable from the worker, route the observer request to the coordinator in the same Run and await its receipt. Reuse an existing observer.
 
@@ -298,7 +298,7 @@ The observer classifies new information:
 Route actionable evidence through Orca to the implementation worker:
 
 - If the original implementation worker has a live Dispatch, send the finding to that Dispatch. Include the PR URL, checked head SHA, failing check/run URL, relevant log excerpt, and actionable failure summary; record the active fix and route that finding once.
-- If its Dispatch has settled, notify the Run coordinator. The coordinator creates a named follow-up task in the same implementation sub-worktree and reuses the exact worker terminal when available; otherwise it dispatches a replacement session in the same implementation sub-worktree using its recorded scope and routing context. Record the replacement in the execution history.
+- If its Dispatch has settled, notify the Run coordinator. The coordinator creates a named follow-up task in the same implementation sub-worktree and reuses the exact worker terminal when available; otherwise it dispatches a replacement session in the same implementation sub-worktree using its recorded scope and routing context. Report the replacement through Orca.
 - Keep only one fix task active for a PR at a time.
 
 The implementation worker owns every correction. For behavioral changes it follows RED -> GREEN -> REFACTOR, reproducing the issue with a focused failing test before editing production code. It runs the focused tests and checks for the correction; CI supplies broader repository coverage. It commits, pushes, and reports the new commit through Orca. In full mode it also responds to the relevant review thread with what changed, or answers a comment that required no code change. The observer then resumes against the updated PR head SHA; assess the correction using results for the updated head.

@@ -36,25 +36,21 @@ class SkillInstructions(unittest.TestCase):
             with self.subTest(skill=path.parent.name):
                 self.assertIsNone(re.search(r'\b(?:this|calling)\s+command\b', path.read_text(), re.I))
 
-    def test_coordinator_prepares_execution_box_before_worker_validation(self):
+    def test_coordinator_plan_references(self):
         coordinator = (SKILLS / 'orchestration-coordinator' / 'SKILL.md').read_text()
-        record = (SKILLS / 'orchestration-coordinator' / 'launch-execution-template.md').read_text()
+        worker = (SKILLS / 'orchestration-sub-worktree' / 'SKILL.md').read_text()
+        self.assertIn('`plan.md`', coordinator)
+        self.assertIn('`plan.md`', worker)
 
-        self.assertIn('requirements-aware self-review', coordinator)
-        self.assertIn('The coordinator prepares the execution box', coordinator)
-        self.assertIn('Re-review each revision', coordinator)
-        self.assertIn('After dispatch, the worker validates the assignment', coordinator)
-        self.assertIn("Orca's blocking `ask/reply` flow", coordinator)
-        self.assertIn('Self-review result', record)
+    def test_retired_tracking_references(self):
+        retired = 'launch-' + 'execution'
+        self.assertFalse(list(SKILLS.rglob(retired + '*')))
+        for path in [ROOT / 'README.md', ROOT / 'CLAUDE.md', *SKILLS.rglob('*.md')]:
+            with self.subTest(path=path):
+                self.assertNotIn(retired, path.read_text())
+                self.assertNotIn('execution box', path.read_text().lower())
 
-    def test_coordinator_dispatches_ready_work_directly(self):
-        coordinator = (SKILLS / 'orchestration-coordinator' / 'SKILL.md').read_text()
-        record = (SKILLS / 'orchestration-coordinator' / 'launch-execution-template.md').read_text()
-
-        self.assertIn('Dispatch each dependency-ready, conflict-free sub-worktree', coordinator)
-        self.assertIn('Record each launch before dispatch', record)
-        self.assertNotRegex(coordinator, r'(?i)(launch|sub-worktree|sub-session).{0,35}(approval|confirmation)')
-        self.assertNotRegex(record, r'(?i)(launch|sub-worktree|sub-session).{0,35}(approval|confirmation)')
+    def test_coordinator_dispatches_without_extra_launch_gate(self):
         for path in (
             ROOT / 'CLAUDE.md', ROOT / 'README.md',
             SKILLS / 'orchestration-sub-worktree' / 'SKILL.md',

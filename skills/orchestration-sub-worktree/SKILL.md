@@ -22,10 +22,10 @@ Execute the approved assignment directly in this worker session.
 Read the injected Orca task prompt end-to-end. Identify:
 
 - Sub-worktree name, goal, and observable outcome
-- Recorded execution box Description, provided as the ordered implementation steps to cover in this sub-worktree
+- Assigned `plan.md` unit, provided as the ordered implementation steps to cover in this sub-worktree
 - Run-wide guidance and task-specific additions
 - Owned scope and explicit exclusions
-- Dependency branch and expected stack position
+- Agreed target branch containing merged prerequisites
 - Acceptance criteria and verification commands
 - Delivery prerequisites and any environment-variable feature flag contract, including disabled behavior and activation conditions
 
@@ -43,11 +43,10 @@ If required task context is absent, use Orca's blocking `ask/reply` flow. Keep t
 
 The orchestrator may answer when accumulated research already determines the result. A material plan change goes back to the user through the orchestrator.
 
-Report meaningful progress through Orca as assigned Description steps complete
+Report meaningful progress through Orca as assigned implementation steps complete
 or blockers arise. Include the step numbers, outcome, relevant commit and
-verification evidence, and next action. The coordinator uses these reports to
-update `launch-execution.md` in the main worktree; route corrections to that
-record through the coordinator.
+verification evidence, and next action. Keep live progress in Orca. The coordinator checks off the unit in `plan.md`
+only after verifying its PR is merged.
 
 ## 3. Verify, Publish, and Report
 
@@ -68,7 +67,7 @@ also checks the integrated enabled path after the required units are delivered.
 Include the variable, enabling value, default, remaining prerequisites, and
 activation readiness in the PR and completion report.
 
-Invoke `dgafka:create-pull-request` in its orchestrated implementation mode. Pass the approved repository, PR base (the prerequisite branch for dependent work), publication authorization, observer name/mode/worktree/findings route, and original worker/Dispatch route. Create or reuse a ready-for-review PR, then send its URL to the main coordinator through Orca immediately.
+Invoke `dgafka:create-pull-request` in its orchestrated implementation mode. Pass the approved repository, PR base (the agreed integration branch), publication authorization, observer name/mode/worktree/findings route, and original worker/Dispatch route. Create or reuse a ready-for-review PR, then send its URL to the main coordinator through Orca immediately.
 
 For automatic observation, trigger the `observe-<topic>` sub-session in this implementation worktree using the observation entry point in `dgafka:create-pull-request`. Use mode `ci` by default, or `full` when explicitly selected. An explicit manual override skips observation and its launch receipt. Ask the coordinator to dispatch it in the same Run when worker-side dispatch is unavailable; wait for the launch receipt before reporting successful completion. Reuse an existing observer. Report a failed automatic launch as a blocker.
 
@@ -85,7 +84,7 @@ Before reporting completion, include the final commit SHA, pushed remote branch,
 PR head SHA, approved PR base, and ready-for-review state. These values must
 describe the same final commit.
 
-Send `worker_done` exactly once using the IDs injected by Orca, then end the dispatched turn. The orchestrator owns dependency release, stacked-PR linkage, integration choices, and worker cleanup. It retains the original worker terminal for CI fixes during the approved observation cycle; after settlement, a fix arrives as a fresh Dispatch in that exact terminal. Use the lifecycle IDs from each fresh Dispatch.
+Send `worker_done` exactly once using the IDs injected by Orca, then end the dispatched turn. The orchestrator owns wave release after merge, integration choices, and worker cleanup. It retains the original worker terminal for CI fixes during the approved observation cycle; after settlement, a fix arrives as a fresh Dispatch in that exact terminal. Use the lifecycle IDs from each fresh Dispatch.
 
 ## Stop Conditions
 
