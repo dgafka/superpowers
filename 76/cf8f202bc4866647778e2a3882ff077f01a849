@@ -1,0 +1,31 @@
+README.md
+  s_072f7f64def95c::t_4d79d311da7c61 144
+  s_072f7f64def95c::t_20604db3da0ebd 11,123,131
+tests/skill-instructions/test-instructions.py
+  s_072f7f64def95c::t_20604db3da0ebd 39,41-43,45-51,53
+CLAUDE.md
+  s_072f7f64def95c::t_20604db3da0ebd 9,11,13,27
+skills/orchestration-sub-worktree/SKILL.md
+  s_072f7f64def95c::t_d4b259ffd36686 25,28,46,48-49,70,87
+skills/create-pull-request/SKILL.md
+  s_072f7f64def95c::t_d4b259ffd36686 276,301
+skills/orchestration-coordinator/SKILL.md
+  s_072f7f64def95c::t_d4b259ffd36686 29-79,102-144,154-156,190,194,201,206-209,211,215,223-224,229
+  s_072f7f64def95c::t_4d79d311da7c61 90,163
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "76cf8f202bc4866647778e2a3882ff077f01a849",
+  "prompts": {},
+  "sessions": {
+    "s_072f7f64def95c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "01a1690e-955e-7dd2-98bb-6bc7c540ca31",
+        "model": "unknown"
+      },
+      "human_author": "Dariusz Gafka <dariusz.gafka@lendable.co.uk>"
+    }
+  }
+}
